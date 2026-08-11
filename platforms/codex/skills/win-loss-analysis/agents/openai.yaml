@@ -1,0 +1,4 @@
+interface:
+  display_name: "Win/Loss Analysis"
+  short_description: "Analyse deal outcomes and create a deck"
+  default_prompt: "Use $win-loss-analysis to analyse Summit53 closed deals and create a win/loss PPTX."

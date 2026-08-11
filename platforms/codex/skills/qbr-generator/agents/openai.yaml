@@ -1,0 +1,4 @@
+interface:
+  display_name: "QBR Generator"
+  short_description: "Generate executive quarterly business reviews"
+  default_prompt: "Use $qbr-generator to create a Summit53 quarterly business review PPTX for this period."

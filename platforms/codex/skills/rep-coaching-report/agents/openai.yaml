@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rep Coaching Report"
+  short_description: "Prepare evidence-based rep coaching decks"
+  default_prompt: "Use $rep-coaching-report to prepare a Summit53 coaching deck for this rep and 1:1."

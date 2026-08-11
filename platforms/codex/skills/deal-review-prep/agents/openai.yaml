@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deal Review Prep"
+  short_description: "Build manager-led formal deal review decks"
+  default_prompt: "Use $deal-review-prep to prepare a manager-led formal review PPTX for this Summit53 opportunity."

@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "claude": [
+    {
+      "name": "board-revenue-pack",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 12569,
+          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 22062,
+          "sha256": "ef1b716ebb766c0c52286521da0f5b07d4d8617a8899340f9ca87de5d3f04b7f"
+        }
+      ]
+    },
+    {
+      "name": "deal-review-prep",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "bytes": 33102,
+          "sha256": "101cde4f74189c0fcbaefc60d9d721e8aaf8e69abcf99c212683806ac721efce"
+        }
+      ]
+    },
+    {
+      "name": "first-meeting-deck",
+      "files": [
+        {
+          "path": "references/vendor-branding.md",
+          "bytes": 7438,
+          "sha256": "5cf4032bfab5c863a882a82e1a16e3c1a975601eed423d18d91f709dc29541d0"
+        },
+        {
+          "path": "references/vendor-context.md",
+          "bytes": 11535,
+          "sha256": "7ee459ad76b823aa8e2532467de44bff7fc35de5a553f2236b56f077f3562beb"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 75288,
+          "sha256": "cb5df8633e3c57f4126caef063cdf19aa137e0be13b2f5d3413c5ee6bb5eb02f"
+        }
+      ]
+    },
+    {
+      "name": "forecast-delta-brief",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 12569,
+          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 16734,
+          "sha256": "c1b1552332655c68fee51cf3e9f3298289b2ae2f86a7bcc59b63ad4ec39915a8"
+        }
+      ]
+    },
+    {
+      "name": "qbr-generator",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 26808,
+          "sha256": "f66636ca14bcd000b6e0cdbe72be842a5b1aa9f7565b385849fd9bc77c6598cb"
+        }
+      ]
+    },
+    {
+      "name": "rep-evidence-dossier",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 12569,
+          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+        },
+        {
+          "path": "references/structural-confounders.md",
+          "bytes": 18002,
+          "sha256": "e39dfde9b87623365ea7d913f1d5b43a7bc936e1effba7d76f45aa211bf79a60"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 15327,
+          "sha256": "70456c676112918a6f20236973e83f431a73a0110557b43aa1a5cfb1311fa36b"
+        }
+      ]
+    },
+    {
+      "name": "revenue-action-brief-s53",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "references/signal-catalog.md",
+          "bytes": 20241,
+          "sha256": "6aab91336c0f04773d8b7680969247593f684e814a2ed61d2b2352aed1ef309c"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 18384,
+          "sha256": "ec9002fde95777ba530c9f3593145599c8fe64e1a3bd3e9a50a79917040850da"
+        }
+      ]
+    },
+    {
+      "name": "territory-review",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 25718,
+          "sha256": "4f3a7d3f19a3be2a2978bb7ffa2400fbfbb6211a033dd784a7945a2fe66aabcf"
+        }
+      ]
+    },
+    {
+      "name": "win-loss-analysis",
+      "files": [
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10077,
+          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 37779,
+          "sha256": "7863d5bcf7d3802aa97d4af8bf2d80d137d69f7905813c8b3f857d6fbc37fcfb"
+        }
+      ]
+    }
+  ],
+  "codex": [
+    {
+      "name": "ae-deal-inspection-prep",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 219,
+          "sha256": "08d2501105fa970454c439135684a49e24c24290fa2335069016fc22d6144307"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 7768,
+          "sha256": "a4365427cea0994f0b63385c90d0ca51cbadaa2ab5a983dd5b16fb5258f1e5c8"
+        }
+      ]
+    },
+    {
+      "name": "board-revenue-pack",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 248,
+          "sha256": "c3f8a7c7fb482fdd07f28ff93f56d88f2472cd85c60b1aad412afd9029b1582e"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 13043,
+          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 9329,
+          "sha256": "7d8cfed51ae5ff0263151f50a3b602501c763a9e790074532fc5c0767a04ce17"
+        }
+      ]
+    },
+    {
+      "name": "competitor-response-card",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 237,
+          "sha256": "70b18acce020f2b826a8965a61476b5e1c024e7ad458de67cf60f583e3eb7328"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 5868,
+          "sha256": "54f656e9a2c8663bbe75370191e9e750c2823e8e718b2d2fa3c0139e5c4e6351"
+        }
+      ]
+    },
+    {
+      "name": "cs-renewal-forecast",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 218,
+          "sha256": "2b41c8c78533a3516f3911066f7bbb778cb64fe1dff19fca7d6cdd50b03c7617"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 9886,
+          "sha256": "ac733f5085ec8af4f54e86682bfefdda146328d2d46700de6cfa625f5c21bc01"
+        }
+      ]
+    },
+    {
+      "name": "customer-qbr",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 202,
+          "sha256": "28c348856ce75a0cccde5c90e2e07d7307d52a313327205a726e31844d1256ed"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 6998,
+          "sha256": "c5d57975ce15f9d0c1bbe6063b9092f239ba21cc522439189a95cfed01de3d75"
+        }
+      ]
+    },
+    {
+      "name": "deal-review-prep",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 229,
+          "sha256": "989d66027c20f3bec942de94596903ca77e2e81cbb16f700fae88fc17edf2259"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 32688,
+          "sha256": "6cde9fb6739b8ede890517adcfc22b6d4ba1efc345b74186732ebe13897e17a5"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 3723,
+          "sha256": "d468f7bf672c01ab360c1ce093e4ae0a84a8b4baca2c7f1e061e3d22b969152f"
+        }
+      ]
+    },
+    {
+      "name": "deal-timeline-defence",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 231,
+          "sha256": "29befe78fe3efd487d9318901761f83361600bd3bd264f5699500bb6cf382798"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 8421,
+          "sha256": "3054012718cc71cd54b2dae5bb7814794774ebabe757b43ec1fb58595a348be8"
+        }
+      ]
+    },
+    {
+      "name": "first-meeting-deck",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 230,
+          "sha256": "e89f98f3d571f694d5ef1b9e669c08c8140a474c73c88887d2e71175a6389e77"
+        },
+        {
+          "path": "references/vendor-branding.md",
+          "bytes": 7438,
+          "sha256": "5cf4032bfab5c863a882a82e1a16e3c1a975601eed423d18d91f709dc29541d0"
+        },
+        {
+          "path": "references/vendor-context.md",
+          "bytes": 11535,
+          "sha256": "7ee459ad76b823aa8e2532467de44bff7fc35de5a553f2236b56f077f3562beb"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 74869,
+          "sha256": "a7211acabb6e6b37c1b14b564190f36920488f8f9ed490e2c40b4619c7ae217e"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 5380,
+          "sha256": "f7b2c3c28e4b55d46e4e3da2cc99109e5768fd97cc4235be10922adecbb698ec"
+        }
+      ]
+    },
+    {
+      "name": "forecast-delta-brief",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 232,
+          "sha256": "12f0a5ade222c58d38cf54708191fc526ddfef69ef324e66fb6b2966cd108476"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 13043,
+          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 10052,
+          "sha256": "fc5b7b54cdeaca0a023be5de048f5bb47ebbb46e57f89d93e1b5e42e1451690b"
+        }
+      ]
+    },
+    {
+      "name": "qbr-generator",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 220,
+          "sha256": "f56b579159a2ebd3b9f100a5a411f85bf97e47be05f99b34a302443d967a9614"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 26396,
+          "sha256": "f21840560dd5631c2ad6ecb30d6c26374ac78fce8dad072b31316810c2f42ef6"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 3069,
+          "sha256": "de4768801edaf9096e312d5033785bd66c518eea27c6bb4bed5dc6bb1b632127"
+        }
+      ]
+    },
+    {
+      "name": "renewal-defence-pack",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 221,
+          "sha256": "3959838ee319be00d69e95083e1a6a8d9052b0c937666de7ff78a78f32281730"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 9048,
+          "sha256": "45307813a6564fa52d4d871eff2377e35d63d83b4e8def171fef4f8345d156af"
+        }
+      ]
+    },
+    {
+      "name": "rep-coaching-report",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 217,
+          "sha256": "5f48aba8cddcd93983e2bc884e078be3aef88f450d356a90b549dccdbbb82cee"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 38940,
+          "sha256": "d2479fd49547953e265fec6800dc8b82dc69b7b965cd4ebcddf1367929e738d1"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 4463,
+          "sha256": "f94b874352315eb3e3dbe9e8f111903cbdead35b3e7b2208b2fa3f7728666aba"
+        }
+      ]
+    },
+    {
+      "name": "rep-evidence-dossier",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 268,
+          "sha256": "062b3eeac6d93f8c4b848c5ee5f55484a0e102e911f7cdbffafd620e44f59de0"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/delta-attribution.md",
+          "bytes": 13043,
+          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+        },
+        {
+          "path": "references/structural-confounders.md",
+          "bytes": 20121,
+          "sha256": "ccdc2e81fc5ece68e097e36a499e78ad148c6c9a1aa730ee64f311954754596a"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 15862,
+          "sha256": "811b15038b8228dabab98d1eaac2e1ea81fca2766ddf1aec1d5cf91cafa63b9e"
+        }
+      ]
+    },
+    {
+      "name": "revenue-action-brief-s53",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 222,
+          "sha256": "5253881668ba1301efcec93a13d6ddbf52323bf261ff80d6b365fc7b518b22e5"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/signal-catalog.md",
+          "bytes": 20241,
+          "sha256": "6aab91336c0f04773d8b7680969247593f684e814a2ed61d2b2352aed1ef309c"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 17913,
+          "sha256": "3d344a1712c986859ff258cdcdd8815db98eee04582594950f188c801a641774"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 2074,
+          "sha256": "c917ca903a02c2dae08166aad53ec7456bbbaffb7f096ce37fd0561a77edad6e"
+        }
+      ]
+    },
+    {
+      "name": "territory-review",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 209,
+          "sha256": "e8380b0d6b179563d4607cb0682f66dfe7e1a54ecffa51fddbbcdeddc2e54dc6"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 25281,
+          "sha256": "b7864c0a7a79df2bac0cda902c224d923481af211df88a04470b13cf34f1fc64"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 3223,
+          "sha256": "d37174571cebfd8e27f4d8ca68663e01e0e1870c60b27e9ebbff5360632f23de"
+        }
+      ]
+    },
+    {
+      "name": "win-loss-analysis",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 214,
+          "sha256": "e6fd6a6d6f2412b859e55457d248b0607d43e95d6ed4af167abb1ecacdb2c010"
+        },
+        {
+          "path": "references/async-envelopes.md",
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 37332,
+          "sha256": "98ec27282abd780c277b1c689bbeb8f53ff51d7bbe988a6b94efe8aace8c8aab"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 3151,
+          "sha256": "caec948feca0f55abe50e71d832a1b1926fe4873a2b03a76ae555952821dbd0f"
+        }
+      ]
+    }
+  ],
+  "shared": [
+    {
+      "path": "shared/canonical/async-envelopes.md",
+      "bytes": 10513,
+      "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+    },
+    {
+      "path": "shared/canonical/delta-attribution.md",
+      "bytes": 13043,
+      "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+    },
+    {
+      "path": "shared/canonical/structural-confounders.md",
+      "bytes": 20121,
+      "sha256": "ccdc2e81fc5ece68e097e36a499e78ad148c6c9a1aa730ee64f311954754596a"
+    }
+  ]
+}

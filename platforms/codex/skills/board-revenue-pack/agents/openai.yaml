@@ -1,0 +1,4 @@
+interface:
+  display_name: "Board Revenue Pack"
+  short_description: "Build evidence-led board and investor revenue packs"
+  default_prompt: "Use $board-revenue-pack to build a non-operational board revenue deck with a defensible quarterly delta."

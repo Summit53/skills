@@ -1,0 +1,4 @@
+interface:
+  display_name: "Renewal Defence Pack"
+  short_description: "Build evidence-grounded renewal defence packs"
+  default_prompt: "Use $renewal-defence-pack to prepare a grounded defence for this account renewal."

@@ -1,0 +1,14 @@
+# Private engineering and provenance trees must never enter this public repository.
+/skills/
+/provenance/
+/_canonical/
+/patches/
+/private/
+
+# Local artifacts and caches.
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+tmp/
+artifacts/

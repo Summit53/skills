@@ -1,0 +1,4 @@
+interface:
+  display_name: "Territory Review"
+  short_description: "Build strategic territory review decks"
+  default_prompt: "Use $territory-review to create a Summit53 territory review PPTX for this scope."

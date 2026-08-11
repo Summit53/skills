@@ -1,0 +1,4 @@
+interface:
+  display_name: "First Meeting Deck"
+  short_description: "Create grounded first-meeting sales decks"
+  default_prompt: "Use $first-meeting-deck to create a Summit53 first-meeting PPTX for this account or opportunity."

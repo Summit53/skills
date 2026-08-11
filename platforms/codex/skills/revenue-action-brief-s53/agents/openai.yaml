@@ -1,0 +1,4 @@
+interface:
+  display_name: "Revenue Action Brief"
+  short_description: "Prioritize evidence-backed revenue actions"
+  default_prompt: "Use $revenue-action-brief-s53 to produce a prioritized Summit53 revenue action brief."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer QBR"
+  short_description: "Create customer-safe value review briefs"
+  default_prompt: "Use $customer-qbr to prepare a customer-safe value review for this account."

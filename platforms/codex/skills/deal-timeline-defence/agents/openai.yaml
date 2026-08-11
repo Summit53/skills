@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deal Timeline Defence"
+  short_description: "Defend challenged deal timelines with evidence"
+  default_prompt: "Use $deal-timeline-defence to reconstruct and assess the chronology of a challenged deal."

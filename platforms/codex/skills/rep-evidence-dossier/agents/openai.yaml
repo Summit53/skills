@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rep Evidence Dossier"
+  short_description: "Build a neutral formal rep-evidence PPTX"
+  default_prompt: "Use $rep-evidence-dossier to create a professional, neutral PPTX evidence dossier for a formal promotion, PIP, or calibration review."

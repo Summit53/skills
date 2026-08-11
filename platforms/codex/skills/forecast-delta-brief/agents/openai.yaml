@@ -1,0 +1,4 @@
+interface:
+  display_name: "Forecast Delta Brief"
+  short_description: "Create a weekly forecast delta PowerPoint"
+  default_prompt: "Use $forecast-delta-brief to create this week's evidence-grounded executive forecast PowerPoint."

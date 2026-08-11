@@ -1,0 +1,4 @@
+interface:
+  display_name: "CS Renewal Forecast"
+  short_description: "Forecast CS renewal exposure and movement"
+  default_prompt: "Use $cs-renewal-forecast to prepare an evidence-grounded portfolio renewal outlook."

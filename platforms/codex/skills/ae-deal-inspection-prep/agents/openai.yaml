@@ -1,0 +1,4 @@
+interface:
+  display_name: "AE Deal Inspection Prep"
+  short_description: "Prepare an AE for a single-deal inspection"
+  default_prompt: "Use $ae-deal-inspection-prep to prepare me for an inspection of one named deal."

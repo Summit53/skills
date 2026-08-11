@@ -1,0 +1,4 @@
+interface:
+  display_name: "Competitor Response Card"
+  short_description: "Prepare evidence-grounded competitor responses"
+  default_prompt: "Use $competitor-response-card to prepare an evidence-grounded response for this active deal."
