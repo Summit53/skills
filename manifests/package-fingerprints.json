@@ -2,22 +2,87 @@
   "schema_version": 1,
   "claude": [
     {
+      "name": "ae-deal-inspection-prep",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 9840,
+          "sha256": "b3f2e40317e626bf36eebb5c050aaf5522ce27fc80b02e7ed11878b4ded8429a"
+        }
+      ]
+    },
+    {
       "name": "board-revenue-pack",
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 12569,
-          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
-          "bytes": 22062,
-          "sha256": "ef1b716ebb766c0c52286521da0f5b07d4d8617a8899340f9ca87de5d3f04b7f"
+          "bytes": 28882,
+          "sha256": "37bf166be4811f6d7187be3835c179cfb260ee714ff02374c20ec97ac39cc4e1"
+        }
+      ]
+    },
+    {
+      "name": "competitor-response-card",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 7027,
+          "sha256": "b895be5a90572be7dc48d96cada19b5bd19c56218bcf68cece357d990dc24dfe"
+        }
+      ]
+    },
+    {
+      "name": "cs-renewal-forecast",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 10755,
+          "sha256": "71eb5a94fe3a7efebfe7516dbd2e20adde2adf9556687086d154f6b2a2c5285d"
+        }
+      ]
+    },
+    {
+      "name": "customer-qbr",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 8132,
+          "sha256": "a6299c4f9ec86227ada0715fd7510620ae9f0468e3f5113e86be923edbdc9b46"
         }
       ]
     },
@@ -25,9 +90,29 @@
       "name": "deal-review-prep",
       "files": [
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 33102,
-          "sha256": "101cde4f74189c0fcbaefc60d9d721e8aaf8e69abcf99c212683806ac721efce"
+          "bytes": 41037,
+          "sha256": "05dbc1ca3a61f1448688560d84896581418900ec2acb4ea48095bd109ef61272"
+        }
+      ]
+    },
+    {
+      "name": "deal-timeline-defence",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 11407,
+          "sha256": "a4e3714eb8ede0fbd33392c0f026d7ccca9c67da97057a1b85e9d5a5a3e7de73"
         }
       ]
     },
@@ -35,19 +120,24 @@
       "name": "first-meeting-deck",
       "files": [
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
           "path": "references/vendor-branding.md",
-          "bytes": 7438,
-          "sha256": "5cf4032bfab5c863a882a82e1a16e3c1a975601eed423d18d91f709dc29541d0"
+          "bytes": 7788,
+          "sha256": "4ab433d8b57ba9b846a58fc2cb0f2b583abcd179a380c4d022d8ec6e895e2050"
         },
         {
           "path": "references/vendor-context.md",
-          "bytes": 11535,
-          "sha256": "7ee459ad76b823aa8e2532467de44bff7fc35de5a553f2236b56f077f3562beb"
+          "bytes": 11972,
+          "sha256": "31ab99de2196e31dbb40d388f9f174539a32ab2af998d30465d43c8915880b95"
         },
         {
           "path": "SKILL.md",
-          "bytes": 75288,
-          "sha256": "cb5df8633e3c57f4126caef063cdf19aa137e0be13b2f5d3413c5ee6bb5eb02f"
+          "bytes": 88453,
+          "sha256": "fcfd8059b619e5d22ac1c9293dc6dc6fdb7142f02beb85bf72821e870a89eaf9"
         }
       ]
     },
@@ -56,18 +146,23 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 12569,
-          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
-          "bytes": 16734,
-          "sha256": "c1b1552332655c68fee51cf3e9f3298289b2ae2f86a7bcc59b63ad4ec39915a8"
+          "bytes": 22277,
+          "sha256": "bade5a007427631db2a5be800bb67ad9acb94a4c90b4573b8eb33a55c7da7a2d"
         }
       ]
     },
@@ -76,13 +171,58 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "SKILL.md",
-          "bytes": 26808,
-          "sha256": "f66636ca14bcd000b6e0cdbe72be842a5b1aa9f7565b385849fd9bc77c6598cb"
+          "bytes": 35709,
+          "sha256": "9bc86d8d9eb44e547238295c0701c40124e55ea93cdcc8d763c24f8b6b77983e"
+        }
+      ]
+    },
+    {
+      "name": "renewal-defence-pack",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 9964,
+          "sha256": "b98649995e4061ccca7d882086894381701e7c6961d2bc5aadea60cdf9c64845"
+        }
+      ]
+    },
+    {
+      "name": "rep-coaching-report",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+        },
+        {
+          "path": "references/structural-confounders.md",
+          "bytes": 20194,
+          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
+        },
+        {
+          "path": "references/workflow-spec.md",
+          "bytes": 55177,
+          "sha256": "c857b250ba3cdcc23d3ac4be93c3c77d601aebe85d20bcabf74331e817df0c33"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 10861,
+          "sha256": "fec7e4427adbe67ffc72e0ee9900b2794bf9c9e377e499960f19250520095658"
         }
       ]
     },
@@ -91,23 +231,28 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 12569,
-          "sha256": "7e4c7e7065522addd64fbf41e9fd470c9fb11ed504e6eab69b8e28e394c701a9"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "references/structural-confounders.md",
-          "bytes": 18002,
-          "sha256": "e39dfde9b87623365ea7d913f1d5b43a7bc936e1effba7d76f45aa211bf79a60"
+          "bytes": 20194,
+          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
         },
         {
           "path": "SKILL.md",
-          "bytes": 15327,
-          "sha256": "70456c676112918a6f20236973e83f431a73a0110557b43aa1a5cfb1311fa36b"
+          "bytes": 32342,
+          "sha256": "26697d2390d3985212aaf49b9c1d1f3873938acb019392ef70d5332daa828695"
         }
       ]
     },
@@ -116,18 +261,23 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "references/signal-catalog.md",
-          "bytes": 20241,
-          "sha256": "6aab91336c0f04773d8b7680969247593f684e814a2ed61d2b2352aed1ef309c"
+          "bytes": 20592,
+          "sha256": "acdd40e4fecfd6bb17d1764f23eda556b1828b5879fc6372b234b468cc7e431d"
         },
         {
           "path": "SKILL.md",
-          "bytes": 18384,
-          "sha256": "ec9002fde95777ba530c9f3593145599c8fe64e1a3bd3e9a50a79917040850da"
+          "bytes": 24174,
+          "sha256": "a683963534b2a5647c0c9b414604e6dd6287cd0c212422db7eb0b6b583a39933"
         }
       ]
     },
@@ -136,13 +286,18 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "SKILL.md",
-          "bytes": 25718,
-          "sha256": "4f3a7d3f19a3be2a2978bb7ffa2400fbfbb6211a033dd784a7945a2fe66aabcf"
+          "bytes": 24509,
+          "sha256": "da413962827ceb0bcfaf375075fb1bbcd16288b3594be18b8419ed66596ec197"
         }
       ]
     },
@@ -151,13 +306,18 @@
       "files": [
         {
           "path": "references/async-envelopes.md",
-          "bytes": 10077,
-          "sha256": "ab7ad817cad991c4f0b51f304ed380cae9b747dcf147cadbb2ed5d84871d32ae"
+          "bytes": 10513,
+          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 8476,
+          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
           "path": "SKILL.md",
-          "bytes": 37779,
-          "sha256": "7863d5bcf7d3802aa97d4af8bf2d80d137d69f7905813c8b3f857d6fbc37fcfb"
+          "bytes": 28179,
+          "sha256": "d5fe91bd3cd0696c78a12a750680f4322097bd623802d343284a542e17ae7eca"
         }
       ]
     }
@@ -193,8 +353,8 @@
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 13043,
-          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
@@ -328,8 +488,8 @@
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 13043,
-          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
@@ -413,13 +573,13 @@
         },
         {
           "path": "references/delta-attribution.md",
-          "bytes": 13043,
-          "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+          "bytes": 13111,
+          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "references/structural-confounders.md",
-          "bytes": 20121,
-          "sha256": "ccdc2e81fc5ece68e097e36a499e78ad148c6c9a1aa730ee64f311954754596a"
+          "bytes": 20194,
+          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
         },
         {
           "path": "SKILL.md",
@@ -516,14 +676,19 @@
       "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
     },
     {
+      "path": "shared/canonical/connector-preflight.md",
+      "bytes": 8476,
+      "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+    },
+    {
       "path": "shared/canonical/delta-attribution.md",
-      "bytes": 13043,
-      "sha256": "935d1b6bd39f5346748b6a7bf0c87bd562f9505181b406e9ec6b2e28dc7475d5"
+      "bytes": 13111,
+      "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
     },
     {
       "path": "shared/canonical/structural-confounders.md",
-      "bytes": 20121,
-      "sha256": "ccdc2e81fc5ece68e097e36a499e78ad148c6c9a1aa730ee64f311954754596a"
+      "bytes": 20194,
+      "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
     }
   ]
 }

@@ -10,7 +10,7 @@ skill directories and are vendored into self-contained packages.
 ```text
 platforms/claude/skills/  Claude packages
 platforms/codex/skills/   Codex packages, including agents/openai.yaml
-shared/canonical/         Shared evidence and asynchronous-lifecycle contracts
+shared/canonical/         Shared preflight, evidence and asynchronous-lifecycle contracts
 manifests/                Deterministic package fingerprints
 tools/                    Validation, synchronization and fingerprint tools
 ```
@@ -23,18 +23,18 @@ provenance.
 
 | Skill | Claude | Codex | Primary use |
 |---|:---:|:---:|---|
-| `ae-deal-inspection-prep` | — | ✓ | AE preparation for an internal single-deal inspection |
+| `ae-deal-inspection-prep` | ✓ | ✓ | AE preparation for an internal single-deal inspection |
 | `board-revenue-pack` | ✓ | ✓ | Board and investor revenue reporting |
-| `competitor-response-card` | — | ✓ | Active-deal competitive response guidance |
-| `cs-renewal-forecast` | — | ✓ | Customer Success renewal-book outlook |
-| `customer-qbr` | — | ✓ | Customer-facing value and success review |
+| `competitor-response-card` | ✓ | ✓ | Active-deal competitive response guidance |
+| `cs-renewal-forecast` | ✓ | ✓ | Customer Success renewal-book outlook |
+| `customer-qbr` | ✓ | ✓ | Customer-facing value and success review |
 | `deal-review-prep` | ✓ | ✓ | Manager-led formal deal review |
-| `deal-timeline-defence` | — | ✓ | Evidence-grounded opportunity chronology |
+| `deal-timeline-defence` | ✓ | ✓ | Evidence-grounded opportunity chronology |
 | `first-meeting-deck` | ✓ | ✓ | Customer-facing first-meeting presentation |
 | `forecast-delta-brief` | ✓ | ✓ | Weekly forecast movement and attribution |
 | `qbr-generator` | ✓ | ✓ | Internal quarterly revenue review |
-| `renewal-defence-pack` | — | ✓ | Account-level renewal defence |
-| `rep-coaching-report` | — | ✓ | Routine developmental coaching and 1:1 preparation |
+| `renewal-defence-pack` | ✓ | ✓ | Account-level renewal defence |
+| `rep-coaching-report` | ✓ | ✓ | Routine developmental coaching and 1:1 preparation |
 | `rep-evidence-dossier` | ✓ | ✓ | Neutral evidence dossier for formal rep decisions |
 | `revenue-action-brief-s53` | ✓ | ✓ | Prioritized revenue-leader action brief |
 | `territory-review` | ✓ | ✓ | Strategic territory review |
@@ -48,7 +48,8 @@ provenance.
 
 Packages discover Summit53 capabilities by logical name and inspect live schemas before use.
 They must verify tenant scope through `current_context` where available and must not hard-code
-server namespaces, generated capability hashes or organization IDs.
+server namespaces, generated capability hashes or organization IDs. Claude packages vendor
+`shared/canonical/connector-preflight.md`, which defines this preflight once.
 
 ## Install
 
@@ -87,6 +88,7 @@ From the repository root:
 ```powershell
 python tools\sync_canonical_references.py --check
 python tools\validate_codex_packages.py
+python tools\validate_claude_packages.py
 python tools\validate_public_boundary.py
 python tools\generate_package_fingerprints.py
 python tools\generate_package_fingerprints.py --check
@@ -94,7 +96,12 @@ python tools\generate_package_fingerprints.py --check
 
 Run Codex's official `quick_validate.py` against every changed Codex package before release.
 When a shared canonical reference changes, run `sync_canonical_references.py --write`, review
-the materialized changes, then rerun all validation.
+the materialized changes in both platform trees, then rerun all validation. To make a package
+consume a canonical file, copy it into that package's `references/` folder once; the sync tool
+discovers consumers by presence.
+
+Both platform trees must contain the same package names; `validate_public_boundary.py`
+enforces this.
 
 ## Contributing
 
