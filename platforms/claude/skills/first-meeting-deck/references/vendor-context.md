@@ -4,6 +4,18 @@ This file grounds the first-meeting-deck skill in Summit53's real capabilities, 
 
 ---
 
+## Contents
+
+- [Vendor Identity](#vendor-identity)
+- [Positioning](#positioning)
+- [Real Capabilities — What We Actually Do](#real-capabilities--what-we-actually-do)
+- [Honest Boundaries — What We Do NOT Do](#honest-boundaries--what-we-do-not-do)
+- [Proof Points](#proof-points)
+- [Current Commercial Offer](#current-commercial-offer)
+- [Voice](#voice)
+- [Market Point of View](#market-point-of-view)
+- [Maintenance](#maintenance)
+
 ## Vendor Identity
 
 **Company name**: Summit53

@@ -1,14 +1,37 @@
 ---
 name: "revenue-action-brief-s53"
-description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows."
-version: "1.0.0"
-baselined: "2026-08-07"
+description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows. Do not use for weekly forecast movement ('why did the number move') — use forecast-delta-brief. Do not use to draft emails or write CRM records — the brief only hands off to a write-capable skill after the user explicitly asks for and approves that action."
+version: "1.1.0"
+baselined: "2026-10-13"
 status: "active"
 ---
 
 # Revenue Action Brief
 
 Produce a horizoned action brief for a sales leader: exactly what to do **today**, **this week**, **this month**, and **this quarter** — every recommendation evidence-cited from live CRM data and placed in the horizon that matches how fast its underlying signal decays. It reads like a diagnosis with a prognosis, not a flat to-do list.
+
+## Route first
+
+- Weekly forecast movement ("why did the number move this week") → `forecast-delta-brief`.
+- Drafting emails, re-engagement touches, coaching materials or CRM writes → not this skill. The brief may hand an item to a write-capable skill only after the leader explicitly asks for and approves that action (Step 7).
+- Prioritizing what to do today, this week, this month or this quarter stays here.
+
+## Preflight
+
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call.
+
+Skill-specific gates:
+
+- **Preflight every read capability** this skill uses before the first data call: the eight data reads in Step 2 (`unified_forecast_summary`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`) plus `get_job` for the async flow, and `deal_drag_dashboard` if a C8 handoff is requested. If they are deferred, load them all in one ToolSearch `select:` call, then inspect each live schema. Tool names and arguments in this file are semantic guidance; follow the live schema when it differs and note the difference.
+- **Missing source ≠ zero.** If a capability is not exposed, errors, or is access-denied, record a missing-source note for it and suppress **only** the signals whose `source` depends on it (per the catalog). Never substitute zero, never treat the silence as health, and never let a missing source make the brief look calmer than the data supports.
+- **Demo label.** Commercial artifact: if fixture rows cannot be separated, put **Demo data — not for customer or commercial decisions** under the brief's header.
+- **Read-only.** No `refresh: true`. The brief never drafts, sends, logs, or writes. Handoffs follow Step 7.
+
+References:
+
+- [references/signal-catalog.md](references/signal-catalog.md) — read in full before Step 3; the authoritative signal registry.
+- [references/async-envelopes.md](references/async-envelopes.md) — read before calling `unified_forecast_summary`; governs `get_job` polling and the identical-arguments re-call.
+- [references/connector-preflight.md](references/connector-preflight.md) — the shared tenant, schema, fixture, read-only, missing-evidence and delivery contract.
 
 ## Why This Exists
 
@@ -18,7 +41,7 @@ This skill resolves that by separating two things every recommendation has: how 
 
 ## Boundary — This Is a Customer-Facing Skill
 
-This skill is used by Summit53 **customers** — VP Sales and CROs running real teams. It is self-contained and generic. It must **not** read any internal Summit53 strategy, positioning, or accountability skill, and must not reference Summit53's own go-to-market. Its only inputs are the customer's own CRM data (via the MCP tools below) and the bundled `references/signal-catalog.md`. Keep all language vendor-neutral and applicable to any mid-market B2B sales org.
+This skill is used by Summit53 **customers** — VP Sales and CROs running real teams. It is self-contained and generic. It must **not** read any internal Summit53 strategy, positioning, or accountability skill, and must not reference Summit53's own go-to-market. Its only inputs are the customer's own CRM data (via the MCP tools below) and the bundled references ([references/signal-catalog.md](references/signal-catalog.md), [references/async-envelopes.md](references/async-envelopes.md), [references/connector-preflight.md](references/connector-preflight.md)). Keep all language vendor-neutral and applicable to any mid-market B2B sales org.
 
 ## How It Works
 
@@ -53,15 +76,17 @@ Call these Summit53 MCP tools. Launch in parallel — they are independent. Capt
 | `weekly_action_plan` | The leader's own open high-priority tasks | `ai_generated` items may lack deal linkage — handle gracefully |
 | `activity_gaps` | Dormant accounts | `days: 14` |
 
-**`unified_forecast_summary` returns asynchronously.** The first call often returns a *processing envelope* — `{"status": "processing", "job_id": ..., "retry_after": N}` — instead of data. This envelope is **not** data; running detection against it will silently find nothing. Follow `references/async-envelopes.md`: poll `get_job` on the returned `job_id` until terminal, then **re-call `unified_forecast_summary` with identical arguments** to collect the payload. `get_job` returns lifecycle state, not the forecast. Budget 6 polls and 2 payload re-calls; stop immediately on `failed` or `cancelled`. If no payload arrives, treat the source as missing and carry the helper's note into the brief verbatim. Fire the other tools first so polling overlaps their execution.
+**`unified_forecast_summary` returns asynchronously.** The first call often returns a *processing envelope* — `{"status": "processing", "job_id": ..., "retry_after": N}` — instead of data. This envelope is **not** data; running detection against it will silently find nothing. Follow [references/async-envelopes.md](references/async-envelopes.md): poll `get_job` on the returned `job_id` until terminal, then **re-call `unified_forecast_summary` with identical arguments** to collect the payload. `get_job` returns lifecycle state, not the forecast. Budget 6 polls and 2 payload re-calls; stop immediately on `failed` or `cancelled`. If no payload arrives, treat the source as missing and carry the helper's note into the brief verbatim. Fire the other tools first so polling overlaps their execution.
 
 **`risk_heatmap` paginates.** A mid-market pipeline commonly exceeds one page. Read the `total` field on the first response and page until every row is retrieved — an undersized pull makes the per-horizon caps and "+N more" counts wrong, even if the missing low-risk tail rarely adds today/week items.
 
-If a tool errors or returns sparse data, do not fail — note it and run detection on whatever is available. A signal whose source tool is missing simply does not fire.
+If a tool errors, is not exposed, is access-denied, or returns no payload, do not fail. Record a **missing-source note** for it (which capability, and a plain-language reason — no raw errors), suppress only the catalog signals whose `source` depends on it, and run detection on everything else. A suppressed signal is **not assessed**, which is different from "did not fire": never substitute zero for the missing values, and never describe the area as healthy. Missing-source notes travel into the rendered brief (Step 6).
+
+An empty result is only "nothing found" when the tool's contract says so (preflight §5). For example, an empty `activity_gaps` list without a verified-zero flag is indeterminate — it suppresses the dormant-account signals rather than proving every account is engaged.
 
 ## Step 3: Detect Signals
 
-Read `references/signal-catalog.md` from this skill's directory. It is the authoritative registry — every detectable signal, its source field, detection rule, decay profile, severity driver, and prescription template.
+Read [references/signal-catalog.md](references/signal-catalog.md) from this skill's directory. It is the authoritative registry — every detectable signal, its source field, detection rule, decay profile, severity driver, and prescription template.
 
 For each catalog entry, evaluate its detection rule against the pulled data. A rule that matches **fires** the signal and produces a candidate recommendation. Collect all fired signals before assigning horizons.
 
@@ -132,6 +157,10 @@ Output in chat. Structure:
 
 Omit any horizon section the leader did not ask for (per Step 1 scope), but if scope is `today` and the "Already Behind" lane is populated, still show it — a leader asking about today needs to know what has already slipped.
 
+If any source was missing, end the brief with a **Not assessed** line listing each missing source and the areas it covers (e.g. "Not assessed: retention signals — ARR growth analytics unavailable"). Keep the wording plain; never show raw errors. If the demo label applies, place it directly under the header.
+
+Deliver the brief in chat. Optionally, if the leader wants a copy, also save it as a Markdown file in the session's outputs directory (or the workspace) and give one clickable link to it.
+
 ### Output template
 
 ```
@@ -160,6 +189,8 @@ Revenue Action Brief — {date}
 
 ▸ ALREADY BEHIND — recovery window has closed; limit the damage
   - {prescription} · {evidence} · {what is and isn't still recoverable}
+
+Not assessed: {area} — {source} unavailable   (only when a source was missing)
 ```
 
 ### Worked example (one item per horizon)
@@ -211,17 +242,17 @@ When the leader picks an item, route by the signal's domain:
 1. Identify the item's `signal_id` and the entity it concerns — the opportunity ID (Domain A) or rep ID (Domain B).
 2. Load the target skill's `SKILL.md` and follow it, scoped to that entity.
 3. Pass the brief's diagnosis as known context — the signal, the evidence line, and the specific blocker. This is the point of the bridge: `deal-action-engine` should draft against the obstacle the brief already identified (e.g. "silent 16 days, closes today"), not open a generic check-in.
-4. These execution skills can **write** — they create drafts and log to the CRM. The brief itself is strictly read-only, so confirm with the leader before handing off to a write-capable skill. The handoff is a deliberate step from diagnosis into action; name it as such.
+4. These execution skills can **write** — they draft messages, create notes, and log to the CRM. The brief itself is strictly read-only. Hand off to a skill that drafts messages or writes CRM records **only after the leader has explicitly requested or approved that specific next action** in this conversation — naming the item number is a request to act on it; a general "thanks" is not. State what the target skill will do (e.g. "deal-action-engine will draft a re-engagement email for {deal}; it can also log to the CRM — go ahead?") and wait for a clear yes. The handoff is a deliberate step from diagnosis into action; name it as such. Any approval flow inside the target skill still applies.
 
-**Domain C and D items** (pipeline-shape and structural signals) usually have no single drafted artifact — they are decisions and process changes, not one email. Do not force a handoff. Offer instead to break the item into concrete sub-steps, or to create tracking tasks via `weekly_action_plan`. Be honest that the work here is the leader's judgment, not something to generate.
+**Domain C and D items** (pipeline-shape and structural signals) usually have no single drafted artifact — they are decisions and process changes, not one email. Do not force a handoff. Offer instead to break the item into concrete sub-steps in chat. If the leader wants tracking tasks created, that is a write: the brief does not create them; hand off to the product surface or a write-capable skill that owns tasks, under the same explicit-approval rule. Be honest that the work here is the leader's judgment, not something to generate.
 
-One exception in Domain C: `pipeline_stall_load` (C8) *does* decompose. If the leader wants to act on it, call `deal_drag_dashboard` for the worst-waste deals and route each to `deal-action-engine` exactly as a Domain A item — so "run a stalled-deal review" becomes a set of drafted re-engagement touches, each carrying that deal's drag cause and recommended recovery action as context.
+One exception in Domain C: `pipeline_stall_load` (C8) *does* decompose. If the leader wants to act on it, call `deal_drag_dashboard` (read-only) for the worst-waste deals and offer to route each to `deal-action-engine` exactly as a Domain A item, under the same explicit-approval rule — so "run a stalled-deal review" becomes a set of drafted re-engagement touches, each carrying that deal's drag cause and recommended recovery action as context.
 
 The routing targets above are the skills in the standard Summit53 library; if a deployment names them differently, the mapping is the only thing that needs adjusting — the protocol is unchanged.
 
 ## Edge Cases
 
-- **No significant signals fire** — say so plainly: "No pressing actions detected — pipeline, retention, and team execution are all within healthy ranges." Do not manufacture filler recommendations.
+- **No significant signals fire** — only when every source returned a payload may you say so plainly: "No pressing actions detected — pipeline, retention, and team execution are all within healthy ranges." If any source was missing, say instead: "No pressing actions detected in the areas assessed" and keep the **Not assessed** line — silence from a missing source is not health. Do not manufacture filler recommendations.
 - **A horizon is empty** — omit the section rather than printing an empty heading.
 - **Sparse CRM data** — if multiple source tools return little data, produce the brief from what fired and add one line noting the brief is partial and which areas could not be assessed.
 - **Leader asks to act on an item** — this skill diagnoses and prioritises; it does not draft or send. Follow the Step 7 handoff to route the item to the execution skill that owns it. Do not draft emails or coaching materials inline.
@@ -229,6 +260,17 @@ The routing targets above are the skills in the standard Summit53 library; if a 
 
 ## Tools Used
 
-`unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`.
+`current_context` (preflight), `list_available_tools` (when the tool set is uncertain), `unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`, and `deal_drag_dashboard` (C8 handoff only).
 
-All are read-only. This skill does not write to the CRM.
+All are read-only. This skill does not write to the CRM, and it hands off to write-capable skills only on the leader's explicit request or approval.
+
+## Verification checklist
+
+- [ ] Preflight checklist complete; `scoped_org_id` matched on returned data
+- [ ] All eight data reads plus `get_job` preflighted; live schemas inspected
+- [ ] `unified_forecast_summary` resolved through the async flow, or recorded as missing
+- [ ] Every missing source has a note; only its dependent signals suppressed; nothing rendered as zero or healthy
+- [ ] Collapse rules applied; caps honored with "+ N more" lines
+- [ ] Demo label applied if fixtures could not be excluded
+- [ ] No drafting, sending or CRM writes; any handoff explicitly requested or approved
+- [ ] Brief delivered in chat; optional saved copy returned as one clickable link

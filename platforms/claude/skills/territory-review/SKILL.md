@@ -1,142 +1,131 @@
 ---
 name: "territory-review"
-description: "Create a strategic Summit53 territory planning or review PPTX using account, pipeline, health, activity, ARR, capacity, and whitespace evidence. Use for territory reviews, regional performance reviews, territory scorecards, whitespace analysis, prospecting allocation, territory health checks, coverage questions, and rebalancing."
-version: "1.0.0"
-baselined: "2026-08-07"
+description: "Build a strategic territory planning or review deck (PPTX) from live Summit53 account, pipeline, health, activity, ARR, capacity and renewal evidence: territory scorecards, coverage, engagement gaps, coverage questions and evidence-backed rebalancing options for CROs, VPs and regional leaders. Use for territory reviews, territory planning, geo or regional performance reviews, territory scorecards, whitespace analysis, prospecting allocation, territory health checks and rebalancing. Triggers: 'how are my territories doing', 'territory breakdown', 'where should we prospect', 'which territories are underperforming', 'regional pipeline review', 'show me territory coverage'. Do not use for individual rep coaching — use rep-coaching-report. Do not use for a board or investor pack — use board-revenue-pack."
+version: "1.1.0"
+baselined: "2026-10-13"
 status: "active"
 ---
----
-name: territory-review
-description: "Generate a territory planning and review deck as a polished PPTX presentation. Pulls account intelligence, pipeline distribution, health scores, activity gaps, and ARR data from Summit53 CRM tools to produce a strategic territory analysis — identifying whitespace, underperforming territories, expansion opportunities, and rebalancing recommendations. Use this skill whenever anyone asks for a territory review, territory planning, territory analysis, geo review, regional performance review, territory scorecard, whitespace analysis, territory rebalancing, or strategic territory planning. Also trigger on phrases like 'how are my territories doing', 'territory breakdown', 'where should we prospect', 'which territories are underperforming', 'territory health check', 'regional pipeline review', or 'show me territory coverage'."
----
-
-> **Codex compatibility notice:** Use this file for domain logic, evidence requirements, fallbacks, territory analysis, narrative, slide content, and visual intent. The parent `SKILL.md` overrides every legacy instruction about Claude, PptxGenJS, `pptxgenjs.md`, legacy rendering commands, or a generic outputs folder. Use Codex's available Presentations skill for implementation and QA.
 
 # Territory Review
 
-Generate a strategic territory planning deck by pulling live data from Summit53 CRM tools and assembling it into a polished, actionable PPTX presentation that reveals where to double down, where the whitespace is, and which territories need attention.
+Build a decision-ready territory review deck from live Summit53 evidence: where to double down, where to intervene, and which coverage questions need validating, with explicit limits wherever territory fields are incomplete.
 
-## Why This Exists
+## Route first
 
-CROs and VPs managing multiple territories or regions need a clear picture of how each territory is performing — not just in revenue, but in pipeline health, account engagement, risk distribution, and growth potential. Building this view manually means hours of cross-referencing dashboards. This skill does it in one shot: live CRM data flows into a strategic territory planning deck with specific, evidence-based recommendations for territory optimization.
+- Individual rep coaching or 1:1 prep → `rep-coaching-report`.
+- Board or investor revenue pack → `board-revenue-pack`.
+- Everything else about territories, regions, geos, segments or owner books stays here.
 
-## Step 1: Clarify Scope
+## Preflight
 
-Before pulling data, confirm these with the user (use sensible defaults if they say "just do it"):
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. Load every tool named in Step 2 in one ToolSearch `select:` call if they are deferred.
 
-- **Territories of interest**: All territories, or specific ones? Default to all.
-- **Time period**: Current quarter? Current + previous for comparison? Default to current quarter.
-- **Audience**: CRO/board (strategic, high-level) or regional managers (operational detail)? Default to CRO.
-- **Special focus**: Any specific territories, segments, or accounts to highlight?
+Skill-specific gates:
 
-## Step 2: Pull All Data
+- **Demo label.** This is a commercial artifact. If fixture rows cannot be separated, label the whole deck **Demo data — not for customer or commercial decisions**.
+- **Territory basis defined** (Step 1) before any territory-level number is computed.
+- **Period, comparison baseline and currency resolved** before analysis. Never mix currencies inside one comparison.
+- **Audience resolved.** Rep-level detail (named reps, ramp status per rep, capacity per person) appears only when the requested audience is authorized to see it and the detail is necessary for the recommendation. Default to territory-level aggregates.
+- **Read-only.** Never pass `refresh: true` (for example to `segment_performance_summary`). This skill writes nothing.
 
-Call these Summit53 MCP tools in parallel where possible. The goal is to get territory-level breakdowns across revenue, pipeline, health, and engagement.
+Read [references/async-envelopes.md](references/async-envelopes.md) before calling `unified_forecast_summary`; it can return a processing envelope instead of data.
 
-### Required Data Pulls
+## Step 1: Clarify scope and define the territory basis
 
-1. **Account Intelligence by Territory**
-   - `account_intelligence_summary` — this is the primary data source. Returns territory_summary, value_segments, health_distribution broken down by territory. Call without filters first to get the full picture.
-   - If specific territories are requested, also call with `territories: [list]` to get filtered views.
+Confirm these with the user (use the defaults if they say "just do it"):
 
-2. **Pipeline Risk Distribution**
-   - `pipeline_risk_summary` — pipeline value distribution, risk levels, confidence metrics across the entire book
-   - Optionally filter by territory if the tool supports it
+- **Territories of interest**: all, or named ones. Default: all.
+- **Time period and baseline**: default current quarter vs previous quarter.
+- **Currency**: the org's reporting currency unless the user names another.
+- **Audience**: CRO/leadership (strategic, aggregated) or regional managers (operational). Default: CRO.
+- **Special focus**: territories, segments or accounts to highlight.
 
-3. **Deal-Level Risk Heatmap**
-   - `risk_heatmap` — deal-level health scores, health bands, framework scores, and risk factors (`page_size: 25`, `sort_by: "healthScore"`, `sort_direction: "asc"`)
-   - This gives you the specific deals that are driving risk in each territory
+**Define the territory basis before analysis.** A "territory" is one of: geography (sales or market region), named-account list, owner book, segment, or another user-defined grouping. Use the org's authoritative territory field when one exists (`account_intelligence_summary` territory breakdown, or `segment_performance_summary` with `dimension: "sales_region"` / `"market_region"`). If there is no authoritative territory field, derive groupings **only from explicit account attributes** (region, country, owner, segment) and disclose on Slide 2 and in the closing limits: "No authoritative territory field — territories derived from {attribute}." Never infer a territory from an account name, a domain, or free text.
 
-   Treat `score_semantics` as authoritative: `healthScore` is higher-is-healthier and riskiest-first is ascending. `riskScore` is only a deprecated alias of `healthScore`; never sort it descending. Prefer each row's `healthBand` over hand-rolled thresholds.
+## Step 2: Pull the data
 
-4. **Activity Gaps**
-   - `activity_gaps` — dormant accounts (days: 30, limit: 25). These map to territories via the account data.
-   - Dormant accounts in high-value territories are particularly concerning
+Run independent reads in parallel. Inspect each tool's live schema first; argument names below are semantic guidance.
 
-5. **ARR Growth**
-   - `arr_growth_analytics` — total ARR, net retention rate, growth stage, benchmarks
-     - Set `include_trends: true`, `include_changes: true`, `include_benchmarks: true`
-   - This provides the revenue foundation for territory analysis
+1. **Account intelligence by territory** — `account_intelligence_summary`. Primary source: `territory_summary`, `value_segments`, `health_distribution`. Call unfiltered first; if specific territories were requested, also call with `territories: [list]`.
+2. **Segment and region performance** (optional) — `segment_performance_summary` with `dimension` set to the territory basis (`sales_region` or `market_region`) when that is the basis. Period-aware ARR, pipeline, velocity and retention per region. Do not pass `refresh`.
+3. **Pipeline risk distribution** — `pipeline_risk_summary`: pipeline value distribution, risk levels and confidence across the book.
+4. **Deal-level health** — `risk_heatmap` (`page_size: 25`, `sort_by: "healthScore"`, `sort_direction: "asc"`). Treat `score_semantics` and the tool's own description as authoritative: `healthScore` is a **0.0–1.0** value and **higher is healthier**, so riskiest-first is ascending. `riskScore` / `risk_score` are only deprecated sorting aliases with the **same** direction — never sort them descending and never read them as "higher = riskier". Prefer each row's server-supplied `healthBand` over any hand-rolled threshold. `risk_heatmap` has no territory filter: map deals to territories through their account.
+5. **Activity gaps** — `activity_gaps` (`days: 30`, `limit: 25`). Map dormant accounts to territories through the account data. Dormant accounts in high-value territories matter most.
+6. **ARR growth** — `arr_growth_analytics` with `include_trends`, `include_changes`, `include_benchmarks` all `true`.
+7. **Forecast** — `unified_forecast_summary` (`period_offset: 0`): pipeline coverage, quota tracking, team metrics. It also returns `kpis.pipeline_coverage.by_deal_size` (org-adaptive deal-size bands), `kpis.win_rate.by_deal_size`, and `kpis.pipeline_coverage.acv_drift` (`drift_pct`, `direction`, `is_significant`). It is asynchronous on a cold cache: poll `get_job` to terminal per [references/async-envelopes.md](references/async-envelopes.md), then re-call with identical arguments. Resolve it once and reuse the payload. Also call `forecast_confidence` (confidence, velocity, stage distribution).
+8. **Capacity vs target** — `capacity_to_target_planner`, grouped by `team` and/or `sales_role`. Separates capacity-constrained territories (not enough reps) from execution-constrained ones (enough reps, target still at risk). Feeds Slide 3. Permission-gated.
+9. **Reverse capacity** — `reverse_capacity_planner`, grouped the same way. Converts an Intervene territory's gap-to-target into a headcount estimate. Feeds Slide 9. Permission-gated.
+10. **Renewal defence** — `renewal_forecast_summary`: ARR renewing in the next 30–180 days and at-risk renewal ARR, ideally by territory. Feeds Slide 4. Permission-gated.
+11. **Ramp cohort** — `ramp_cohort`: reps still inside their ramp window. Use it before calling any territory "underperforming". Permission-gated; check the live schema for roster-level vs per-rep arguments and filter locally if it is roster-level.
+12. **Hunter/farmer mix** — `hunter_farmer_mix`: new-business vs expansion mix per territory. Feeds Slide 6. Permission-gated; same schema check as `ramp_cohort`.
+13. **Account health movement** — `account_health_movement`: accounts trending healthy → at-risk → critical (or back) per territory over the period. Feeds Slide 5. Permission-gated. Movement is **correlational**: accounts "moved" or "trended", never "a territory or rep caused".
 
-6. **Forecast Data**
-   - `unified_forecast_summary` — pipeline coverage, quota tracking, team metrics
-     - Current period: `period_offset: 0`
-     - Also returns `kpis.pipeline_coverage.by_deal_size` (org-adaptive deal-size bands — pipeline value per band), `kpis.win_rate.by_deal_size` (win rate per band), and `kpis.pipeline_coverage.acv_drift` (`drift_pct`, `direction`, `is_significant`). Deal-size mix is a useful territory-strategy lens — territories skewed entirely to one band carry different risk than balanced ones.
-     - This tool is asynchronous on a cold cache. Follow `references/async-envelopes.md`: poll `get_job` to terminal, then re-call with identical arguments for the payload. Resolve it once and reuse the payload across the deck.
-   - `forecast_confidence` — confidence scores, rep performance, velocity, stage distributions
+### Handling missing data
 
-7. **Capacity vs. Target (Scorecard Verdict)**
-   - `capacity_to_target_planner` — grouped by `team` and/or `sales_role` — assesses whether each territory's current staffing can realistically hit target, and separates territories that are capacity-constrained (not enough reps) from those that are execution-constrained (enough reps, target still at risk). Feeds the Territory Scorecards (Slide 3).
-   - Manager/team-permission gated. If the call is unauthorized or empty, omit the capacity verdict from the scorecards rather than failing.
+Adapt; do not fail. A missing value is **unavailable**, never zero or healthy (preflight §5).
 
-8. **Reverse Capacity Planning (Intervene Recommendations)**
-   - `reverse_capacity_planner` — grouped by `team` and/or `sales_role` — converts an "Intervene" territory's gap-to-target into a concrete headcount ask (e.g., "West needs ~1.4 more AEs to hit target"). Feeds Slide 9 Territory Recommendations.
-   - Manager/team-permission gated. If unauthorized or empty, fall back to qualitative effort-shift language for Intervene recommendations rather than failing.
+- No territory breakdown from `account_intelligence_summary` or `segment_performance_summary` → use the Step 1 fallback (explicit account attributes only) and disclose it.
+- ARR growth with no territory breakdown → show the aggregate and label it company-wide.
+- `activity_gaps` returns an empty list → report "No dormant accounts returned for the {days}-day window" and treat it as **indeterminate** unless the tool marks the empty result as verified. Never render it as "all territories engaged".
+- A territory with zero accounts or zero pipeline **in the CRM** → absence of CRM records is not proof of whitespace. Flag it as a **coverage question to validate with market data** (addressable accounts, firmographic lists, external research), not as an opportunity.
+- `capacity_to_target_planner`, `reverse_capacity_planner`, `renewal_forecast_summary`, `ramp_cohort`, `hunter_farmer_mix` and `account_health_movement` are manager/team-permission gated. If one is unauthorized or empty, drop only the enhancement it feeds (capacity badge, headcount estimate, renewal panel, ramp adjustment, hunter/farmer strip, movement view) and fall back as described per slide. Summarise gaps in the closing limits; never show raw permission errors.
 
-9. **Renewal Forecast (Defense)**
-   - `renewal_forecast_summary` — ARR renewing in the next 30-180 days and at-risk renewals, ideally broken down by territory. This is the defense counterpart to the new-pipeline data pulled in item 6 above — without it, the deck only covers offense. Feeds Slide 4 Pipeline Distribution.
-   - Manager/team-permission gated. If unauthorized or empty, note "Renewal defense data not available — showing new pipeline only" and proceed with new-pipeline data alone.
+## Step 3: Reconcile records to territories
 
-10. **Ramp Cohort**
-    - `ramp_cohort` — identifies reps who are still inside their ramp window. Use this to sanity-check territory performance before labeling a territory "underperforming" — a territory staffed with recently-ramping reps should be judged against ramp-stage expectations, not full-quota expectations. Feeds Territory Scoring (Step 3) and the framing on Slide 3 and Slide 9.
-    - Manager/team-permission gated. If unauthorized or empty, proceed with standard performance framing and skip the ramp adjustment.
+Before computing any indicator:
 
-11. **Hunter/Farmer Mix**
-    - `hunter_farmer_mix` — per-territory new-business vs. expansion deal mix. Reveals whether flat territory growth is a hunting problem (not enough new logos) or a farming problem (not enough expansion in the existing base). Feeds Slide 6 Whitespace Analysis.
-    - Manager/team-permission gated. If unauthorized or empty, fall back to the existing whitespace/expansion framing without the hunter/farmer split.
+1. Assign every account and opportunity to exactly one territory using the Step 1 basis.
+2. Track **unassigned** records (no value in the territory attribute) and **ambiguously assigned** records (conflicting values, e.g. account region ≠ owner region, or multiple matches) **separately**. Never fold them into the nearest territory or drop them silently.
+3. Report the count and value of unassigned/ambiguous records on Slide 2. If they exceed ~10% of accounts or pipeline value, say so in the headline limits: territory comparisons are partial.
+4. Exclude fixture rows per the preflight before counting anything.
 
-12. **Account Health Movement**
-    - `account_health_movement` — trended account health per territory, i.e. accounts moving healthy → at-risk (and at-risk → critical, or back to healthy) over the period. Replaces a static point-in-time health snapshot with a trend, which catches deteriorating territories a snapshot alone would miss. Feeds Slide 5 Account Health by Territory.
-    - Manager/team-permission gated. If unauthorized or empty, fall back to the static `health_distribution` snapshot from `account_intelligence_summary`.
-    - Movement here is **correlational, not causal** — describe accounts as having "trended" or "moved" toward at-risk, never as something the territory or a rep "caused."
+## Step 4: Analyse territory patterns
 
-### Handling Missing Data
+Synthesise before building slides. Preserve denominators and sample sizes on every indicator ("4 of 11 accounts", not just "36%").
 
-Territory data richness varies. Don't fail — adapt:
-- If `account_intelligence_summary` doesn't return territory breakdowns, group accounts by whatever segmentation is available (industry, owner, size tier) and note "Territory-level segmentation not configured — showing account segments instead."
-- If ARR growth has no territory breakdown, show the aggregate and note it applies company-wide.
-- If activity gaps returns empty, that's a positive signal — note "No engagement gaps detected across territories."
-- If a territory has zero accounts or zero pipeline, that IS the insight — it's whitespace.
-- `capacity_to_target_planner`, `reverse_capacity_planner`, `renewal_forecast_summary`, `ramp_cohort`, `hunter_farmer_mix`, and `account_health_movement` are all manager/team-permission gated. If any of these calls comes back unauthorized or empty, fall back to the current tools/notes described above (scorecard fields without a capacity verdict, qualitative effort-shift language, new-pipeline-only view, standard performance framing, static health snapshot, two-column whitespace view without the hunter/farmer split) rather than failing the deck.
+### Normalise before comparing
 
-## Step 3: Analyze Territory Patterns
+Territories differ in size, segment mix, tenure and staffing. Do not compare raw totals across unlike territories. Compare on normalised measures: pipeline per account or per rep, coverage ratio vs that territory's own target, ARR share vs account share, win rate within the same deal-size band, health mix as a proportion. If two territories are not comparable even after normalisation (for example one is enterprise named-accounts and the other is SMB geography), say so and compare each to its own baseline instead.
 
-Before building slides, synthesize the raw data into strategic territory insights. This analysis is what makes the deck valuable — not just numbers, but patterns and recommendations.
+### Territory scoring
 
-### Territory Scoring
+For each territory:
 
-For each territory, compute a composite health view:
+1. **Revenue concentration** — share of total ARR. Over-indexed on one territory?
+2. **Pipeline coverage** — pipeline vs that territory's target or quota. Which are pipeline-starved?
+3. **Account health distribution** — healthy / at-risk / critical counts and proportions, from the server's categories.
+4. **Engagement** — dormant accounts and the ARR attached to them.
+5. **Deal health density** — count and value of deals in the server's `Low` `healthBand`, and the median `healthScore` (lower = less healthy). Do not average a deprecated `riskScore` as if higher meant riskier.
+6. **Capacity vs execution** — from `capacity_to_target_planner`: understaffed (headcount question) vs execution-constrained (coaching/process question).
+7. **Ramp-adjusted performance** — cross-check apparent underperformers against `ramp_cohort`. A territory with several reps still ramping is judged against ramp-stage expectations before anything is labelled "underperforming".
 
-1. **Revenue Concentration**: What percentage of total ARR does this territory represent? Are we over-indexed on one territory?
-2. **Pipeline Coverage**: How much pipeline exists relative to quota or target for each territory? Which territories are pipeline-starved?
-3. **Account Health Distribution**: What's the healthy vs at-risk vs critical split per territory?
-4. **Engagement Health**: How many dormant accounts per territory? What ARR is at risk from disengagement?
-5. **Risk Density**: What's the average deal risk score per territory? Which territories carry the most high-risk deals?
-6. **Capacity vs. Execution**: Use `capacity_to_target_planner` to separate territories that can't hit target because they're understaffed (capacity-constrained) from those with enough capacity that aren't executing (execution-constrained) — these two situations call for very different recommendations (headcount vs. coaching).
-7. **Ramp-Adjusted Performance**: Cross-check apparent underperformers against `ramp_cohort`. A territory carrying multiple reps still inside their ramp window should be judged against ramp-stage expectations, not full-quota expectations — don't brand it "underperforming" until you've controlled for ramp.
+### Coverage questions and expansion
 
-### Whitespace Analysis
+Identify:
 
-Identify territories with:
-- Zero or minimal revenue but high market potential
-- Low account counts relative to market size
-- No active pipeline despite existing accounts
-- Healthy accounts with no expansion motion underway
+- Territories with little or no CRM revenue or pipeline → **coverage questions** to validate with market data. Absence of records is not evidence of untapped demand.
+- Low account counts relative to an externally known market size (only when that market size comes from a cited source).
+- Existing accounts with no active pipeline.
+- Healthy accounts with no expansion motion underway (expansion candidates from `account_intelligence_summary`).
 
-### Strategic Recommendations
+### Recommendations: evidence vs hypothesis
 
-Based on the patterns above, generate 3-5 territory-level strategic recommendations. Each should:
-- Reference specific territory data (e.g., "West territory has 35% of accounts but only 18% of pipeline")
-- Suggest a concrete action (e.g., "Rebalance prospecting effort — shift 2 SDR hours/week from East to West"). For **Intervene** recommendations specifically, prefer a concrete headcount ask from `reverse_capacity_planner` over vague effort-shift language when the tool is available (see Slide 9).
-- Connect to a business outcome (e.g., "Closing the pipeline coverage gap in West could add $1.2M to Q3 forecast")
+Generate 3–5 territory-level recommendations. Label each one:
 
-Avoid generic advice like "improve territory coverage." Ground everything in the actual data.
+- **Evidence-backed** — supported by the pulled data with stated denominators (e.g. "West holds 35% of accounts (41 of 117) but 18% of pipeline value").
+- **Hypothesis to validate** — depends on market potential, coverage, or causal assumptions the CRM cannot confirm (e.g. "Closing West's coverage gap could add pipeline — validate addressable accounts first"). State what evidence would confirm or refute it.
 
-## Step 4: Build the Deck
+Each recommendation names a concrete action and the outcome it targets. For **Intervene** items, prefer a headcount estimate from `reverse_capacity_planner` when available over vague effort-shift language.
 
-Read the pptx skill's `pptxgenjs.md` reference for PptxGenJS technical details. Use the **Midnight Executive** design system for visual consistency with other Summit53 deliverables.
+**No reassignment advice from raw pipeline alone.** Before recommending that accounts, reps or effort move between territories, weigh capacity, account potential, renewal exposure, engagement and ownership constraints. If only pipeline totals are available, frame it as a hypothesis, not a reassignment.
 
-### Design System
+Avoid generic advice like "improve territory coverage".
+
+## Step 5: Build the deck
+
+Build with PptxGenJS following the `pptx` skill: read its SKILL.md and its `pptxgenjs.md` reference before writing code. Use the **Midnight Executive** design system for consistency with other Summit53 decks.
+
+### Design system
 
 | Role | Color | Hex |
 |------|-------|-----|
@@ -148,185 +137,145 @@ Read the pptx skill's `pptxgenjs.md` reference for PptxGenJS technical details. 
 | Text on dark | White | `FFFFFF` |
 | Text on light | Charcoal | `1E293B` |
 | Light background | Off-white | `F8FAFC` |
-| Subtle border/divider | Slate | `64748B` |
+| Unavailable / neutral | Slate | `64748B` |
 | Light Slate (dividers, grid) | Light Slate | `E2E8F0` |
 
-**Typography**: Georgia headers (36-44pt), Calibri body (14-16pt).
-**Layout**: 16:9 widescreen. 0.5" margins minimum. Dark title/close slides, light content slides.
+**Typography**: Georgia headers (36–44pt), Calibri body (14–16pt).
+**Layout**: 16:9 widescreen, 0.5" minimum margins. Dark title/close slides, light content slides. If a demo label applies, put it on every slide.
 
-### Slide Structure
+### Slide structure (10 slides, ~25-minute review)
 
-Build these slides in order. The deck is designed for a ~25 minute strategic territory review.
+Adjust the composition when the number of territories or data density needs it; keep the content contract.
 
----
+#### Slide 1: Title
+- Navy background. "Territory Review", period label, date, organization name, "Powered by Summit53". Centered; large Georgia title, Calibri subtitle.
 
-#### Slide 1: Title Slide
-- **Background**: Navy (`1E2761`)
-- **Content**: "Territory Review", quarter/period label, date, "Powered by Summit53"
-- **Layout**: Centered, clean. Large Georgia title, Calibri subtitle.
+#### Slide 2: Territory overview
+- Sources: `account_intelligence_summary` (`territory_summary`), `unified_forecast_summary`, optional `segment_performance_summary`.
+- Four stat cards: territories active, accounts under management, pipeline value, aggregate ARR.
+- Below: one row/card per territory (account count, pipeline, ARR, account-health mix). Left border colour comes from the server's health categories via `healthColor()`; slate when unavailable.
+- Add a separate **Unassigned / ambiguous** row with its counts and value (Step 3).
+- One-line basis note: "Territory basis: {basis}. {N} unassigned, {M} ambiguous records shown separately."
 
----
+#### Slide 3: Territory scorecards
+- Sources: `account_intelligence_summary`, `capacity_to_target_planner`, `ramp_cohort`.
+- One card per territory (2×2 or 2×3): name, account count, pipeline, ARR, health mix (server categories), active deal count, and a **capacity verdict** badge — "On track to hit target", "Capacity-constrained" or "Execution-constrained". Omit the badge if the tool is unauthorized or empty; never guess.
+- More than 6 territories → show the top 6 by ARR and state how many more exist.
+- Before flagging a card red, check `ramp_cohort`. If a meaningful share of the territory's reps are ramping, note it on the card (e.g. "2 of 4 AEs ramping — judged against ramp plan"). Named reps only for authorized audiences.
 
-#### Slide 2: Territory Overview
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `account_intelligence_summary` (territory_summary), `unified_forecast_summary`
-- **Layout**: 4 stat cards across the top row:
-  - Total Territories Active
-  - Total Accounts Under Management
-  - Total Pipeline Value
-  - Aggregate ARR
-- Below: a summary table or card grid showing each territory with key metrics (account count, pipeline value, ARR, health score). Use color-coded left borders on each territory card (emerald for healthy, amber for needs attention, red for critical).
+#### Slide 4: Pipeline distribution by territory
+- Sources: `unified_forecast_summary`, `forecast_confidence`, `pipeline_risk_summary`, `renewal_forecast_summary`.
+- Bar chart (stacked by stage or risk level) of pipeline per territory, then a table: Territory | Pipeline | Target | Coverage ratio. Coverage colour via `coverageColor()`: below 2× red, 2–3× amber, 3×+ emerald; slate if target unavailable.
+- **Deal-size composition**: mini-chart from `kpis.pipeline_coverage.by_deal_size`. If `acv_drift.is_significant` is `true`, add one amber line: "Pipeline ACV is drifting {direction} {drift_pct}% vs trailing-12-month closed-won — pipeline deals no longer resemble what the team has historically closed." Omit when not significant.
+- **Renewal defence** panel from `renewal_forecast_summary`: ARR renewing in 30–180 days and at-risk renewal ARR per territory. If unavailable: "Renewal defence data unavailable — showing new pipeline only."
 
----
+#### Slide 5: Account health by territory
+- Sources: `account_health_movement` (primary), `account_intelligence_summary` `health_distribution` (snapshot/fallback).
+- Lead with movement: accounts that trended healthy → at-risk and at-risk → critical per territory. Pair with the healthy / at-risk / critical distribution (counts and proportions). Below: top 5 at-risk accounts — Account, Territory, Health, ARR, Primary risk factor.
+- Correlational language only. If movement is unavailable: "Health movement unavailable — showing point-in-time snapshot."
+- Answers: "Where are accounts most vulnerable, and which territories are trending the wrong way?"
 
-#### Slide 3: Territory Scorecards
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `account_intelligence_summary` (territory_summary, health_distribution), `capacity_to_target_planner` (capacity verdict), `ramp_cohort` (ramp guard)
-- **Layout**: One scorecard card per territory (2x2 or 2x3 grid depending on territory count). Each card contains:
-  - Territory name (bold header)
-  - Account count
-  - Pipeline value
-  - Revenue / ARR
-  - Health score (color-coded: emerald/amber/red)
-  - Active deal count
-  - **Capacity verdict**: a small badge from `capacity_to_target_planner` — "On Track to Hit Target," "Capacity-Constrained" (not enough reps to reach target even at full productivity), or "Execution-Constrained" (enough capacity, target still at risk — a coaching issue, not a headcount issue). If the tool is unauthorized or empty, omit the badge rather than guessing.
-- If there are more than 6 territories, show the top 6 by ARR and note how many additional territories exist below.
-- Before flagging a territory's health score or capacity verdict as concerning, check `ramp_cohort` for that territory. If a meaningful share of its reps are still ramping, note it on the card (e.g., "2 of 4 AEs ramping — attainment tracking to ramp plan") instead of flagging it red outright.
+#### Slide 6: Coverage questions and expansion
+- Sources: synthesis of all pulls; `hunter_farmer_mix` for deal-mix enrichment.
+- Two columns:
+  - **Left — "Coverage questions to validate"** (navy accent): territories or segments with little or no CRM revenue/pipeline, with what the CRM does show (accounts with no deals, large accounts with no engagement) and the market evidence needed to confirm real whitespace. Never title this column "untapped" or "whitespace" unless external market evidence is cited.
+  - **Right — "Expansion opportunities"** (emerald accent): healthy existing accounts with room to grow, from `account_intelligence_summary` expansion candidates.
+- **Hunter/farmer strip** beneath: new-business vs expansion split per territory, to show whether flat growth is a hunting or farming pattern. Drop the strip if unavailable.
 
----
+#### Slide 7: Engagement gaps by territory
+- Source: `activity_gaps`.
+- If dormant accounts were returned: amber callout with count and ARR attached, then a table grouped by territory (Account, Territory, Days since last activity, ARR). Highlight the territories with the most dormant accounts.
+- If the list is empty: a **neutral** (slate) note — "No dormant accounts returned for the {days}-day window." Do not use a green "all engaged" callout; no logged activity and no returned gap are both indeterminate without a verified-zero flag.
 
-#### Slide 4: Pipeline Distribution by Territory
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `unified_forecast_summary`, `forecast_confidence`, `pipeline_risk_summary`, `renewal_forecast_summary` (defense)
-- **Layout**: Horizontal stacked bar chart or grouped bar chart showing pipeline value per territory, broken down by stage or risk level. Below the chart: pipeline coverage ratio per territory as a simple comparison table (Territory | Pipeline | Target | Coverage Ratio).
-- Highlight territories with coverage below 2x in red, 2-3x in amber, 3x+ in emerald.
-- **Deal-size composition**: Add a "Pipeline by Deal Size" mini-chart from `kpis.pipeline_coverage.by_deal_size` showing the book's distribution across deal-size bands. A territory analysis benefits from this lens — coverage that looks healthy in aggregate may be concentrated in a single band, which affects how rebalancing recommendations should be framed (Slide 9). If `kpis.pipeline_coverage.acv_drift.is_significant` is `true`, add a one-line amber note: "Pipeline ACV is drifting {direction} {drift_pct}% vs trailing-12-month closed-won — pipeline deals no longer resemble what the team has historically closed." Omit when not significant.
-- **Renewal defense**: Pull `renewal_forecast_summary` and add a compact "Renewal Defense" panel beneath the coverage table — ARR renewing in the next 30-180 days and at-risk renewal ARR, per territory. This is the deck's defense counterpart to the new-pipeline numbers above; a territory can look strong on new pipeline (offense) while carrying significant renewal risk (defense) that the coverage ratio alone won't show. If the tool is unauthorized or empty, note "Renewal defense data not available — showing new pipeline only" and proceed.
+#### Slide 8: Deal health by territory
+- Sources: `risk_heatmap`, `pipeline_risk_summary`.
+- Table of the least healthy deals, annotated by territory: Deal, Territory, Amount, Stage, Health score, Health band, Top risk factor. Colour from the server's `healthBand` via `healthBandColor()`: `Low` → red, `Medium` → amber, `High` → emerald, missing → slate "band unavailable". Order by `healthScore` ascending. Cap at 10 rows; navy header row, white text.
+- Callout: which territory carries the most `Low`-band deal value (with count and denominator).
 
----
+#### Slide 9: Territory recommendations
+- Sources: Step 4 recommendations; `reverse_capacity_planner` for Intervene items.
+- 3–5 numbered recommendations (emerald numbered circles), each with a bold action headline, one supporting sentence (evidence with denominators, expected outcome), and a tag: **Evidence-backed** or **Hypothesis to validate**.
+- Group as **Double down** (performing territories), **Intervene** (needing attention), **Explore** (coverage questions; these are hypotheses by default).
+- For each Intervene item, translate the gap into a headcount estimate where `reverse_capacity_planner` is available (e.g. "West: ~1.4 additional AEs estimated to reach target"). Otherwise use qualitative effort-shift language. No reassignment advice from raw pipeline alone.
 
-#### Slide 5: Account Health by Territory
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `account_health_movement` (primary — trended health by territory), `account_intelligence_summary` (health_distribution by territory, static snapshot / fallback)
-- **Layout**: Lead with the movement view from `account_health_movement` — accounts that trended healthy → at-risk (and at-risk → critical) per territory over the period, since this catches deteriorating territories that a single-point-in-time snapshot misses. Pair it with the existing stacked bar chart or grouped stat cards showing Healthy / At-Risk / Critical account distribution per territory. Below: table of the top 5 at-risk accounts across all territories with Account Name, Territory, Health Score, ARR, and Primary Risk Factor.
-- Describe movement as accounts having "trended" or "moved" toward at-risk/critical — this is correlational, not causal. Never say a territory or rep "caused" the movement; say accounts "moved" or "trended" that direction.
-- `account_health_movement` is manager/team-permission gated. If the call is unauthorized or empty, fall back to the static `health_distribution` snapshot alone and note "Health movement data not available — showing point-in-time snapshot."
-- This slide answers: "Where are our accounts most vulnerable — and which territories are trending in the wrong direction?"
+#### Slide 10: Close — basis, sources and limits
+- Navy background. Title: "Territory Strategy: Where We Play, How We Win", organization name, date.
+- Lower block (Ice Blue text): territory basis, period and currency, unassigned/ambiguous counts, sources used, sources unavailable (summarised, no raw errors), and the demo label if it applies.
 
----
+## Step 6: Generate the file
 
-#### Slide 6: Whitespace Analysis
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: Synthesized from all data pulls — territories with zero/low revenue, underserved segments; `hunter_farmer_mix` for deal-mix enrichment
-- **Layout**: Two-column layout.
-  - **Left column**: "Untapped Territories" — territories or segments with zero or minimal revenue. Show market indicators if available (account count with no deals, large accounts with no engagement).
-  - **Right column**: "Expansion Opportunities" — existing territories where healthy accounts have room to grow. Pull from expansion candidates in account_intelligence_summary.
-- Use emerald accent on the expansion column, navy accent on the whitespace column.
-- **Hunter/farmer enrichment**: Below the two columns, add a compact per-territory strip from `hunter_farmer_mix` showing the new-business vs. expansion deal split. This diagnoses *why* a territory is flat — a territory with strong hunting (new logos) but weak farming (expansion) needs a different play than the reverse, and this distinction should inform which column (or both) a territory lands in. If `hunter_farmer_mix` is unauthorized or empty, drop this strip and keep the two-column whitespace/expansion view as-is.
+Write one Node.js PptxGenJS script that:
 
----
+1. Embeds all pulled and calculated data directly (no external data files).
+2. Uses factory functions for shadows and option objects (PptxGenJS mutates option objects; never reuse them across calls).
+3. Defines helpers: `addStatCard()`, `addSectionTitle()`, `healthBandColor()`, `healthColor()`, `coverageColor()`, `formatCurrency()`, `territoryCard()`.
+4. Builds every slide above.
+5. Handles missing data, empty arrays, nulls and unassigned records, rendering "unavailable" rather than `0`.
+6. Saves to the session's outputs directory as `Territory-Review-[Date].pptx`.
 
-#### Slide 7: Engagement Gaps by Territory
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `activity_gaps`
-- **Layout**: If dormant accounts exist, show a warning callout (amber background) with total count and total ARR at risk. Below: table of dormant accounts grouped by territory with Account Name, Territory, Days Since Last Activity, and ARR at Risk.
-- If no gaps: show a green "All territories actively engaged" callout — this is positive reinforcement.
-- Highlight which territories have the most dormant accounts.
-
----
-
-#### Slide 8: Risk Heatmap by Territory
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: `risk_heatmap`, `pipeline_risk_summary`
-- **Layout**: Table of highest-risk deals, grouped or annotated by territory. Columns: Deal Name, Territory, Amount, Stage, Health Score, Health Band, Top Risk Factor. Color-code the server-supplied `healthBand`: `Low` → red, `Medium` → amber, `High` → emerald. Keep the table ordered by `healthScore` ascending.
-- Cap at 10 rows for readability. Navy header row, white text.
-- Below the table: a summary callout showing which territory carries the highest aggregate risk.
-
----
-
-#### Slide 9: Territory Recommendations
-- **Background**: Off-white (`F8FAFC`)
-- **Data source**: Your synthesized recommendations from Step 3; `reverse_capacity_planner` for Intervene recommendations
-- **Layout**: 3-5 numbered strategic recommendations, each with:
-  - A bold headline (the action)
-  - A supporting sentence (the evidence and expected impact)
-- Use numbered circles in emerald as bullet markers. Give each recommendation space.
-- Frame recommendations in three categories: **Double Down** (territories performing well), **Intervene** (territories needing attention), **Explore** (whitespace opportunities).
-- For every **Intervene** recommendation, call `reverse_capacity_planner` (grouped by `team` and/or `sales_role`) and translate the recommendation from vague effort-shift language into a concrete headcount ask — e.g., "West needs ~1.4 more AEs to hit target" instead of "shift 2 SDR hours/week from East to West." If the tool is unauthorized or empty, fall back to the qualitative effort-shift language shown in the Step 3 example.
-
----
-
-#### Slide 10: Closing Slide
-- **Background**: Navy (`1E2761`)
-- **Content**: "Territory Strategy: Where We Play, How We Win", company name, date
-- **Layout**: Clean, centered. Mirror the title slide design.
-
----
-
-## Step 5: Generate the File
-
-Write a complete Node.js script using PptxGenJS that:
-
-1. Embeds all the pulled data directly (no external data files)
-2. Uses factory functions for shadows and card styles to avoid PptxGenJS's object mutation issues
-3. Creates helper functions: `addStatCard()`, `addSectionTitle()`, `riskColor()`, `formatCurrency()`, `healthColor()`, `territoryCard()`
-4. Constructs all slides following the structure above
-5. Handles edge cases (missing data, empty arrays, zero values, missing territory breakdowns)
-6. Saves to the outputs folder as `Territory-Review-[Date].pptx`
-
-### Helper Function Patterns
+### Helper patterns
 
 ```javascript
-// Risk color coding
-function riskColor(score) {
-  if (score >= 70) return "EF4444";
-  if (score >= 40) return "F59E0B";
-  return "10B981";
+// Deal health colour. Follow the server's healthBand; never derive colour from raw score thresholds.
+// healthScore is 0.0–1.0 and higher = healthier; riskScore is a deprecated alias with the SAME direction.
+function healthBandColor(band) {
+  const map = { low: "EF4444", medium: "F59E0B", high: "10B981" };
+  return map[String(band ?? "").toLowerCase()] || "64748B"; // slate = band unavailable
 }
 
-// Health color coding
+// Account health colour from the server's health category.
 function healthColor(status) {
   const map = { healthy: "10B981", "at-risk": "F59E0B", critical: "EF4444" };
-  return map[status?.toLowerCase()] || "64748B";
+  return map[String(status ?? "").toLowerCase()] || "64748B";
 }
 
-// Coverage ratio color
+// Coverage ratio colour; slate when the target (and so the ratio) is unavailable.
 function coverageColor(ratio) {
+  if (ratio == null || Number.isNaN(ratio)) return "64748B";
   if (ratio >= 3) return "10B981";
   if (ratio >= 2) return "F59E0B";
   return "EF4444";
 }
 
-// Factory for shadows (avoid PptxGenJS mutation issue)
+// Fresh shadow object per call (avoids the PptxGenJS mutation issue).
 const makeShadow = () => ({ type: "outer", color: "000000", blur: 6, offset: 2, angle: 135, opacity: 0.15 });
 
-// Format currency
-function formatCurrency(val) {
-  if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
-  if (val >= 1e3) return `$${(val / 1e3).toFixed(0)}K`;
-  return `$${val}`;
+// Currency resolved in Step 1; null renders as "unavailable", never $0.
+function formatCurrency(val, symbol = "$") {
+  if (val == null || Number.isNaN(val)) return "unavailable";
+  if (Math.abs(val) >= 1e6) return `${symbol}${(val / 1e6).toFixed(1)}M`;
+  if (Math.abs(val) >= 1e3) return `${symbol}${(val / 1e3).toFixed(0)}K`;
+  return `${symbol}${val}`;
 }
 ```
 
-## Step 6: QA
+## Step 7: Render, QA and deliver
 
-After generating the file:
+1. Render **every** slide to an image using the `pptx` skill's render/thumbnail flow (or `soffice --headless --convert-to pdf` then `pdftoppm -jpeg -r 150`).
+2. Inspect each slide at full size: overlap, clipping, wrapping, chart scales, mislabelled territories, placeholder text, colour contrast.
+3. Spot-check every headline number against the source payloads, including the unassigned/ambiguous counts.
+4. Fix and re-render until clean.
+5. Return **one clickable link** to the PPTX, followed by a short note on territory basis, coverage limitations, unavailable sources and anything excluded.
 
-1. Convert to images:
-   ```bash
-   python scripts/office/soffice.py --headless --convert-to pdf output.pptx
-   pdftoppm -jpeg -r 150 output.pdf slide
-   ```
-2. Visually inspect every slide for overlapping text, missing data, color contrast issues
-3. Verify data accuracy — spot-check that numbers match what the MCP tools returned
-4. Fix issues and re-verify
+## Tips for great territory reviews
 
-## Tips for Great Territory Reviews
+- **Lead with the allocation question.** Every slide should help answer "where should we put resources?"
+- **Make coverage questions actionable.** Don't just say "Territory X has no revenue" — show what the CRM holds there and what market evidence would confirm the opportunity.
+- **Balance defence and offence.** Quantify renewal risk as hard as new pipeline.
+- **Be honest about concentration risk.** If 80% of ARR sits in one territory, that is the headline.
+- **Don't penalise ramp.** Check `ramp_cohort` before branding a territory underperforming.
+- **Make Intervene asks concrete** — a headcount estimate beats a vague effort shift — and keep hypotheses labelled as hypotheses.
+- **Keep it to 10 slides.**
 
-- **Lead with the strategic question.** Every slide should answer "where should we allocate resources?" not just "here are numbers by territory."
-- **Make whitespace actionable.** Don't just say "Territory X has no revenue" — show what accounts exist there, what the potential is, and what it would take to activate it.
-- **Balance defense and offense.** Show both where to protect (at-risk territories, and renewal risk from `renewal_forecast_summary`) and where to attack (whitespace and expansion). Don't let defense stay a vague gesture while offense gets hard numbers — quantify both sides.
-- **Be honest about concentration risk.** If 80% of ARR comes from one territory, that's the most important insight in the deck.
-- **Don't penalize ramp.** A territory staffed with recently-ramping reps isn't automatically "underperforming" — check `ramp_cohort` before you brand it that way.
-- **End with clear territory actions.** The audience should leave knowing exactly which territories to invest in, which to defend, and which to explore. For Intervene territories, make the ask concrete — a headcount number beats a vague effort-shift.
-- **Keep it short.** 10 slides max. The review should spark strategic discussion, not drown in data.
+## Verification checklist
+
+- [ ] Preflight checklist complete; `scoped_org_id` matched on returned data
+- [ ] Territory basis stated; derived groupings disclosed
+- [ ] Unassigned and ambiguous records counted separately
+- [ ] Comparisons normalised; denominators shown
+- [ ] Deal colours follow server `healthBand`; no raw-threshold or inverted colouring
+- [ ] No "whitespace" claim from absent CRM records; empty `activity_gaps` not shown as green
+- [ ] Every recommendation tagged evidence-backed or hypothesis; no reassignment from raw pipeline alone
+- [ ] Rep-level detail only for an authorized audience
+- [ ] Demo label applied if fixtures could not be excluded
+- [ ] Every slide rendered and inspected; one link returned
