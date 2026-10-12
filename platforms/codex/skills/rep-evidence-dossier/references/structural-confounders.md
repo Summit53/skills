@@ -1,6 +1,6 @@
 # Structural Confounders — Screening Protocol
 
-**Version 2.1.1 · adapted 2026-08-10 for Summit53 Staging.**
+**Version 2.1.2 · adapted 2026-08-10 for Summit53 Staging.**
 
 ## Contents
 
@@ -15,7 +15,8 @@
 - [Output contract](#output-contract)
 Screens 1, 1b and the verified-zero check are now server-supported — read the
 fields rather than hand-rolling them.
-Reference for `rep-evidence-dossier`. Read before assembling any dossier.
+Reference for `rep-evidence-dossier` (read before assembling any dossier) and
+`rep-coaching-report` (read before attributing any flag to the rep).
 
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check or materialize shared canonical references into Codex packages only."""
+"""Check or materialize shared canonical references into Claude and Codex packages."""
 
 from __future__ import annotations
 
@@ -10,23 +10,31 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SHARED = ROOT / "shared" / "canonical"
-CODEX = ROOT / "platforms" / "codex" / "skills"
+PLATFORMS = (
+    ROOT / "platforms" / "claude" / "skills",
+    ROOT / "platforms" / "codex" / "skills",
+)
 
 
 def consumers(canonical: Path) -> list[Path]:
-    return sorted(CODEX.glob(f"*/references/{canonical.name}"))
+    """A package consumes a canonical file when it vendors a copy under references/."""
+    found: list[Path] = []
+    for platform in PLATFORMS:
+        found.extend(platform.glob(f"*/references/{canonical.name}"))
+    return sorted(found)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Check byte parity with shared/canonical or explicitly copy canonical "
-            "references into existing Codex consumers. The frozen Claude tree is never written."
+            "references into existing Claude and Codex consumers. Seed a new consumer by "
+            "copying the canonical file into its references/ folder once."
         )
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true", help="check parity (default)")
-    mode.add_argument("--write", action="store_true", help="overwrite existing Codex consumers")
+    mode.add_argument("--write", action="store_true", help="overwrite existing consumers")
     args = parser.parse_args()
 
     canonical_files = sorted(SHARED.glob("*.md"))
@@ -39,7 +47,7 @@ def main() -> None:
     for canonical in canonical_files:
         targets = consumers(canonical)
         if not targets:
-            drift.append(f"{canonical.name}: no existing Codex consumers")
+            drift.append(f"{canonical.name}: no existing consumers")
             continue
         for target in targets:
             checked += 1
@@ -58,7 +66,7 @@ def main() -> None:
         for item in drift:
             print(f"DRIFT: {item}")
         raise SystemExit(1)
-    print(f"Canonical reference parity passed for {checked} Codex consumer(s)")
+    print(f"Canonical reference parity passed for {checked} consumer(s)")
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ Everything in this list is shippable and demonstrable today.
 - Weekly action plan with prioritised tasks and risk summary
 
 **Architecture**
-- MCP-native — every tool above is addressable via Model Context Protocol, so Codex (and any MCP-capable assistant) can drive the full revenue motion conversationally
+- MCP-native — every tool above is addressable via Model Context Protocol, so Claude (and any MCP-capable assistant) can drive the full revenue motion conversationally
 - Sits on top of existing CRM data — not a replacement
 - Self-hostable / cloud-hostable
 
