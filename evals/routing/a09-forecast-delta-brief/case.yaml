@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: a09-forecast-delta-brief
+description: "Routes to forecast-delta-brief; never board-revenue-pack"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Why is the forecast number different from last week? Prep me for the commit call."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-forecast-delta-brief
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?forecast-delta-brief\""
+  - name: never-board-revenue-pack
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?board-revenue-pack\""
+    min: 0
+    max: 0

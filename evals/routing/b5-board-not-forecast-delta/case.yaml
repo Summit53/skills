@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: b5-board-not-forecast-delta
+description: "Routes to board-revenue-pack; never forecast-delta-brief"
+tags: ["routing", "near-miss"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Is our revenue problem a market problem or an execution problem? The board will ask."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-board-revenue-pack
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?board-revenue-pack\""
+  - name: never-forecast-delta-brief
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?forecast-delta-brief\""
+    min: 0
+    max: 0

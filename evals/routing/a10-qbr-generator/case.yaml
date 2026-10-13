@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: a10-qbr-generator
+description: "Routes to qbr-generator; never customer-qbr"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Prep for my QBR — pull together this quarter's numbers into our internal quarterly revenue review."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-qbr-generator
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?qbr-generator\""
+  - name: never-customer-qbr
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?customer-qbr\""
+    min: 0
+    max: 0

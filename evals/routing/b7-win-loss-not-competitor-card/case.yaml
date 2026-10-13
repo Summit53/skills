@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: b7-win-loss-not-competitor-card
+description: "Routes to win-loss-analysis; never competitor-response-card"
+tags: ["routing", "near-miss"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "What do our wins against competitors have in common?"
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-win-loss-analysis
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?win-loss-analysis\""
+  - name: never-competitor-response-card
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?competitor-response-card\""
+    min: 0
+    max: 0

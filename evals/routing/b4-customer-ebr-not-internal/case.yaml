@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: b4-customer-ebr-not-internal
+description: "Routes to customer-qbr; never qbr-generator"
+tags: ["routing", "near-miss"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Prep the EBR with Capital Wealth Advisory."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-customer-qbr
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?customer-qbr\""
+  - name: never-qbr-generator
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?qbr-generator\""
+    min: 0
+    max: 0

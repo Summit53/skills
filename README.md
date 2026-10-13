@@ -148,6 +148,25 @@ file, copy it into that package's `references/` folder once; the sync tool disco
 by presence. After any package change, run `generate_package_fingerprints.py` to refresh the
 manifest.
 
+## Routing evals
+
+`evals/routing/` checks that natural requests reach the right skill: one prompt per skill,
+near-miss pairs that must route apart (each also asserts the look-alike skill is *not*
+invoked), and the `summit53` start-here prompts. No MCP server runs; routing depends only on
+skill descriptions. Run them after changing any `description`:
+
+```bash
+claude plugin eval . --ablation none --no-publish -j 4 --max-cost-usd 25
+claude plugin eval . --case 'b6-*' --ablation none   # one case
+```
+
+Run from the repository root (the plugin must sit under the eval target). The full suite is
+81 runs and costs roughly USD 15–20 at default settings, so filter with `--case` or `--tag`
+(`per-skill`, `near-miss`, `router`) while iterating. Cases are generated: edit the table in
+`tools/build_routing_evals.py`, then run it. A failing `routes-to-*` grader means the
+description does not trigger on that phrasing; a failing `never-*` grader means two
+descriptions overlap.
+
 ## Releasing
 
 Bump `version` in **both** `plugins/summit53/.claude-plugin/plugin.json` and
