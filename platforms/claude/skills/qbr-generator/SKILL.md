@@ -1,20 +1,34 @@
 ---
 name: "qbr-generator"
-description: "Create an internal Summit53 quarterly revenue or sales review as an executive PPTX, with an optional DOCX companion. Use for quarterly operating reviews and executive performance decks. Despite the legacy name, do not use this for a customer-facing QBR; that external CS hot seat is a separate planned skill."
-version: "1.0.0"
-baselined: "2026-08-07"
+description: "Build an internal quarterly revenue and sales operating review as an executive PPTX from live Summit53 data: quota and revenue performance, ARR growth and retention, pipeline health, risk and stalled pipeline, account portfolio, wins and losses, and next-quarter actions. DOCX only when explicitly requested. Use when a revenue or sales leader says 'prep for my QBR', 'build my quarterly deck', 'quarterly business review', 'quarterly sales review', 'executive revenue review', 'pull together the numbers for this quarter', 'I need a revenue review', or wants the quarter's CRM performance compiled into an internal presentation. Despite the name, do not use for a customer-facing QBR or value review — use customer-qbr. Do not use for board or investor reporting — use board-revenue-pack. Do not use for the weekly 'why did the number move' brief — use forecast-delta-brief."
+version: "1.1.0"
+baselined: "2026-10-13"
 status: "active"
 ---
----
-name: qbr-generator
-description: "Generate a complete Quarterly Business Review (QBR) deck or document by pulling live data from Summit53 CRM tools and assembling a polished, narrative-driven PPTX or DOCX deliverable. Use this skill whenever the user asks for a QBR, quarterly business review, quarterly review deck, executive revenue review, board deck with pipeline data, quarterly sales review, or any request to compile CRM performance data into a presentation or report. Also trigger when the user says things like 'prep for my QBR', 'build my quarterly deck', 'pull together the numbers for this quarter', or 'I need a revenue review'."
----
-
-> **Codex compatibility notice:** Use this file for domain logic, evidence requirements, fallbacks, narrative, slide/document content, and visual intent. The parent `SKILL.md` overrides every legacy instruction about Claude, PptxGenJS, the old pptx/docx skills, legacy rendering commands, or a generic outputs folder. Use Codex's available Presentations skill and, only when requested, Documents skill for implementation and QA.
 
 # QBR Generator
 
-Generate a complete Quarterly Business Review by pulling live data from Summit53 CRM tools and assembling a polished, narrative-driven PPTX deck (default) or DOCX document.
+Turn live Summit53 revenue evidence into an internal quarterly operating review: one headline narrative, the honest risks, quarter-over-quarter movement, and the few forward decisions that matter. The default deliverable is a PPTX deck; a DOCX is produced only when the user explicitly asks for one.
+
+## Route first
+
+- Use this skill for an **internal** quarterly revenue or sales operating review for leadership.
+- Customer-facing QBR, value review or success review for a named customer → `customer-qbr`. Never present this internal deck to a customer.
+- Board, investor or fundraise revenue pack → `board-revenue-pack`. Do not blend board framing into an internal operating QBR.
+- Weekly "why did the forecast move" brief → `forecast-delta-brief`.
+
+## Preflight
+
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one ToolSearch `select:` batch, live-schema discovery, read-only discipline (never `refresh: true`), fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
+
+Read [references/async-envelopes.md](references/async-envelopes.md) before the first `unified_forecast_summary` call: it defines how to poll processing envelopes with `get_job` and re-call for the payload.
+
+Skill-specific gates (resolve these up front — see Step 1):
+
+1. **Reporting period, comparison period, currency and audience are resolved before data is pulled**, from the request or context, and every assumption is stated on the Executive Summary slide and in the delivery note.
+2. **Scope.** Org-wide unless the user names a team, segment or region; every returned organization ID must match `scoped_org_id`.
+3. **One currency.** Use the reporting currency the tools return. Never add or compare amounts across currencies; if a payload mixes currencies without a converted total, show the native figures separately and say so.
+4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide.
 
 ## Why This Exists
 
@@ -22,11 +36,13 @@ Every revenue leader does QBRs, and building them is painful — hours of pullin
 
 ## Tools Reference
 
-This skill uses the following Summit53 MCP tools:
+This skill uses the following Summit53 tools (logical names; resolve the prefix per the preflight, and inspect each live schema before the first call — argument names below are semantic guidance):
+
+**Gate & discovery**: `current_context` (always first), `list_available_tools` (confirms which optional, permission-gated tools are exposed)
 
 **Revenue & Forecast**: `unified_forecast_summary` (incl. revenue per rep, win rate & coverage by deal size, ACV drift), `get_job`, `forecast_confidence`, `hunter_farmer_mix` (optional, manager/team-permission gated — rep deal-mix: net-new hunting vs expansion farming)
 
-> **Async contract:** each `unified_forecast_summary` period can return a processing envelope. Follow `references/async-envelopes.md`: poll that call's `job_id` with `get_job` until terminal, then re-call the original tool with identical arguments for the payload. Current and prior periods are separate jobs. Never render a processing envelope as blank or zero data.
+> **Async contract:** each `unified_forecast_summary` period can return a processing envelope. Follow [references/async-envelopes.md](references/async-envelopes.md): poll that call's `job_id` with `get_job` until terminal, then re-call the original tool with identical arguments for the payload. Current and prior periods are separate jobs. Never render a processing envelope as blank or zero data.
 
 **ARR Growth**: `arr_growth_analytics` (incl. GRR, logo churn, time-to-value), `arr_growth_narrative`, `renewal_forecast_summary` (manager/team-permission gated — forward-looking renewal risk: ARR renewing in 30-180 days, at-risk causes, commit/best-case bands)
 
@@ -46,17 +62,18 @@ This skill uses the following Summit53 MCP tools:
 
 ## Step 1: Clarify Scope
 
-Before pulling data, confirm these with the user (use sensible defaults if they say "just do it"):
+Resolve these **before** pulling data — from the request or available context where possible; ask only for what you cannot infer. If the user says "just do it", apply the defaults and state each one as an assumption.
 
-- **Period**: Which quarter? Default to current quarter.
-- **Format**: PPTX deck (default) or DOCX document.
-- **Audience**: Board/exec (high-level narrative) or sales leadership (operational detail). Default to exec.
-- **Specific focus areas**: Any accounts, reps, or segments to highlight?
-- **Comparison period**: Compare to previous quarter? Default yes.
+- **Reporting period**: Which quarter? Default to the current quarter as the forecast tool defines it (`period_offset: 0`). Once the first payload returns, record the actual start/end dates and whether the period is fiscal or calendar, and use those dates on the title slide.
+- **Comparison period**: Default to the previous quarter (`period_offset: -1`). If the user wants year-over-year or another baseline, confirm the tools can return it; if not, say so rather than substituting a different baseline silently.
+- **Currency**: The reporting currency the tools return. Confirm it from the first payload and state it on the title slide.
+- **Audience**: Executive leadership (high-level narrative — the default) or sales leadership (operational detail). Board or investor audiences route to `board-revenue-pack`; customer audiences route to `customer-qbr`.
+- **Team scope and focus areas**: Org-wide by default; any team, segment, accounts or reps to highlight?
+- **Format**: PPTX. Produce a DOCX only if the user explicitly asks for one (see DOCX Companion below) — do not offer it as a default choice.
 
 ## Step 2: Pull All Data
 
-Call these Summit53 MCP tools. Launch as many in parallel as possible — they're independent. Capture the raw responses; you'll synthesize them into narrative later.
+Call these Summit53 tools. Launch as many in parallel as possible — they're independent. Capture the raw responses, including every denominator, sample size, as-of timestamp and data-quality flag they carry; you'll synthesize them into narrative later and those caveats must survive into the deck.
 
 ### Required Data Pulls
 
@@ -81,7 +98,7 @@ Call these Summit53 MCP tools. Launch as many in parallel as possible — they'r
 
 4. **Pipeline Risk**
    - `pipeline_risk_summary` — risk distribution, velocity issues, confidence metrics
-   - `risk_heatmap` — deal-level risk with scores and risk factors (page 1, 25 results, sorted by risk score desc)
+   - `risk_heatmap` — deal-level risk with scores and risk factors (page 1, 25 results). Treat `score_semantics` as authoritative: higher `healthScore` is healthier, `riskScore` is only a deprecated alias. Sort for the riskiest deals by `healthScore` ascending, never by `riskScore` descending
    - `deal_drag_dashboard` — stalled deals with waste scores and recovery strategies (sort_by="waste_score", page_size=5)
 
 5. **Engagement**
@@ -99,7 +116,7 @@ Call these Summit53 MCP tools. Launch as many in parallel as possible — they'r
 8. **Team Performance & Execution**
    - `team_action_plan` — rep completion rates, accountability data, high-priority items (limit 25)
 
-9. **Post-Sale Health** (optional, board-level QBRs only)
+9. **Post-Sale Health** (optional, executive-audience QBRs only)
    - `get_value_impact_card` — for top 3 accounts by ARR: fulfilment score, expansion readiness, impact evidence count
 
 10. **Action Plan**
@@ -107,31 +124,36 @@ Call these Summit53 MCP tools. Launch as many in parallel as possible — they'r
 
 ### Handling Missing Data
 
-Some tools may return sparse data or errors. Don't fail — adapt:
-- If a tool returns no data, note it as "Data not available" in the relevant section and move on.
+Some tools may return sparse data or errors. Don't fail — adapt. Missing data is **never zero and never a positive signal**:
+- If a tool returns no data, mark the metric "unavailable" with a one-line reason in the relevant section and on the Sources & Limits slide, and move on. Never render it as `0`, a dash, or a green status.
 - If ARR growth has no trends, skip the trend chart and use the snapshot numbers.
-- If risk heatmap is empty, note "No deals currently flagged as high risk" (which is a positive signal).
-- `renewal_forecast_summary`, `revenue_loop_diagnosis`, and `hunter_farmer_mix` are manager/team-permission gated (require VIEW_TEAM_METRICS or team/all-metrics access). If any of these calls is unauthorized or returns empty, skip that block or slide gracefully — never fail the deck.
+- If `risk_heatmap` is empty, that is **indeterminate**, not healthy — note "Deal-level risk unavailable for this period" unless the payload explicitly confirms zero deals in scope.
+- If `activity_gaps` returns nothing, say "Dormancy data unavailable", not "no dormant accounts".
+- `renewal_forecast_summary`, `revenue_loop_diagnosis`, and `hunter_farmer_mix` are manager/team-permission gated (require VIEW_TEAM_METRICS or team/all-metrics access). If any of these calls is unauthorized or returns empty, skip that block or slide gracefully — never fail the deck, and never show the permission error on a slide. List the omitted metric on the Sources & Limits slide as "not included (access-gated)".
 - `account_health_movement` reflects correlation, not causation. Slide and document copy must describe accounts as having "trended down" or "moved to at-risk" — never say an account's movement was "caused" by a specific factor.
 
 ## Step 3: Synthesize the Narrative
 
-This is what separates a good QBR from a data dump. Before building slides, write a brief internal narrative outline:
+This is what separates a good QBR from a data dump. Before building slides, reconcile the figures once (the same numbers feed every slide and any DOCX), then write a brief internal narrative outline:
 
 1. **Headline**: One sentence capturing the quarter's story. Is it a growth story? A recovery story? A risk story? Examples:
-   - "Strong quarter: 112% quota attainment driven by enterprise expansion"
+   - "Strong quarter: 112% quota attainment, with enterprise expansion the largest contributor"
    - "Pipeline coverage gap emerging: 1.8x vs 3x target needs attention"
-   - "Retention held steady at 108% NRR despite two key churns"
+   - "Retention held steady at 108% NRR alongside two key churns"
+
+   Describe health movement, interventions and execution signals as correlational ("moved alongside", "coincided with") unless a source proves causation.
 
 2. **Three key themes**: What are the 3 things the audience should walk away remembering?
 
-3. **One honest risk**: What's the biggest thing that could derail next quarter?
+3. **One honest risk**: What's the biggest thing that could derail next quarter? Weak metrics stay in the deck — do not drop or soften a bad number to protect the headline.
 
 4. **One clear action**: What's the single most important thing to do next?
 
 ## Step 4: Build the Deck
 
-Read the pptx skill's `pptxgenjs.md` reference for the technical details of creating slides. The deck structure below is your blueprint.
+Build with PptxGenJS following the `pptx` skill: read its SKILL.md (and its PptxGenJS reference, where the installed version has one) before writing any code. The deck structure below is your blueprint — favor a coherent executive story over exhaustive dashboard coverage, and drop a slide whose sources were all unavailable rather than rendering an empty frame.
+
+**Preserve the evidence on the slide.** Show denominators and sample sizes next to rates (win rate "(n = 42 closed)", logo churn "3 of 57 renewal logos", time-to-value "median 41 days, 18 contracts measured", revenue per rep "across 9 quota-carrying reps"), the as-of timestamp of each source in the slide footer, and any data-quality caveat the tool returned. A rate without its denominator is not shippable.
 
 ### Design System
 
@@ -161,7 +183,7 @@ Build these slides in order. Each slide description includes what data to use an
 
 #### Slide 1: Title Slide
 - **Background**: Navy (`1E2761`)
-- **Content**: Company name, "Quarterly Business Review", quarter label (e.g., "Q1 2026"), date
+- **Content**: Company name, "Quarterly Business Review — Internal", quarter label with its actual date range (e.g., "Q1 FY2026 · 1 Jan – 31 Mar 2026"), reporting currency, date prepared
 - **Layout**: Centered, clean, minimal. Large Georgia title, smaller Calibri subtitle.
 
 ---
@@ -169,7 +191,7 @@ Build these slides in order. Each slide description includes what data to use an
 #### Slide 2: Executive Summary
 - **Background**: Navy (`1E2761`)
 - **Data source**: Your synthesized headline + three key themes from Step 3
-- **Layout**: Large headline text (28-32pt, white), then 3 key takeaway bullets below (18pt, ice blue)
+- **Layout**: Large headline text (28-32pt, white), then 3 key takeaway bullets below (18pt, ice blue). A small assumptions line at the bottom (12pt): reporting period, comparison period, currency, scope, and any default you applied.
 - This is the most important slide — it frames the entire review.
 
 ---
@@ -180,7 +202,7 @@ Build these slides in order. Each slide description includes what data to use an
 - **Layout**: 3-4 large stat callouts across the top (quota attainment %, closed revenue, pipeline value, win rate). Below: bar chart comparing current vs previous quarter revenue. Use emerald for positive deltas, red for negative.
 - **Key numbers to show**: Quota attainment %, total closed revenue, comparison to previous quarter, pipeline coverage ratio.
 - **Productivity & segmentation**: Add **Revenue per Rep** (`team_summary.revenue_per_rep`) as a stat callout — it shows per-head productivity, which quota attainment alone hides. If `kpis.win_rate.by_deal_size` shows a meaningful spread across bands, add a small horizontal bar set "Win Rate by Deal Size" — a healthy blended win rate often masks a weak segment, and the QBR is the right venue to expose it.
-- **Rep deal-mix (optional)**: If `hunter_farmer_mix` is available (requires VIEW_TEAM_METRICS or team/all-metrics access), add a small stacked-bar or split-stat next to Revenue per Rep showing each rep's mix of net-new "hunting" vs expansion "farming" deals — it explains *how* revenue per rep was earned, not just how much. If the call is unauthorized or returns empty, omit this element and keep the slide as-is.
+- **Rep deal-mix (optional, sales-leadership audience only)**: If `hunter_farmer_mix` is available (requires VIEW_TEAM_METRICS or team/all-metrics access), add a small stacked-bar or split-stat next to Revenue per Rep showing each rep's mix of net-new "hunting" vs expansion "farming" deals — it explains *how* revenue per rep was earned, not just how much. If the call is unauthorized or returns empty, omit this element and keep the slide as-is.
 
 ---
 
@@ -189,7 +211,7 @@ Build these slides in order. Each slide description includes what data to use an
 - **Data source**: `arr_growth_analytics`, `arr_growth_narrative`
 - **Layout**: Left side — large ARR number with growth % delta, NRR percentage, growth stage label. Right side — line chart of ARR trend if trend data is available, or a stat card layout if not.
 - **Retention block**: This slide is now the retention story, not just growth. Show **NRR and GRR as a pair** — NRR is the expansion-inclusive number, GRR is gross retention (capped at 100%, color-coded green ≥90% / amber ≥80% / red <80%). Add **Logo Churn** (`rate` plus `churned_logos`/`total_renewal_logos`) as a count-based companion to GRR's dollar-based view. Add **Time-to-Value** (`median_days`, with `p75_days` and `contracts_measured`) as an onboarding-velocity stat — it connects sales execution to realized customer value.
-- **Include**: Benchmark comparison (how does NRR compare to best-in-class?). If NRR and GRR diverge sharply, state plainly that expansion is offsetting churn.
+- **Include**: Benchmark comparison **only** when `arr_growth_analytics` returns benchmarks (`include_benchmarks: true`) — cite them as the tool's benchmark, with its basis. Never invent or recall a "best-in-class" figure from memory; if no benchmark is returned, omit the comparison. If NRR and GRR diverge sharply, state plainly that expansion is offsetting churn.
 - Pull key quotes/insights from the narrative tool to add a 1-2 sentence insight below the numbers.
 - **Renewal risk (forward-looking)**: The blocks above are backward-looking (retention history). If `renewal_forecast_summary` is available (requires VIEW_TEAM_METRICS or team/all-metrics access), add a "Renewals Coming Due" block showing ARR renewing in 30-180 days, broken out by window, with at-risk causes called out and commit vs best-case bands shown side by side. This turns the retention story forward — not just "how we did" but "what's coming." If the call is unauthorized or returns empty, omit this block and keep the slide retention-history-only.
 
@@ -228,8 +250,8 @@ Build these slides in order. Each slide description includes what data to use an
 #### Slide 8: Engagement & Activity Gaps
 - **Background**: Off-white (`F8FAFC`)
 - **Data source**: `activity_gaps`
-- **Layout**: Count of dormant accounts as a large warning callout. Below: table of top 10 dormant accounts with account name, days since last activity, and ARR at risk.
-- This slide is a call to action — frame dormant accounts as revenue at risk.
+- **Layout**: Count of dormant accounts as a large warning callout, with the dormancy threshold used (e.g., "no logged activity in 30+ days"). Below: table of top 10 dormant accounts with account name, days since last logged activity, and ARR at risk.
+- This slide is a call to action — frame dormant accounts as revenue at risk. "Dormant" means no logged CRM activity; it is not proof the customer is disengaged, so say "no logged activity", not "gone silent".
 
 ---
 
@@ -239,7 +261,8 @@ Build these slides in order. Each slide description includes what data to use an
 - **Layout**: Two-column. Left: "Wins" with emerald accent. Right: "Losses" with red accent. For each deal, construct a 1-2 sentence narrative using: deal name, amount, key stage progression, and thematic insight from the notes summary.
   - Example win: "Acme Enterprise ($250K) — expanded from platform to enterprise tier after demonstrating ROI in Q3, closed following expanded C-suite alignment."
   - Example loss: "TechCorp ($85K) — stalled in negotiation due to budget reallocation; prospect indicated interest for Q3 2026."
-- If specific deal data isn't available, fall back to: note "Connect your CRM for deal-level win/loss tracking" and skip to next slide.
+- If specific deal data isn't available, drop the slide and list "Deal-level win/loss detail: unavailable" on the Sources & Limits slide.
+- Win and loss narratives come from the notes summary; write what happened alongside the outcome, not a causal verdict on why it was won or lost unless the notes record the buyer's stated reason.
 - **Qualification context**: Pull `opportunity_framework_summary` for the same top wins and losses and add one qualification-framework note per deal — MEDDPIC, BANT, or SPICED, whichever the org uses — e.g., "Economic Buyer confirmed pre-close" for a win or "no compelling event, Budget unconfirmed" for a loss. This explains deals in qualification terms, not just outcome facts.
 
 ---
@@ -247,14 +270,14 @@ Build these slides in order. Each slide description includes what data to use an
 #### Slide 10: Next Quarter Plan & Actions
 - **Background**: Off-white (`F8FAFC`)
 - **Data source**: `team_action_plan` (current period completion rates), `weekly_action_plan`, your synthesized narrative from Step 3
-- **Layout**: Add a "Team Execution Baseline" stat card at the top showing average team action completion rate from the current quarter (e.g., "Team averaged 78% action completion this quarter"). Below: numbered list of top 5-7 prioritized actions. Each action should have: what to do, why it matters, and the expected impact. Use icon-style bullets (numbered circles in emerald).
+- **Layout**: Add a "Team Execution Baseline" stat card at the top showing average team action completion rate from the current quarter (e.g., "Team averaged 78% action completion this quarter", with the number of actions it is based on). Keep it team-level: no per-rep completion rankings on this slide. Below: numbered list of top 5-7 prioritized actions. Each action should have: what to do, why it matters, and the expected impact. Use icon-style bullets (numbered circles in emerald).
 
 ---
 
-#### Slide 11: Value & Expansion Health (Optional — Board-Level QBRs Only)
+#### Slide 11: Value & Expansion Health (Optional — Executive-Audience QBRs Only)
 - **Background**: Off-white (`F8FAFC`)
 - **Data source**: `get_value_impact_card` for top 3 accounts by ARR
-- **When to include**: Only when audience is board/executive level. Omit for sales leadership QBRs.
+- **When to include**: Only when the audience is executive leadership. Omit for sales-leadership QBRs. (Board audiences use `board-revenue-pack`.)
 - **Layout**: Three-column card layout. For each top account: show account name, fulfilment score, expansion readiness category (e.g., "Ready to Expand", "At Risk", "Stable"), and key impact evidence count. Use color coding (emerald for "Ready to Expand", amber for "Stable", red for "At Risk").
 - **Narrative**: Add a 1-2 sentence summary below: "Top 3 accounts show strong fulfilment (avg X score) with Y expansion opportunities identified. Focus on [category] for Q2 growth."
 
@@ -269,7 +292,16 @@ Build these slides in order. Each slide description includes what data to use an
 
 ---
 
-#### Slide 13: Closing Slide
+#### Slide 13: Sources & Limits
+- **Background**: Off-white (`F8FAFC`)
+- **Content**: a compact two-column list at 11-12pt.
+  - **Sources**: each tool used, its as-of / generated timestamp, the reporting and comparison periods, and the currency.
+  - **Limits**: every metric that is unavailable, access-gated, stale, low-sample or carries a tool data-quality caveat, one plain line each ("Renewal forecast: not included (access-gated)", "Win rate by deal size: <10 closed deals per band"). No raw permission errors, stack traces or tool error text.
+  - Excluded fixture rows, or the demo label if the preflight required one.
+
+---
+
+#### Slide 14: Closing Slide
 - **Background**: Navy (`1E2761`)
 - **Content**: "Thank You" or "Questions?", company name, date
 - **Layout**: Clean, centered, minimal. Mirror the title slide design.
@@ -278,33 +310,34 @@ Build these slides in order. Each slide description includes what data to use an
 
 ### Chart Generation
 
-For charts embedded in slides, generate them as PNG images using a Node.js script with a charting library, then embed them in the PPTX. Alternatively, use PptxGenJS's built-in chart support (bar, line, pie) which renders natively in PowerPoint.
-
-Prefer native PptxGenJS charts when possible — they're editable in PowerPoint and look sharper. Use the chart styling guidance from pptxgenjs.md (custom colors matching the palette, clean backgrounds, muted axis labels, subtle grid lines).
+Use native PptxGenJS charts (`addChart()` — bar, line, pie, stacked bar); they're editable in PowerPoint and look sharper. Follow the `pptx` skill's chart guidance: set titles and data labels, pass `chartColors` from the palette, muted axis labels and subtle grid lines. Fall back to an image only for a chart type PowerPoint cannot draw natively.
 
 ## Step 5: Generate the File
 
-Use the pptx skill's approach:
+Use the `pptx` skill's approach:
 
 1. Write a Node.js script using PptxGenJS that constructs all slides
-2. Embed the data directly in the script (no external data files needed)
-3. Run the script to generate the .pptx file
-4. Save to the outputs folder
+2. Embed the reconciled data directly in the script (no external data files needed)
+3. Use factory functions for option objects (PptxGenJS mutates them — never reuse one across calls)
+4. Run the script to generate the .pptx file
+5. Save to the session's outputs directory as `QBR-[Quarter]-[Year].pptx`
 
-If the user requested DOCX format instead, read the docx skill's SKILL.md and follow its patterns. Structure the document with the same sections as the deck, using proper heading hierarchy, tables for data, and narrative paragraphs between sections.
+Only if the user explicitly requested a document, also build the DOCX described under DOCX Companion with the `docx` skill (read its SKILL.md first), from the **same reconciled figures** as the deck.
 
 ## Step 6: QA
 
 After generating the file:
 
-1. Convert to images using the pptx skill's conversion approach
-2. Visually inspect every slide — check for overlapping text, missing data, color contrast issues
-3. Verify all data points match what was pulled from the MCP tools
-4. Fix any issues and re-verify
+1. Render every slide to an image using the `pptx` skill's render flow (its `soffice.py` wrapper to PDF, then `pdftoppm`). Use the full-resolution renders, not the thumbnail grid.
+2. Open and inspect **every slide at full size** — check for clipping, overlapping text, awkward wrapping, chart errors, color-contrast issues, placeholder text or bracketed TODOs
+3. Verify every data point, denominator and timestamp matches what the tools returned, and that the DOCX (if any) uses the same figures as the deck
+4. Confirm no slide shows a permission error, an "unavailable" metric rendered as zero, or per-rep detail on an executive-audience deck
+5. Fix any issues, re-render the changed slides, and re-inspect
+6. Deliver: return **one clickable link** to the PPTX (plus one to the DOCX only if it was requested), followed by a short note on the stated assumptions, material gaps and excluded access-gated metrics
 
-## DOCX Alternative
+## DOCX Companion (only on explicit request)
 
-If the user requests a document instead of a deck, structure it as:
+Produce a DOCX only when the user explicitly asks for a document. Build it with the `docx` skill, from the same reconciled figures as the deck (if the user asked for the document *instead of* a deck, still reconcile the figures the same way). Keep the same assumptions line, denominators, timestamps and Sources & Limits section. Structure it as:
 
 ```
 QUARTERLY BUSINESS REVIEW — [Quarter] [Year]
@@ -328,7 +361,7 @@ QUARTERLY BUSINESS REVIEW — [Quarter] [Year]
    [Narrative: coverage, velocity, concerns]
 
 5. Risk Analysis
-   [Table: Deal | Amount | Risk Score | Top Risk Factor | Qualification Note (MEDDPIC/BANT/SPICED, from opportunity_framework_summary)]
+   [Table: Deal | Amount | Health Score / Band | Top Risk Factor | Qualification Note (MEDDPIC/BANT/SPICED, from opportunity_framework_summary)]
    [Narrative: concentration risk, mitigation actions]
 
 6. Where Deals Break Down (Optional — Conditional on Data Availability)
@@ -349,11 +382,36 @@ QUARTERLY BUSINESS REVIEW — [Quarter] [Year]
 
 10. Next Quarter Plan
    [Numbered action items with owners and deadlines]
+
+11. Sources & Limits
+   [Tools, as-of timestamps, periods, currency; unavailable / access-gated / low-sample metrics; no error text]
 ```
 
 ## Tips for Great QBRs
 
 - **Lead with insight, not data.** Every slide should answer "so what?" before showing numbers.
 - **Use comparisons.** Raw numbers are meaningless without context — show quarter-over-quarter deltas, benchmark comparisons, and target vs actual.
-- **Be honest about risk.** The credibility of your QBR depends on acknowledging what's not going well.
+- **Be honest about risk.** The credibility of your QBR depends on acknowledging what's not going well. Never hide a weak metric or invent a benchmark.
+- **Keep the evidence attached.** Denominators, sample sizes, timestamps and caveats travel with every number.
 - **End with clear actions.** The audience should leave knowing exactly what happens next.
+
+## Guardrails
+
+- Internal only. Customer-facing reviews → `customer-qbr`; board or investor packs → `board-revenue-pack`.
+- Read-only: no `refresh: true`, no writes.
+- Missing, empty or access-gated data is unavailable — never zero, never a positive signal.
+- Never expose permission errors, rep-sensitive detail (per-rep rankings, individual completion or deal-mix on an executive deck) or unsupported customer claims on audience-facing slides.
+- No causal language about health movement, interventions or execution signals.
+- DOCX only on explicit request, built from the same reconciled figures.
+
+## Final verification checklist
+
+- [ ] Preflight checklist complete; `current_context` ran first; returned IDs match `scoped_org_id`
+- [ ] Reporting period, comparison period, currency, audience and scope resolved and stated as assumptions
+- [ ] Async envelopes polled to terminal; no processing envelope rendered as blank or zero
+- [ ] Every rate shows its denominator or sample size; every source has an as-of timestamp
+- [ ] Unavailable / access-gated metrics listed on Sources & Limits, with no error text
+- [ ] Benchmarks shown only when a tool returned them
+- [ ] Risk ordering uses `healthScore` / `healthBand`, not inverted `riskScore`
+- [ ] Fixture rows excluded, or the demo label is on every slide
+- [ ] Every slide rendered and inspected at full size; one link returned (two only if a DOCX was requested)

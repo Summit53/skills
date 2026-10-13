@@ -4,6 +4,18 @@ Visual design tokens the first-meeting-deck skill uses when generating decks for
 
 ---
 
+## Contents
+
+- [Colour Palette](#colour-palette)
+- [Slide Design Tokens](#slide-design-tokens)
+- [Background Strategy](#background-strategy)
+- [Typography](#typography)
+- [Signature Visual](#signature-visual)
+- [Visual Tone](#visual-tone)
+- [What to Avoid](#what-to-avoid)
+- [Accessibility Notes](#accessibility-notes)
+- [Maintenance](#maintenance)
+
 ## Colour Palette
 
 ### Brand Colours

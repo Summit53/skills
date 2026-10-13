@@ -1,13 +1,14 @@
 # Delta With Attribution — Canonical Pattern
 
-**Canonical file. Version 1.0.1 · adapted for Summit53 Staging.**
+**Canonical file. Version 1.0.2 · adapted for Summit53 Staging.**
 
 Maintained once, copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy. If two copies disagree, the higher version wins.
 
-Intended consumers (Phase 4 items 1, 2, 5): `forecast-delta-brief` (built),
-`board-revenue-pack` (built), CS Renewal Forecast (Tier 2, not yet built — this pattern
-is designed to accept it without modification).
+Consumers: `forecast-delta-brief`, `board-revenue-pack`, `rep-evidence-dossier`.
+`cs-renewal-forecast` deliberately does not consume this file: it must not use
+`forecast_confidence_decomposition` as a renewal anchor, and it reports renewal exposure
+rather than attributed movement.
 
 ## Contents
 

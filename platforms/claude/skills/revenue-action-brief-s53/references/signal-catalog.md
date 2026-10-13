@@ -2,6 +2,14 @@
 
 The authoritative registry for the Revenue Action Brief. Each signal defines: what fires it, the decay profile that places it on a horizon, what scales its severity, and how to phrase the recommendation.
 
+## Contents
+
+- [Domain A — Deal-level execution](#domain-a--deal-level-execution)
+- [Domain B — Rep / team execution](#domain-b--rep--team-execution)
+- [Domain C — Pipeline shape & forecast](#domain-c--pipeline-shape--forecast)
+- [Domain D — Retention & structural](#domain-d--retention--structural)
+- [Maintenance notes](#maintenance-notes)
+
 **How to read a signal block:**
 
 - **source** — MCP tool(s) and field path(s) the detection rule reads.

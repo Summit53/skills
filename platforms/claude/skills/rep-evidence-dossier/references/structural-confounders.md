@@ -1,9 +1,22 @@
 # Structural Confounders — Screening Protocol
 
-**Version 2.0.0 · baselined 2026-08-08 (post-fix) against Summit53_Staging.**
+**Version 2.1.2 · adapted 2026-08-10 for Summit53 Staging.**
+
+## Contents
+
+- [Why confounders come first](#why-confounders-come-first)
+- [Flag base rate](#screen-1--base-rate-of-the-flag)
+- [Benchmark meaning](#screen-1b--what-the-benchmark-actually-is)
+- [Territory and segment](#screen-2--territory-and-segment-assignment)
+- [Ramp and survivor bias](#screen-3--ramp-status-and-the-survivorship-problem)
+- [Role-motion fit](#screen-4--rolemotion-fit)
+- [Evidentiary depth](#screen-5--evidentiary-depth)
+- [Intervention Ledger scope](#screen-6--what-the-intervention-ledger-actually-covers)
+- [Output contract](#output-contract)
 Screens 1, 1b and the verified-zero check are now server-supported — read the
 fields rather than hand-rolling them.
-Reference for `rep-evidence-dossier`. Read before assembling any dossier.
+Reference for `rep-evidence-dossier` (read before assembling any dossier) and
+`rep-coaching-report` (read before attributing any flag to the rep).
 
 ---
 
@@ -162,8 +175,9 @@ dossier. Omitting it while retaining the negative signals is selective presentat
 
 ## Screen 2 — Territory and segment assignment
 
-**Sources:** `segment_performance_summary`, `search_opportunities` (rep-filtered),
-`account_intelligence_summary`.
+**Sources:** `segment_performance_summary` plus an authorized source that actually
+supports rep ownership, such as `risk_heatmap(reps: [rep_id])` or
+`forecast_confidence(reps: [rep_id])`.
 
 Segment-level performance differences are structural. They attach to the patch, not the
 person.
@@ -174,7 +188,8 @@ considered. Comparing the two on raw win rate is comparing territories.
 
 Procedure:
 
-1. Determine which segment(s) the rep's book sits in.
+1. Determine which segment(s) the rep's book sits in from an authorized rep-filterable
+   source. `search_opportunities` has no rep or owner filter and cannot establish this.
 2. Pull that segment's `win_rate`, `sales_cycle_days`, `first_contract_acv`,
    `pipeline_coverage`.
 3. Compare the rep against **their own segment**, not the blended team number.
@@ -264,11 +279,27 @@ whole point.
 
 ## Screen 5 — Evidentiary depth
 
-The most important screen, and the one with no dedicated tool.
+The most important screen. Prefer the dedicated `coaching_history` capability when it is
+exposed; do not silently degrade a missing capability into an empty record.
 
-**Sources:** `coaching_development.diagnostic_history`, `.focus_metric_trend`,
-`.development_goals`; `coaching_meeting_analytics.total_meetings`;
-`coaching_agenda.status`.
+**Primary source:** `coaching_history` for dated sessions, completion events, provenance,
+manager notes, action items, linked meeting evidence, and artifact availability.
+
+**Corroborating/fallback sources:** `coaching_development.diagnostic_history`,
+`.focus_metric_trend`, `.development_goals`; `coaching_meeting_analytics.total_meetings`;
+`coaching_agenda.status`; `rep_coaching_context`.
+
+### Synthetic and demo records are not employment evidence
+
+Inspect provenance, source-channel, fixture, generator, and free-text markers before
+counting any record. Treat `synthetic`, `demo_seed`, `demo_fixture`, seeded/generator
+metadata, and equivalent markers as test data. Exclude those rows from formal HR counts,
+comparators, timelines, and documentary-depth gates.
+
+For a Staging forward test, synthetic rows may exercise the workflow only when the
+entire output is visibly labelled **Demo data — not for employment decisions**. If no
+non-fixture history remains after filtering, the formal-evidence count is zero and the
+stop gate applies. Never let a realistic-looking fixture satisfy the depth gate.
 
 `coaching_diagnostic` and `coaching_agenda` changed from *get or generate* to **read
 stored**. Where no record was generated, they return an empty or `not_generated`
@@ -297,17 +328,21 @@ Compute and render, before any performance content:
 | Weeks of stored diagnostic history | `len(diagnostic_history)` |
 | Development goals on record | `len(development_goals)` |
 | Meetings analysed | `total_meetings` |
-| Documented interventions targeting this rep | see Screen 6 |
+| Completed coaching sessions with provenance | `coaching_history` |
+| Sessions with manager notes/action evidence | `coaching_history` |
+| Linked meeting evidence | `coaching_history`, `coaching_meeting_analytics` |
+| Interventions assigned to this rep | see Screen 6; execution accountability only |
 | Stored agendas available | count of sessions not `not_generated` |
 
 Then gate the artifact:
 
-- **Fewer than 6 weeks of history, or zero development goals, or zero meetings
-  analysed** → the dossier opens with an **insufficient-evidence banner** and every
-  downstream section is labelled provisional.
-- **Zero across all four** → the dossier states that no documented coaching record
-  exists and **stops before performance evidence**. Produce the record-state finding and
-  nothing else.
+- **Fewer than 6 weeks of history, zero development goals, zero completed coaching
+  sessions, or zero meetings analysed** → the dossier opens with an
+  **insufficient-evidence banner** and every downstream section is labelled provisional.
+- **Zero diagnostic history, zero goals, zero completed sessions, and zero meeting
+  evidence** → the dossier states that no documented coaching record exists and
+  **stops before performance evidence**. Produce the record-state finding and nothing
+  else.
 
 Banner wording:
 

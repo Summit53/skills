@@ -19,9 +19,11 @@ def digest(path: Path) -> str:
 
 def inventory(root: Path) -> list[dict[str, object]]:
     records: list[dict[str, object]] = []
-    for package in sorted(path for path in root.iterdir() if path.is_dir()):
+    for package in sorted((path for path in root.iterdir() if path.is_dir()), key=lambda p: p.name):
         files = []
-        for path in sorted(item for item in package.rglob("*") if item.is_file()):
+        # Case-insensitive POSIX ordering keeps the manifest identical on every host OS.
+        paths = (item for item in package.rglob("*") if item.is_file())
+        for path in sorted(paths, key=lambda item: item.relative_to(package).as_posix().casefold()):
             files.append(
                 {
                     "path": path.relative_to(package).as_posix(),

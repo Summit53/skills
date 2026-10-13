@@ -1,6 +1,6 @@
 # Async Envelopes — Canonical Handling
 
-**Canonical file. Version 2.0.0 · baselined 2026-08-08 (post-fix) against Summit53_Staging.**
+**Canonical file. Version 2.0.1 · adapted for Summit53 Staging.**
 
 > **v2.0.0 change.** The server now returns machine-readable completion instructions.
 > **Read `job_lifecycle.completion` and follow it** rather than hard-coding the pattern
@@ -14,6 +14,16 @@ If two copies disagree, the higher version wins.
 Consumers as of 2026-08-08: `forecast-delta-brief`, `board-revenue-pack`,
 `rep-evidence-dossier`, `qbr-generator`, `territory-review`, `win-loss-analysis`,
 `revenue-action-brief-s53`, `strategic-assessment-s53`.
+
+## Contents
+
+- [The failure this prevents](#the-failure-this-prevents)
+- [Preferred path](#preferred-path-follow-job_lifecyclecompletion)
+- [Poll then re-call](#the-critical-detail-get_job-does-not-return-your-payload)
+- [Terminal states and budgets](#terminal-vs-non-terminal-job-states)
+- [Missing and ready payloads](#when-the-source-is-genuinely-missing)
+- [Reference implementation](#reference-implementation)
+- [Other async surfaces](#other-async-surfaces)
 
 ---
 

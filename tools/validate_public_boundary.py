@@ -9,7 +9,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_CODEX = 16
-EXPECTED_CLAUDE = 9
 FORBIDDEN_ROOTS = {"skills", "provenance", "_canonical", "patches", "private"}
 TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 FORBIDDEN_PATTERNS = {
@@ -38,10 +37,11 @@ def main() -> None:
     claude = package_names(ROOT / "platforms" / "claude" / "skills")
     if len(codex) != EXPECTED_CODEX:
         errors.append(f"expected {EXPECTED_CODEX} Codex packages, found {len(codex)}")
-    if len(claude) != EXPECTED_CLAUDE:
-        errors.append(f"expected {EXPECTED_CLAUDE} Claude packages, found {len(claude)}")
-    if not claude.issubset(codex):
-        errors.append(f"Claude packages absent from Codex tree: {sorted(claude - codex)}")
+    if claude != codex:
+        if claude - codex:
+            errors.append(f"Claude packages absent from Codex tree: {sorted(claude - codex)}")
+        if codex - claude:
+            errors.append(f"Codex packages absent from Claude tree: {sorted(codex - claude)}")
 
     for path in sorted(item for item in ROOT.rglob("*") if item.is_file()):
         if path == Path(__file__).resolve():

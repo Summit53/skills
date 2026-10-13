@@ -1,20 +1,39 @@
 ---
 name: "first-meeting-deck"
-description: "Create a grounded, customer-facing Summit53 first-meeting or discovery PPTX for a specific account or opportunity, including a visibly quarantined AE preparation slide. Use for first calls, executive discovery meetings, account-specific hypothesis decks, meeting slides, or value conversations with a prospect."
-version: "1.0.0"
-baselined: "2026-08-07"
+description: "Build a grounded, customer-facing first-meeting or discovery PPTX for one Summit53 account or opportunity: assertive-but-invitational hypotheses, discovery agenda, market point of view, vendor-grounded capabilities and next steps, plus a visibly quarantined AE prep slide. Detects net-new vs expansion meetings and adapts to meeting length. Use when an AE is preparing for a first or early-stage customer meeting, e.g. 'first meeting deck for [deal/account]', 'prep a discovery deck', 'build slides for my call with [prospect]', 'I'm meeting [stakeholder] tomorrow — make me a deck', 'generate a hypothesis deck', 'customer-facing deck for [deal]', 'what should I show in the first meeting', 'turn this opportunity into a discovery deck'. Also use for an explicit 'refresh vendor context' or 'refresh vendor branding' request. Do not use for a value or success review with an existing customer — use customer-qbr. For a one-screen response to a named competitor in an active deal use competitor-response-card."
+version: "1.1.0"
+baselined: "2026-10-13"
 status: "active"
 ---
----
-name: first-meeting-deck
-description: "Generate a customer-facing first meeting deck as a polished PPTX for a specific opportunity. Pulls the Three Whys, Discovery Planner, Value Pyramid, and Stakeholder Intelligence from Summit53 CRM tools and transforms them — grounded in the vendor's real capabilities — into an assertive-hypothesis deck that opens a discovery conversation. Detects net-new vs expansion meetings and adapts. Use when an AE is preparing for a first or early-stage customer meeting, or needs to convert internal strategic narratives into customer-facing slides. Also trigger on 'first meeting deck for [deal/account]', 'prep a discovery deck', 'build slides for my call with [prospect]', 'I'm meeting [stakeholder] tomorrow — make me a deck', 'generate a hypothesis deck', 'customer-facing deck for [deal]', 'what should I show in the first meeting', or 'turn this opportunity into a discovery deck'."
----
-
-> **Codex compatibility notice:** Use this file for research order, transform contracts, evidence boundaries, meeting-length adaptation, slide content, and design intent. The parent `SKILL.md` overrides every legacy instruction about Claude, `web_search`, `web_fetch`, PptxGenJS, `pptxgenjs.md`, legacy rendering commands, or a generic outputs folder. Use Codex's current web tools for browsing and the available Presentations skill for implementation and QA.
 
 # First Meeting Deck
 
 Generate a customer-facing first meeting deck for a specific opportunity. The deck is a conversation-opener, not a pitch — it earns credibility through relevance, invites discovery through assertive hypotheses, and previews value without over-promising. Every internal diagnostic is filtered out; every slide is designed to be shown to the prospect, grounded in the vendor's real capabilities.
+
+## Route first
+
+- Use this skill for a first or early-stage meeting deck with a prospect, or with a new stakeholder at an existing customer (expansion meeting mode).
+- A value, success or quarterly review with an existing customer → `customer-qbr`.
+- A one-screen response to a named competitor in an active deal → `competitor-response-card`. This deck speaks in comparison categories, not competitor brands.
+- An internal, manager-led review of the same deal → `deal-review-prep`.
+
+## Preflight
+
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one ToolSearch `select:` batch, capability discovery with `list_available_tools`, live-schema inspection before every call (tool names and sample arguments in this file are semantic guidance), read-only discipline, fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
+
+Skill-specific gates:
+
+1. **Vendor files present and current.** Read both vendor reference files in full (see Reference files below) before any other step. Their `Last reviewed` date is **2026-04-21**: treat every date-sensitive claim in them — commercial offer mechanics, cohort names, slot counts and dates, "live" programmes, proof points, reference customers, and recently shipped capabilities — as unverified until checked against a current authoritative source (the vendor's own live website or pricing page, or the user's explicit confirmation in this conversation). An unverified or expired claim does not go on a slide.
+2. **Resolve exactly one opportunity**, the attendees, meeting length and meeting objective before analysis. A name matching several opportunities is ambiguous — list the candidates and ask. Ask only when ambiguity would materially change the deck.
+3. **Scope.** The opportunity's and account's organization must match `scoped_org_id`; on mismatch, stop.
+4. **Demo label.** If the opportunity, account or narratives come from fixture or seeded data that provenance cannot separate from real records, every slide (Slide 0 included) carries **Demo data — not for customer or commercial decisions** in the footer, and the delivery note says the deck must not be shown to a real prospect.
+
+## Reference files
+
+- [references/vendor-context.md](references/vendor-context.md) — what the vendor says and stands for: identity, positioning and Signature Concepts, Real Capabilities, Honest Boundaries, Proof Points, Current Commercial Offer, Voice (including Language we never use), Market Point of View, and Maintenance (`Last reviewed`). Read it in Step 0; every transform that makes a capability, outcome or offer claim takes it as input.
+- [references/vendor-branding.md](references/vendor-branding.md) — how the deck looks: colour palette, Slide Design Tokens, Background Strategy, Typography, Signature Visual, Visual Tone, What to Avoid, Accessibility Notes. Read it in Step 0; Steps 6–8 resolve every colour and typeface from it.
+
+Throughout this file, `vendor-context.md` and `vendor-branding.md` mean these two files in `references/`. Do not modify either file unless the user explicitly asks for a vendor-context or vendor-branding refresh, and even then only after they approve the proposed changes (see Step 0).
 
 ## Why This Exists
 
@@ -51,20 +70,30 @@ Before any other step, the skill needs grounded facts about the vendor using it 
 
 ### Check for Existing Vendor Files
 
-The skill uses two vendor-specific files, both sibling to this `SKILL.md`:
+The skill uses two vendor-specific files, both in this skill's `references/` directory:
 
-- **`vendor-context.md`** — what you say and stand for (positioning, real capabilities, honest boundaries, commercial offer, voice, market POV)
-- **`vendor-branding.md`** — how the deck looks (colour palette, typography, background strategy, slide design tokens, visual tone)
+- **[references/vendor-context.md](references/vendor-context.md)** — what you say and stand for (positioning, real capabilities, honest boundaries, commercial offer, voice, market POV)
+- **[references/vendor-branding.md](references/vendor-branding.md)** — how the deck looks (colour palette, typography, background strategy, slide design tokens, visual tone)
 
-**If both present**: load both verbatim and proceed to Step 1. Their contents are passed to the transform prompts (Step 4) and the deck-generation script (Step 7) later.
+**If both present**: load both verbatim, run the currency check below, and proceed to Step 1. Their contents are passed to the transform prompts (Step 4) and the deck-generation script (Step 7) later.
 
-**If either missing**: run the guided setup before proceeding. Do not attempt to generate a deck without both files.
+**If either missing**: offer the guided setup before proceeding. Do not attempt to generate a deck without vendor context.
 
-### Guided Setup Ritual (first-run only)
+### Currency Check (every run)
+
+Read the `Last reviewed` line in each file's Maintenance section (currently 2026-04-21). Before a date-sensitive claim reaches a slide or shapes a CTA, verify it against a current authoritative source:
+
+- **Commercial offer** — programme name, price mechanics, cohort names, slot counts and launch dates. A cohort whose window has passed, or whose current status you cannot confirm, is an **expired claim**: do not reference it, and do not let Transform F propose it.
+- **Proof points and reference customers** — use only entries that are current and permissioned. A named customer needs explicit reference permission from a current source; an anonymised outcome needs current evidence. Never use a placeholder proof point, a "[customer name]" stand-in, or a bracketed TODO; an empty Proof Points section simply means no proof line on the slide.
+- **Recently shipped capabilities** — confirm anything that reads as new or roadmap-adjacent before it goes on Slide 6 or 7.
+
+Verify with the web fetch / search tools available in the session (prefer the vendor's own live pages) or ask the user to confirm. Record the source URL and access date for each verified fact in Slide 0's speaker notes. If a claim cannot be verified, leave it out and list it in the delivery note as "skipped — unverified". Verification shapes this deck only; it does not rewrite the reference files.
+
+### Guided Setup Ritual (first-run, or on an explicit refresh request)
 
 Tell the user:
 
-> No vendor context is set up yet. I need a few facts about your company to generate a deck that claims only what you actually do. This is a one-time setup that takes about 5 minutes. You can refresh it any time by saying "refresh vendor context". Ready?
+> No vendor context is set up yet. I need a few facts about your company to generate a deck that claims only what you actually do. This is a one-time setup that takes about 5 minutes. I'll show you the drafts and only save them if you say so. You can refresh it any time by saying "refresh vendor context". Ready?
 
 If they say yes, run the setup in this order:
 
@@ -72,16 +101,16 @@ If they say yes, run the setup in this order:
 
 Ask: *"What's your company name and website URL?"*
 
-Once received, run in parallel:
-- `web_fetch` on the homepage — pull hero message, mission, category language
-- `web_fetch` on `/about` or `/company` if linked — mission, founder story, tone
-- `web_fetch` on `/product` or `/features` or `/platform` — capabilities as publicly described
-- `web_fetch` on `/customers` or `/case-studies` — named references, logo wall
-- `web_fetch` on `/pricing` if public — commercial structure
-- `web_search` for `[Company name] founder recent blog post` — surfaces recent tone-of-voice material
-- `web_search` for `[Company name] positioning category` — surfaces how they describe themselves in third-party coverage
+Once received, run in parallel with the session's web fetch and web search tools:
+- Fetch the homepage — pull hero message, mission, category language
+- Fetch `/about` or `/company` if linked — mission, founder story, tone
+- Fetch `/product` or `/features` or `/platform` — capabilities as publicly described
+- Fetch `/customers` or `/case-studies` — named references, logo wall
+- Fetch `/pricing` if public — commercial structure
+- Search `[Company name] founder recent blog post` — surfaces recent tone-of-voice material
+- Search `[Company name] positioning category` — surfaces how they describe themselves in third-party coverage
 
-Extract from these: positioning, category language, signature concepts, published features, customer names, pricing mechanics, recent voice samples.
+Extract from these: positioning, category language, signature concepts, published features, customer names, pricing mechanics, recent voice samples. Record the URL and access date for every fact you keep — they go into the draft's Maintenance section as a Sources list.
 
 **Part B — Focused questions (the things web scraping can't answer)**
 
@@ -107,19 +136,38 @@ Ask these as one combined message, not sequentially — the user can answer in o
 
 **Part C — Synthesise and review**
 
-Combine web-research findings with the focused-question answers into **two draft files**:
-- `vendor-context.md` — using the structure of `vendor-context.template.md` (positioning, capabilities, boundaries, commercial offer, voice, market POV)
-- `vendor-branding.md` — using the structure of `vendor-branding.template.md` (colour palette, PPT RGB values, background strategy, slide design tokens, typography, visual tone, usage patterns)
+Combine web-research findings with the focused-question answers into **two drafts**. There is no blank template file; use these section structures (they match the installed files, so the transforms and generation script can read either):
+
+- **vendor-context.md** —
+  1. *Vendor Identity*: company name, one-line description, website, primary audience
+  2. *Positioning*: category / how we describe ourselves, canonical positioning statement, positioning formula, signature concepts / frameworks
+  3. *Real Capabilities — What We Actually Do*: grouped by area, each a concrete shipped capability
+  4. *Honest Boundaries — What We Do NOT Do*
+  5. *Proof Points*: named reference customers (only with permission), anonymisable outcomes (only with current evidence)
+  6. *Current Commercial Offer*: offer name, key mechanics, typical first-meeting CTA
+  7. *Voice*: brand voice in 3 adjectives, required voice patterns, language we never use
+  8. *Market Point of View*: the vendor's deliberate public positions
+  9. *Maintenance*: last reviewed date, reviewed by, sources (URL + access date)
+- **vendor-branding.md** —
+  1. *Colour Palette*: brand colours and neutral palette (hex)
+  2. *Slide Design Tokens*: a table mapping each token used in Steps 6–8 (`title-slide-bg`, `content-slide-bg`, `title-on-dark`, `title-on-light`, `body-on-dark`, `body-on-light`, `accent-primary`, `accent-secondary`, `muted`, `divider`) to a hex value and usage
+  3. *Background Strategy*: Pattern A (bookended) or Pattern B (dark throughout)
+  4. *Typography*: header, body and accent typefaces, weights in use
+  5. *Signature Visual* (optional): the one structural diagram, its placement, rendering and when to skip
+  6. *Visual Tone*, *What to Avoid*, *Accessibility Notes*
+  7. *Maintenance*: last reviewed date, reviewed by
+
+Leave a field empty rather than writing a placeholder. Never put a bracketed TODO in a draft — list open gaps as numbered questions in chat instead.
 
 Show both drafts to the user in sequence:
 
-> Here's the draft vendor context I've built. Skim it — correct anything wrong, fill gaps where I've marked [TODO], reply "looks good" to save, or tell me what to change.
+> Here's the draft vendor context I've built. Skim it — correct anything wrong, answer the open questions listed below it, reply "looks good, save it" to save, or tell me what to change.
 
 After vendor-context.md is approved:
 
 > And here's the branding file — visual design tokens for the deck. Same drill — correct, fill gaps, or approve.
 
-Iterate until both are approved. Then save each file to its respective path in the skill directory.
+Iterate until both are approved. **Ask before writing**: save each file to `references/vendor-context.md` and `references/vendor-branding.md` only after the user explicitly says to save. If the skill directory is read-only (for example an uploaded skill), hand the user the approved drafts as files to install instead, and use them in-conversation for this deck.
 
 **Part D — Proceed**
 
@@ -127,13 +175,13 @@ Confirm: *"Saved. Moving on to generate the deck."* Continue to Step 1.
 
 ### Refresh Command
 
-If the user says "refresh vendor context" or "refresh vendor branding" or "refresh both" at any point, re-run the relevant Part A + B + C sequence and overwrite the file(s). Useful when positioning evolves, new features ship, the commercial offer changes, or the brand palette gets updated.
+If the user says "refresh vendor context" or "refresh vendor branding" or "refresh both" at any point, confirm which file(s) and sections are in scope, re-run the relevant Part A + B + C sequence, and show the proposed evidence-backed changes (what changes, and the source URL + access date for each). Overwrite the file(s) only after the user approves. Useful when positioning evolves, new features ship, the commercial offer changes, or the brand palette gets updated. A deck run that merely finds a stale claim does **not** trigger a refresh — it skips the claim and mentions it in the delivery note.
 
 ### Degraded Modes
 
 If the user really can't spare 5 minutes:
 - Offer: *"Want to skip setup and paste 2-3 sentences about your company, what you do, and what you're offering? The deck will be weaker but workable."*
-- Save the short input as a minimal `vendor-context.md` with a `## Minimal context — expand when possible` warning at the top so future runs know to prompt for a fuller setup.
+- Use the short input in-conversation for this deck. Offer to save it as a minimal `references/vendor-context.md` with a `## Minimal context — expand when possible` warning at the top, and write it only if the user says yes.
 
 Never proceed with no vendor context at all. A generic first-meeting deck is worse than no deck.
 
@@ -144,7 +192,7 @@ You need an opportunity ID plus context about who is attending. If the user prov
 If they give a deal or account name:
 
 1. Call `search_opportunities` with the name as the query
-2. If multiple results come back, show them and ask the user to pick one
+2. If multiple results come back, show them and ask the user to pick one. Do not continue until the opportunity is unambiguous
 3. Call `get_opportunity` with the selected ID
 
 ### Critical Context Gathering
@@ -157,13 +205,15 @@ Before pulling data, confirm three things with the user. These change the deck m
 
 3. **How long is the meeting?** 30 / 45 / 60 minutes. Affects slide count — 30-min meetings get 6 slides max, 60-min meetings get the full 9.
 
+4. **What is the meeting's objective?** (e.g., earn a working session, meet a new executive sponsor, re-open a stalled conversation). It shapes the lead hypothesis and the first next step.
+
 Ask these as a single grouped question if they aren't already clear. Don't interrogate the AE — one well-structured clarifier is fine; three sequential ones will annoy.
 
 ## Step 2: Pull Data in Parallel
 
-Launch these calls in parallel. Most are independent.
+Launch these calls in parallel. Most are independent. Inspect each tool's live schema first (sample arguments here are semantic guidance), confirm optional tools with `list_available_tools`, and never pass `refresh: true`.
 
-**Async note**: `external_account_research` (item 5 below) is asynchronous — queue it first when firing the parallel batch so its latency overlaps with the synchronous calls instead of gating the end of Step 2. Fire it, move on to the rest of the batch immediately, and only block on its result when Step 4's mirroring inputs are actually needed. Do not treat it as an immediate synchronous return.
+**Async note**: `external_account_research` (item 5 below) is asynchronous — queue it first when firing the parallel batch so its latency overlaps with the synchronous calls instead of gating the end of Step 2. Fire it, move on to the rest of the batch immediately, and only block on its result when Step 4's mirroring inputs are actually needed. Do not treat it as an immediate synchronous return: if it returns a processing envelope with a `job_id`, poll `get_job` until the job is terminal, then re-call with identical arguments for the payload. A processing envelope is never "no research".
 
 ### Required Data Pulls
 
@@ -194,7 +244,7 @@ Launch these calls in parallel. Most are independent.
    - **Guardrail**: the `first_constraint` and win-probability narrative may shape hypothesis *language and emphasis* on Slide 3. The underlying scores, confidence values, and severity ratings are internal diagnostics — same category as MEDDPIC/BANT scores — and must never be printed on a customer-facing slide, even as a subtle label.
 
 7. **Competitive & Knowledge Base Enrichment**
-   - `get_battlecard` with the competitor name(s) surfaced in Three Whys `direct_competitive_differentiation` (or named in `external_account_research` / supplied by the AE, if any) — returns up to 3 ranked candidate battlecards. Feeds Transform G with concrete, vetted differentiators and objection-handling language instead of the model inventing generic "we're better" framing.
+   - `get_battlecard` (exact competitor-name match only) with the competitor name(s) surfaced in Three Whys `direct_competitive_differentiation` (or named in `external_account_research` / supplied by the AE, if any) — returns up to 3 ranked candidate battlecards. Feeds Transform G with concrete, vetted differentiators and objection-handling language instead of the model inventing generic "we're better" framing.
    - **Graceful skip**: not every account has a competitor worth battlecarding, and not every competitor has a battlecard in the Knowledge Base. If `get_battlecard` returns no candidates, skip it — Transform G falls back to Three-Whys-only differentiation (see Handling Missing Data).
    - `search_knowledge` with a query built from the account's industry, use case, or stakeholder focus (e.g., "[industry] case study outcomes") — searches the org Knowledge Base across positioning, case studies, product, and battlecard assets. Pulls real case studies and positioning snippets as proof points for Transform D (Capability, Slide 6) and Transform E (Value Preview, Slide 7), supplementing the often-thin or placeholder Proof Points section in `vendor-context.md`.
    - **Graceful skip**: if `search_knowledge` returns no relevant matches, proceed without KB-sourced proof points — `vendor-context.md`'s own Proof Points section (even if thin) remains the fallback. Do not invent a case study to fill the gap.
@@ -231,7 +281,7 @@ First meetings often have sparse data. Adapt gracefully:
 
 ## Step 3: Fresh Signals (Optional — Progressive Disclosure)
 
-The strategic narratives capture the AE's prior understanding but don't include fresh external signals (news from this week, recent announcements, LinkedIn posts). `external_account_research` is domain-scoped to the account's own site, so cannot surface these. The skill offers an opt-in research step using `web_search`.
+The strategic narratives capture the AE's prior understanding but don't include fresh external signals (news from this week, recent announcements, LinkedIn posts). `external_account_research` is domain-scoped to the account's own site, so cannot surface these. The skill offers an opt-in research step using the session's web search and fetch tools. Every fact kept from this step is recorded with its source URL and access date, and stays a dated fact — it never becomes CRM evidence, and a hypothesis built on it stays a hypothesis.
 
 ### Offer the Signal Search
 
@@ -245,7 +295,7 @@ If skip, proceed to Step 4. If yes:
 
 Run **five bounded `web_search` queries**, one per category. Keep queries short (3–6 words):
 
-1. **Capital events** — `"[Account name] funding acquisition 2026"`
+1. **Capital events** — `"[Account name] funding acquisition [current year]"`
 2. **Leadership changes** — `"[Account name] CEO appointment hire"`
 3. **Product/strategic moves** — `"[Account name] launch announcement"`
 4. **Partnerships** — `"[Account name] partnership integration"`
@@ -256,22 +306,23 @@ Adapt based on what the account actually is. Drop irrelevant categories silently
 ### Curate and Present
 
 From the search results, select at most **1–2 findings per category** that are:
-- Dated within the last 90 days
+- Dated within the last 90 days of today's date (check the publication date on the page itself, not the search snippet)
 - Clearly about *this* company (not a namesake)
+- From a primary or reputable source — prefer the prospect's own site, filings and press releases
 - Relevant to the Why Change / Why Now narrative
 
 Present as a structured review:
 
 > Found these fresh signals — pick which to include (max 3 on the deck):
 >
-> 1. [Headline, date, 1-line why it matters] — [source URL]
+> 1. [Headline, date, 1-line why it matters] — [source URL, accessed YYYY-MM-DD]
 > 2. ...
 >
 > Reply with the numbers (e.g., "1, 3"), "all", "none", or "skip".
 
-Cap the deck at 3 signals — more becomes noise.
+Cap the deck at 3 signals — more becomes noise. For each selected signal, keep the URL and access date: put the date on Slide 2 and the URL + access date in Slide 2's speaker notes.
 
-If `web_search` returns nothing meaningful:
+If web search returns nothing meaningful:
 
 > No fresh signals surfaced in the last 90 days. Proceeding without a signals section.
 
@@ -353,6 +404,7 @@ Each transform has four parts: **inputs**, **vendor grounding**, **instruction**
 > - Framed as industry analysis, not as a threat to them
 > - Each 1–2 sentences
 > - No product references
+> - No competitor or vendor brand names: if the vendor's Market Point of View names specific tools or companies, translate them into a category (e.g., "a stack of point tools plus a RevOps hire") unless the user explicitly asked for named comparisons
 > - End with a transition like "This is the context in which we think [their firm] has a real opportunity."
 
 *Output shape:* `{ observations: [string, ...], transition: string }`
@@ -379,7 +431,7 @@ Each transform has four parts: **inputs**, **vendor grounding**, **instruction**
 > - Cross-check Honest Boundaries — if a statement drifts into something the vendor doesn't do, reframe.
 > - Subsequent statements open with what the customer achieves (outcome), not what the vendor does. Example: "Advisory teams stop spending 40% of their time on production and redirect it to strategic work."
 > - Match the stakeholder layer
-> - If Proof Points has an anonymisable entry, weave one in as: *"A similar [type] committed to [outcome] — [progress]."* If `search_knowledge` surfaced a relevant case study or positioning snippet, it may be used instead of, or alongside, the vendor-context.md Proof Points entry — but it is still subject to the same rule as everything else in this transform: it must describe a capability that is actually listed in vendor-context.md Real Capabilities. A compelling KB case study about a capability outside Real Capabilities does not get used.
+> - If Proof Points has an anonymisable entry that passed the Step 0 Currency Check, weave one in as: *"A similar [type] committed to [outcome] — [progress]."* If `search_knowledge` surfaced a relevant case study or positioning snippet, it may be used instead of, or alongside, the vendor-context.md Proof Points entry — but it is still subject to the same rule as everything else in this transform: it must describe a capability that is actually listed in vendor-context.md Real Capabilities. A compelling KB case study about a capability outside Real Capabilities does not get used.
 > - Stay concrete. No vague "drives efficiency" claims.
 
 *Output shape:* `{ positioning_headline: string, capabilities: [{ outcome: string, supporting: string }, ...], proof_reference?: string }`
@@ -403,7 +455,7 @@ Note the added `positioning_headline` field — this is a single bold line that 
 > Generate exactly 2 differentiation claims addressing the alternatives the customer is realistically weighing. Rules:
 > - Each claim is one sentence, max ~25 words
 > - Each must implicitly or explicitly address a real alternative the prospect is considering — e.g., *"A BI tool gets you X; what the bow-tie gives you is Y"* or *"Building this internally with Multiplier's engineers would take 18 months; we start next week"*
-> - Reference comparison *categories* (generic CRM, build-internally, point BI tools) — never name specific competitor brands. First meetings are not the place for named competitive attacks.
+> - Reference comparison *categories* (generic CRM, build-internally, point BI tools) — never name specific competitor brands unless the user explicitly asked for a named comparison and the evidence is current. First meetings are not the place for named competitive attacks.
 > - Each claim must ground in a vendor Signature Concept or capability that genuinely differentiates — avoid hollow "we're more intuitive / more modern / faster" claims
 > - If a `get_battlecard` match exists for a comparison category the prospect is realistically weighing, ground the claim in the battlecard's vetted comparison points and objection-handling language instead of inventing generic "we're better" framing — but the comparison-category rule still applies: translate the battlecard's specifics into a category claim, never a named competitor brand, and never claim strength in anything listed in Honest Boundaries.
 > - No hedging. No "we think we're better". Make a specific claim.
@@ -452,6 +504,7 @@ Note the added `positioning_headline` field — this is a single bold line that 
 > - Subsequent steps fill coverage gaps if stakeholder intelligence shows them
 > - No pricing, contract terms, or "sign here" energy
 > - Never propose anything not aligned with the vendor's actual offer (e.g., don't propose a "free trial" if they don't offer one)
+> - Never reference an offer, programme, cohort or slot count that did not pass the Step 0 Currency Check — an expired cohort is not an offer
 > - One sentence each, action-oriented, time-bound where possible
 
 *Output shape:* `{ next_steps: [string, ...] }`
@@ -474,6 +527,10 @@ After all transforms complete, scan for:
 - **Any differentiator sourced from `get_battlecard` must still reference a comparison category, not a named competitor brand**, and must still pass the Honest Boundaries check — battlecard specifics get translated into category claims, not pasted in raw
 - **Any Revenue Signal Layer score, confidence value, or severity rating leaking onto a customer-facing slide** → strip immediately, same rule as other framework scores
 - **Any MEDDPIC/BANT gap language from `opportunity_framework_summary` appearing anywhere outside Slide 0** → strip immediately — this data is AE-prep-only by definition and must never reach a customer-facing slide
+- **Any bracketed TODO, placeholder value, "[customer name]"-style stand-in, placeholder proof point, unconfirmed reference customer, or expired cohort/offer claim** → remove; the slide is better without it
+- **Any date-sensitive claim (offer, cohort, proof point, new capability, fresh signal) without a verified current source** → remove and list as "skipped — unverified" for the delivery note
+- **Any named competitor brand on Slides 1–9** the user did not explicitly ask for → translate to a comparison category
+- **Any hypothesis phrased as fact, or any web fact presented as CRM evidence** → rewrite
 
 Re-run failed transforms with the specific failure as additional context.
 
@@ -500,7 +557,7 @@ Detect once, early. Build the whole deck in that mode. Do not mix.
 
 ## Step 6: Build the Deck
 
-Read the pptx skill's `pptxgenjs.md` reference for PptxGenJS technical details. Apply the **design system from `vendor-branding.md`** — colours, typefaces, background strategy, slide design tokens, visual tone. All branding choices come from that file, never hardcoded in this skill. The slide-level instructions below use the token names defined in `vendor-branding.md`'s **Slide Design Tokens** table — resolve each token to its hex value at generation time.
+Build with PptxGenJS following the `pptx` skill: read its SKILL.md (and its PptxGenJS reference, where the installed version has one) before writing any code. Apply the **design system from [references/vendor-branding.md](references/vendor-branding.md)** — colours, typefaces, background strategy, slide design tokens, visual tone. All branding choices come from that file, never hardcoded in this skill. The slide-level instructions below use the token names defined in `vendor-branding.md`'s **Slide Design Tokens** table — resolve each token to its hex value at generation time.
 
 ### Layout Philosophy (vendor-agnostic)
 
@@ -694,53 +751,54 @@ Write a complete Node.js script using PptxGenJS that:
 6. **Resolve all colour and typeface values at generation time from `vendor-branding.md`** — map each design token (e.g., `title-slide-bg`, `accent-primary`) to its hex value from the branding file's Slide Design Tokens table. Never hardcode colour values in the generation script.
 7. **Renders Slide 0 as visible with strong visual distinctness** — do NOT set `slide.hidden = true` or inject `show="0"` into the slide XML. Slide 0 is rendered as a normal, visible slide so it survives Google Slides, Claude Desktop preview, and other viewers that silently drop hidden slides from their editor. The safety net is visual: a full-width `accent-primary` header strip labelled **"AE PREP  ·  DO NOT PRESENT"** (0.4" tall, the only full-width `accent-primary` fill in the whole deck), plus the muted overlay and dense layout specified in the Slide 0 section above. Verify the treatment in Step 8 — do not skip the verification.
 8. Handles edge cases (missing data, empty sections, no fresh signals, unauthorized Revenue Signals access, no battlecard/KB match, unscored framework)
-9. Saves to the outputs folder as `First-Meeting-[AccountName]-[Date].pptx`
+9. Writes speaker notes: Slide 2 carries each fresh signal's URL + access date; Slide 0 carries the verified vendor-fact sources (URL + access date) and the list of claims skipped as unverified
+10. Adds the demo label to every slide footer when the preflight requires it
+11. Saves to the session's outputs directory as `First-Meeting-[AccountName]-[Date].pptx`
 
 ## Step 8: QA
 
 After generating the file:
 
-1. Convert to images:
-   ```bash
-   python scripts/office/soffice.py --headless --convert-to pdf output.pptx
-   pdftoppm -jpeg -r 150 output.pdf slide
-   ```
-2. Visually inspect every slide for overlapping text, cramped layouts, color contrast issues
-3. **Voice audit** — read every slide out loud:
+1. Render every slide to an image using the `pptx` skill's render flow (its `soffice.py` wrapper to PDF, then `pdftoppm`). Use the full-resolution renders for inspection; the thumbnail grid is only for the Slide 0 thumbnail check below.
+2. Open and inspect **every slide individually at full size** for clipping, overlapping text, awkward wrapping, cramped layouts and colour-contrast issues. The branding typeface (Inter) is not a QA-safe font in LibreOffice, so leave ~10% width slack in text boxes rather than trusting an apparent fit
+3. **Placeholder and grounding scan** — no bracketed TODOs, placeholder values, lorem text, "[Account Name]"-style tokens, unconfirmed reference customers, expired cohort or offer claims, or competitor brand names the user didn't ask for, on any slide
+4. **Voice audit** — read every slide out loud:
    - Slide 3 assertive-but-invitational, not preachy?
    - Any slide before 6 mention the vendor's product/platform/solution? Strip
    - Any internal diagnostic language (risk, health, score, framework)? Strip
    - Slide 7 making promises rather than hypotheses? Soften
-4. **Vendor grounding audit** — cross-check slides 6 and 7:
+5. **Vendor grounding audit** — cross-check slides 6 and 7:
    - Every capability claim maps to vendor-context.md Real Capabilities
    - No claim strays into Honest Boundaries territory
    - Language aligns with vendor-context.md Voice (no banned phrases)
    - Any claim sourced from `search_knowledge` or `get_battlecard` maps to a real capability / comparison category the same way a vendor-context.md-sourced claim would — supplementary data doesn't get a pass on grounding
-5. **Branding audit** — cross-check visual rendering against vendor-branding.md:
+6. **Branding audit** — cross-check visual rendering against vendor-branding.md:
    - All colours used match the palette in vendor-branding.md (no accidental hardcoded navy / off-white from template defaults)
    - Background strategy matches the vendor's stated pattern (A bookended or B dark throughout)
    - Accent colours respect accessibility notes (e.g., never using low-contrast colours for body copy)
    - No banned visual patterns from the "What to Avoid" section (gradients, emoji, stat-card grids, etc.)
    - If vendor-branding.md defines a Signature Visual: it appears on Slide 6, uses the specified colours, and does not crowd the capability text
-6. **Positioning sharpness audit** — Slide 6 specifically:
+7. **Positioning sharpness audit** — Slide 6 specifically:
    - The positioning headline uses a Signature Concept from vendor-context.md (e.g., "Revenue Engine", "Figure-Eight", "bow-tie") — not a generic "where we help" framing
    - The Why Us band appears at the bottom with 2 differentiators from Transform G
    - Differentiators reference real comparison categories, not vague "we're better" claims — including any sourced from `get_battlecard`
-7. **Slide 5 attribution audit** — at least one market observation uses explicit first-person framing ("Our working thesis…", "We believe…", "The way we see it…")
-8. Verify mode adaptation:
+8. **Slide 5 attribution audit** — at least one market observation uses explicit first-person framing ("Our working thesis…", "We believe…", "The way we see it…")
+9. Verify mode adaptation:
    - Net-new: slide 6 uses Transform D with real vendor capabilities AND Transform G Why Us band
    - Expansion: slide 6 shows actual impact entries, slide 1 subtitle is "Expanding the Partnership", Transform G is skipped
-9. Verify meeting-length adaptation: 30-min deck has 6 customer-facing slides max (plus Slide 0 AE prep — visible but visually distinct)
-10. **Slide 0 audit** — Slide 0 exists, appears first in the deck, and is rendered with the right treatment:
+10. Verify meeting-length adaptation: 30-min deck has 6 customer-facing slides max (plus Slide 0 AE prep — visible but visually distinct)
+11. **Slide 0 audit** — Slide 0 exists, appears first in the deck, and is rendered with the right treatment:
     - **Not hidden**: unzip the PPTX and confirm NO slide has the hidden flag. `unzip -p output.pptx ppt/slides/slide1.xml | grep -i 'show='` should return nothing; same for every other slide. If `show="0"` appears anywhere, the skill has regressed to the old hidden-slide approach — strip it. Hidden slides are silently skipped by Google Slides and several previewers, which means the AE can't see the prep material they need.
     - **Visual distinctness**: the `accent-primary` header strip with "AE PREP · DO NOT PRESENT" is present, spans the full slide width, and is at least 0.4" tall. It must be the only full-width `accent-primary` fill in the entire deck — confirm no other slide has one. The muted content overlay is visible (not so subtle that the slide blends into customer-facing slides at thumbnail size). Dense prep-style layout is obvious at a glance.
     - **Voice audit**: raw internal voice is correct here. If Slide 0 reads like a customer slide (softened, assertive-but-invitational), the prep purpose is lost — rebuild using raw `opportunity_discovery_planner` / `opportunity_value_pyramid` / `opportunity_framework_summary` output rather than the Transform B / Transform E output.
     - **Thumbnail sanity check**: open the generated PDF preview or the slide navigator of the PPTX and confirm Slide 0 is visibly, unmistakably different from Slide 1 in thumbnail size. If a reasonable person could scroll past it and miss it, make the header strip taller or the overlay stronger.
-11. **Revenue Signals / framework-gaps leakage audit** (new — run this every time, not just when the data was available):
+12. **Revenue Signals / framework-gaps leakage audit** (new — run this every time, not just when the data was available):
     - Search Slides 1–9 for any score, percentage, confidence value, or severity label that could have come from `get_opportunity_signals` or `opportunity_framework_summary` — none should exist. If Revenue Signals shaped Slide 3's hypothesis wording, confirm only the *wording* changed, not that a score or "first constraint" label got printed.
     - Confirm Slide 0's "What to probe" band (if present) does not have a customer-facing counterpart anywhere else in the deck — it is unique to Slide 0.
     - If `get_opportunity_signals` was denied (access guard), confirm Transform A completed via the Three-Whys-only fallback without erroring the whole skill run, and that Slide 3 reads no differently than it would have without Revenue Signals at all.
-12. Do not declare success until at least one fix-and-verify cycle is complete
+13. **Source audit** — every fresh signal on Slide 2 has a visible date and a URL + access date in the speaker notes; every verified vendor fact has its source in Slide 0's notes
+14. Do not declare success until at least one fix-and-verify cycle is complete: fix, re-render the changed slides, re-inspect them
+15. **Deliver**: return **one clickable link** to the final PPTX, followed by a short note covering material evidence gaps, any claims skipped as unverified or expired, any fallback taken (no signals, no Revenue Signals access), and the demo label if applied. Remind the AE to skip Slide 0 when presenting
 
 ## Tips for Great First Meeting Decks
 
@@ -754,7 +812,7 @@ After generating the file:
 - **Expansion meetings deserve different energy.** Feel like the next chapter, not a fresh pitch.
 - **Slide 0 is the AE's cockpit.** Review it once five minutes before the meeting; glance at it during when an unexpected stakeholder joins or a discovery question dead-ends. If it's not helping during the meeting, the content is wrong — rebuild the raw inputs, don't polish the layout.
 - **Access guards are a feature, not a bug.** If `get_opportunity_signals` comes back denied, that's the platform working as intended — degrade quietly and keep moving. Don't treat an authorization boundary as a data-quality problem.
-- **Keep vendor-context.md alive.** Stale context means stale decks. Quarterly review; refresh on major shifts.
+- **Keep vendor-context.md alive — on request.** Stale context means stale decks, so check date-sensitive claims every run and suggest a refresh when they fail. But never rewrite the reference files as a side effect of building a deck; refresh only when the user asks, and save only what they approve.
 
 ## Tools Used
 
@@ -778,17 +836,46 @@ CRM tools (from Summit53 or equivalent revenue platform):
 - `search_knowledge` — org Knowledge Base search across positioning, case studies, product, and battlecard assets; supplements thin/placeholder Proof Points for Transforms D and E. Skip gracefully if no relevant match exists. Supplements the vendor-grounding check — never bypasses it.
 - `opportunity_framework_summary` — MEDDPIC/BANT/SPICED/THREE_WHYS framework scores and gaps; feeds Slide 0's "What to probe" band only. Never appears on customer-facing slides — omit the band if unscored.
 
-External tools:
+Gate and discovery:
 
-- `web_search` — fresh-signal research in Step 3; vendor positioning lookup in Step 0
-- `web_fetch` — vendor context setup in Step 0
+- `current_context` — tenant gate; always first
+- `list_available_tools` — confirms which optional tools (Revenue Signals, battlecards, Knowledge Base, account research) this connector exposes
+- `get_job` — polls `external_account_research` if it returns a processing envelope
 
-Local files:
+External tools (whatever web search and web fetch tools the session provides):
 
-- `vendor-context.md` (sibling to this SKILL.md) — vendor's real capabilities, offer, voice, positioning, market POV
-- `vendor-context.template.md` (sibling) — blank positioning template for initial setup
-- `vendor-branding.md` (sibling) — vendor's visual design system for deck generation (colours, typography, background strategy, slide tokens)
-- `vendor-branding.template.md` (sibling) — blank branding template for initial setup
+- Web search — fresh-signal research in Step 3; vendor positioning lookup and date-sensitive claim checks in Step 0
+- Web fetch — vendor context setup and currency checks in Step 0; reading the full page behind a search result before citing it
+
+Reference files:
+
+- [references/vendor-context.md](references/vendor-context.md) — vendor's real capabilities, offer, voice, positioning, market POV
+- [references/vendor-branding.md](references/vendor-branding.md) — vendor's visual design system for deck generation (colours, typography, background strategy, slide tokens)
+- [references/connector-preflight.md](references/connector-preflight.md) — shared tenant, schema, fixture, read-only, missing-evidence and delivery contract
+
+There are no blank template files; the guided setup in Step 0 describes the fields inline.
+
+## Guardrails
+
+- Read-only against Summit53: no writes, notes or `refresh: true`. The only files this skill may write are the deck itself and — only on an explicit refresh or first-run setup the user approved — the two vendor reference files.
+- Do not invent capabilities, proof points, customer outcomes, competitor claims, pricing or implementation commitments. No bracketed TODOs, placeholder proof points, unconfirmed reference customers or expired cohort claims.
+- Verify date-sensitive vendor claims against a current source (vendor context last reviewed 2026-04-21); skip what cannot be verified.
+- Record a URL and access date for every web fact; never present a web snippet as CRM evidence or a hypothesis as fact.
+- Do not name competitors on customer slides unless the user explicitly asks and the evidence is current and relevant.
+- Never expose framework scores, risk or health labels, signal confidence, private notes, AE-only objections, or access-denied detail on Slides 1–9.
+- Do not hide Slide 0 with a hidden-slide flag or `show="0"`; keep the visible visual forcing function.
+
+## Final verification checklist
+
+- [ ] Preflight checklist complete; `current_context` ran first; returned IDs match `scoped_org_id`
+- [ ] Exactly one opportunity resolved; attendees, meeting length and objective known
+- [ ] Both vendor reference files read; date-sensitive claims verified or skipped
+- [ ] Transform Quality Check passed (grounding, voice, no scores, no placeholders, no competitor brands)
+- [ ] Slide 0 present, visible, unmistakably labelled; no `show="0"` anywhere
+- [ ] Fresh signals dated on-slide with URL + access date in notes
+- [ ] Fixture data excluded, or the demo label is on every slide
+- [ ] Every slide rendered and inspected at full size; one link returned with the gaps note
+- [ ] Reference files unchanged unless the user requested and approved a refresh
 
 ## Design Rationale Notes
 
