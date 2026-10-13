@@ -8,5 +8,13 @@
   },
   "homepage": "https://github.com/j-sulliman/summit53-external-skills",
   "repository": "https://github.com/j-sulliman/summit53-external-skills",
-  "keywords": ["summit53", "revenue", "forecast", "pipeline", "sales", "mcp"]
+  "keywords": [
+    "summit53",
+    "revenue",
+    "forecast",
+    "pipeline",
+    "sales",
+    "mcp"
+  ],
+  "icon": "./assets/icon.png"
 }

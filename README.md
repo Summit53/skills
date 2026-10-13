@@ -13,6 +13,7 @@ plugins/summit53/                The summit53 plugin (one copy, both hosts)
   .claude-plugin/plugin.json     Claude plugin manifest
   .codex-plugin/plugin.json      Codex plugin manifest
   .mcp.json                      Bundled hosted Summit53 MCP connector
+  assets/                        Logo (logo.png) and square icon (icon.png)
   skills/<name>/SKILL.md         One package per skill, including the `summit53` router
   skills/<name>/agents/          Codex UI metadata (openai.yaml); ignored by Claude
   skills/<name>/references/      Vendored canonical contracts plus skill-specific references

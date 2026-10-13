@@ -103,7 +103,7 @@ Exclude, and count each exclusion for the limits section:
 
 Choose the sample: the top 5–8 won and top 5–8 lost deals by amount from the cleaned cohort (state the selection rule; it skews to large deals). For each sampled deal, call the per-deal tools below in **controlled batches** (about 5–8 deals per parallel batch), not one long sequential chain and not an unbounded fan-out. If a call fails for a deal, drop that deal from that analysis only and record the reduced n.
 
-3. **Framework deep-dives** — `opportunity_framework_summary` with `framework: "MEDDPIC"`; also BANT and SPICED if requested. Record **when** each score was captured (stage at capture) — see the stage-capture bias rule in Step 3b.
+3. **Framework deep-dives** — `opportunity_framework_summary` with `framework: "MEDDPIC"`, then BANT and SPICED (included by default for comparison; skip them only if the user asks). Record **when** each score was captured (stage at capture) — see the stage-capture bias rule in Step 3b.
 4. **Deal narratives** — `get_opportunity_notes_summary` for each sampled deal; for lost deals also `get_opportunity_notes`. When a lost deal's notes name a competitor, call `get_battlecard` for that competitor. Notes reveal pricing objections, competitor names, procurement blockers and stated loss reasons; won-deal notes reveal champion language, urgency triggers and proof points.
 5. **Deal details** — `get_opportunity`: health at close, owner, account linkage, stage history, current stage.
 6. **Activity sequences** — `get_opportunity_activities`: volume by type, cadence between touches, last activity type before outcome, momentum. Feeds Slide 9 and Step 3e.
