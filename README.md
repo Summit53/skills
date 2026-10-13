@@ -68,7 +68,7 @@ loading, slide and document toolchains, rendering, delivery).
 ### Claude Code
 
 ```text
-/plugin marketplace add j-sulliman/summit53-external-skills
+/plugin marketplace add Summit53/skills
 /plugin install summit53@summit53
 /reload-plugins
 ```
@@ -94,7 +94,7 @@ with their own account.
 ### Codex
 
 ```bash
-codex plugin marketplace add j-sulliman/summit53-external-skills
+codex plugin marketplace add Summit53/skills
 codex plugin add summit53@summit53
 ```
 
