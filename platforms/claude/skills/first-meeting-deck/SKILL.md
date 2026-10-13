@@ -1,7 +1,7 @@
 ---
 name: "first-meeting-deck"
 description: "Build a grounded, customer-facing first-meeting or discovery PPTX for one Summit53 account or opportunity: assertive-but-invitational hypotheses, discovery agenda, market point of view, vendor-grounded capabilities and next steps, plus a visibly quarantined AE prep slide. Detects net-new vs expansion meetings and adapts to meeting length. Use when an AE is preparing for a first or early-stage customer meeting, e.g. 'first meeting deck for [deal/account]', 'prep a discovery deck', 'build slides for my call with [prospect]', 'I'm meeting [stakeholder] tomorrow — make me a deck', 'generate a hypothesis deck', 'customer-facing deck for [deal]', 'what should I show in the first meeting', 'turn this opportunity into a discovery deck'. Also use for an explicit 'refresh vendor context' or 'refresh vendor branding' request. Do not use for a value or success review with an existing customer — use customer-qbr. For a one-screen response to a named competitor in an active deal use competitor-response-card."
-version: "1.1.0"
+version: "1.2.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -120,7 +120,7 @@ Ask these as one combined message, not sequentially — the user can answer in o
 >
 > 1. **What do you NOT do?** (Features you're often asked for but don't have. Integrations you don't support. Adjacent problems you don't solve. This is the most important question — it's what prevents the deck from over-claiming.)
 >
-> 2. **What's your current commercial offer?** (E.g., "Founding Partner Programme — $9/user/month for 3 months, mutual commitment". Just the mechanics; pricing won't appear on the deck but the skill needs to know what you're actually proposing.)
+> 2. **What's your current commercial offer?** (E.g., "Founding Partner Programme — USD 9/user/month for 3 months, mutual commitment". Just the mechanics; pricing won't appear on the deck but the skill needs to know what you're actually proposing.)
 >
 > 3. **Any proof points / named reference customers** you're willing to cite in a first meeting? (Empty is fine — don't invent.)
 >
@@ -255,6 +255,18 @@ Launch these calls in parallel. Most are independent. Inspect each tool's live s
    - **Hard rule, reinforcing the existing one**: this output is AE-prep material only. It must never be transformed into customer-facing language or appear anywhere on Slides 1–9. See the Slide 0 spec in Step 6 and the audits in Step 8.
    - If the framework hasn't been scored yet or the call returns empty, omit the Slide 0 band rather than rendering placeholder gaps (see Handling Missing Data).
 
+9. **Target-account context** (optional enhancement — requires the customer's Outreach plan; read-only)
+   - When the prospect was worked as an outreach target account, its stored thesis, buying committee and research ground the deck far better than a cold start. Confirm `search_target_accounts`, `get_target_account` and `get_stakeholder_research_brief` are exposed with `list_available_tools`. If they are absent, access-denied or plan-gated, skip this pull, continue, and list "Target-account context: unavailable" in the delivery note.
+   - **Find and confirm the match.** Call `search_target_accounts` with `query` set to the account's company name (then its website domain if the name finds nothing). A result is the same prospect only when its name or domain matches the opportunity's account, and — where the target account has an `opportunity_id` or `crm_account` — that value matches the resolved opportunity or account. Several plausible candidates: list them and ask, or skip. Never use a near-match name.
+   - **Read the matched account.** `get_target_account(target_account_id)` → `thesis`, `committee[]` (`committee_role`, `committee_angle`, `engaged`, `last_touch_date`), `coverage.roles[]` and `coverage.gaps`, `external_research{researched_at, results[]}`. `get_stakeholder_research_brief(target_account_id)` adds the account summary, mapped committee and coverage gaps; use it read-only and ignore its `suggestions[]` workflow.
+   - **How each field shapes the deck** (inputs only — see the customer-facing safety rule below):
+     - `thesis` → the seller's "why you, why now" framing: an input to Slide 2 (Why We're Here) and to Transform A's hypothesis emphasis, cross-checked against Three Whys `why_now`. It is never quoted verbatim on a slide.
+     - `committee[]` roles and `committee_angle` → who is likely in the room and what each person cares about. Use them to answer Step 1's attendee question (confirm with the AE rather than assume), to choose the Value Pyramid layer for Transforms D and E, and to shape Transform B's agenda emphasis. Map into the existing transforms; do not add slides for it.
+     - `coverage.gaps` (e.g. no economic buyer mapped) → raw discovery questions on Slide 0 ("Who signs off on this budget?") and a candidate for Transform F's coverage-gap next step ("a short session with whoever owns the budget decision"). For a single-threaded account `coverage_applicable` is false and `coverage_pct` is `null` — no gaps by design, not 0% coverage.
+     - `external_research.results[]` → research inputs alongside Step 3's fresh signals: keep each result's `url` and `published_date`, plus the digest's `researched_at`. A digest older than ~90 days is possibly stale — re-verify any fact from it with the session's web tools before it reaches Slide 2, or leave it off. Every fact used carries its URL + date in the speaker notes, exactly like a fresh signal.
+   - **Customer-facing safety.** `tier`, `fit_rating`, coverage percentages, `touch_history`, coordination state, `stage`, and `committee_role` labels (especially "blocker", "economic_buyer", "champion") are internal targeting data. They shape content only and never appear on any slide, Slide 0 included — on Slide 0, describe a person by what they care about (their `committee_angle`), not by their role label. Slide 0 may list coverage gaps as raw "who do we still need to meet" questions.
+   - **Never write.** Do not call create/update/convert target-account tools, `submit_stakeholder_suggestions`, `accept_stakeholder_suggestion` or `dismiss_stakeholder_suggestion`, and do not pass `target_account_id` to `external_account_research` (that refreshes the stored digest). Use the stored digest as returned.
+
 ### Narrative Freshness Check
 
 After pulling the three strategic narratives, check the `last_updated` field on each. If any is older than 14 days OR the `is_stale` flag is true, surface a warning before proceeding:
@@ -278,6 +290,7 @@ First meetings often have sparse data. Adapt gracefully:
 - If `get_battlecard` returns no candidates, skip battlecard grounding for Transform G and fall back to Three-Whys-only differentiation (`why_us` + `direct_competitive_differentiation`)
 - If `search_knowledge` returns no relevant results, proceed without KB-sourced proof points for Transforms D and E — `vendor-context.md` Proof Points remains the only source
 - If `opportunity_framework_summary` is empty or the framework is unscored, omit the Slide 0 "What to probe" band entirely rather than rendering it with placeholder gaps
+- If the target-account tools are unavailable, plan-gated or denied, or no target account confidently matches the prospect, build the deck exactly as before and note "Target-account context: unavailable" (or "no confirmed match") in the delivery note. An empty `committee[]` or `external_research` is unavailable evidence, never "no stakeholders" or "no news"
 
 ## Step 3: Fresh Signals (Optional — Progressive Disclosure)
 
@@ -348,6 +361,7 @@ Each transform has four parts: **inputs**, **vendor grounding**, **instruction**
 - AE-selected fresh signals (if any)
 - Prospect self-description from `external_account_research`
 - `get_opportunity_signals` output, if the caller was authorized — the `first_constraint` and win-probability movement narrative
+- Target-account `thesis` and dated `external_research` results, if a confirmed target account was found (Step 2, item 9) — shape emphasis only; never quote the thesis
 
 *Vendor grounding:* Not required — this slide is entirely about the customer.
 
@@ -371,6 +385,7 @@ Each transform has four parts: **inputs**, **vendor grounding**, **instruction**
 *Inputs:*
 - Discovery Planner → `discovery_guide` section (key questions block)
 - Stakeholder Intelligence → attendees from Step 1
+- Target-account `committee_angle` for each confirmed attendee and `coverage.gaps`, if available — shape emphasis, never name a role label
 
 *Vendor grounding:* Not required — this slide is about what we want to learn from them.
 
@@ -494,6 +509,7 @@ Note the added `positioning_headline` field — this is a single bold line that 
 *Inputs:*
 - Discovery Planner → `next_steps_and_action_plan` section
 - Stakeholder Intelligence → coverage gaps
+- Target-account `coverage.gaps`, if available — phrased as a person or decision to meet, never as "gap" or a role label
 
 *Vendor grounding:*
 - `vendor-context.md` → **Current Commercial Offer** — real offer mechanics and typical first-meeting CTA
@@ -531,6 +547,7 @@ After all transforms complete, scan for:
 - **Any date-sensitive claim (offer, cohort, proof point, new capability, fresh signal) without a verified current source** → remove and list as "skipped — unverified" for the delivery note
 - **Any named competitor brand on Slides 1–9** the user did not explicitly ask for → translate to a comparison category
 - **Any hypothesis phrased as fact, or any web fact presented as CRM evidence** → rewrite
+- **Any target-account internal field on any slide** — tier, fit rating, coverage %, touch history, stage, the target-account thesis verbatim, or a committee-role label such as "blocker" or "economic buyer" → strip; use it only to shape content
 
 Re-run failed transforms with the specific failure as additional context.
 
@@ -611,6 +628,7 @@ This is the only slide the prospect must never see. It is the AE's cockpit: a si
   - Small caps label *"DISCOVERY — ANSWERS YOU WANT"* in `accent-primary`
   - 4–6 **raw** questions from `opportunity_discovery_planner` → `discovery_guide` key questions block. These are the blunt questions the AE is actually trying to get answered — not the customer-facing "we'd like to understand" rephrasings that appear on Slide 4. Body typeface 11pt, `body-on-light`.
   - For the top 2 questions, a "what good looks like" one-liner underneath in italic `muted` — a mental model for the kind of answer that would meaningfully advance the deal.
+  - If a confirmed target account returned `coverage.gaps`, add up to two raw "who do we still need to meet" questions from them (e.g. "Who owns the budget decision?"). No role labels, coverage percentages, tier or fit rating.
 - **Band 3 — Value Pyramid cheat sheet (right half of body)**:
   - Small caps label *"VALUE PYRAMID — ALL TIERS"* in `accent-primary`
   - Four compact rows in tier order: **Executive / Functional / Technical / Procurement**. Each row: tier label bold in `accent-secondary` 11pt, then a one-line value message in `body-on-light` 11pt. Source: `opportunity_value_pyramid`, compressed to one line per tier.
@@ -796,7 +814,8 @@ After generating the file:
     - Search Slides 1–9 for any score, percentage, confidence value, or severity label that could have come from `get_opportunity_signals` or `opportunity_framework_summary` — none should exist. If Revenue Signals shaped Slide 3's hypothesis wording, confirm only the *wording* changed, not that a score or "first constraint" label got printed.
     - Confirm Slide 0's "What to probe" band (if present) does not have a customer-facing counterpart anywhere else in the deck — it is unique to Slide 0.
     - If `get_opportunity_signals` was denied (access guard), confirm Transform A completed via the Three-Whys-only fallback without erroring the whole skill run, and that Slide 3 reads no differently than it would have without Revenue Signals at all.
-13. **Source audit** — every fresh signal on Slide 2 has a visible date and a URL + access date in the speaker notes; every verified vendor fact has its source in Slide 0's notes
+13. **Source audit** — every fresh signal on Slide 2 has a visible date and a URL + access date in the speaker notes; every verified vendor fact has its source in Slide 0's notes; every target-account research fact used carries its URL, `published_date` and the digest's `researched_at`, and any digest older than ~90 days was re-verified or left out
+13b. **Target-account leakage audit** — search every slide (Slide 0 included) and the speaker notes on Slides 1–9 for tier, fit rating, coverage %, touch history, stage, the thesis text, and committee-role labels ("blocker", "economic buyer", "champion", "influencer"). None may appear
 14. Do not declare success until at least one fix-and-verify cycle is complete: fix, re-render the changed slides, re-inspect them
 15. **Deliver**: return **one clickable link** to the final PPTX, followed by a short note covering material evidence gaps, any claims skipped as unverified or expired, any fallback taken (no signals, no Revenue Signals access), and the demo label if applied. Remind the AE to skip Slide 0 when presenting
 
@@ -835,6 +854,7 @@ CRM tools (from Summit53 or equivalent revenue platform):
 - `get_battlecard` — best-matching competitive battlecard by competitor name (up to 3 candidates); grounds Transform G's differentiators. Skip gracefully if no match exists.
 - `search_knowledge` — org Knowledge Base search across positioning, case studies, product, and battlecard assets; supplements thin/placeholder Proof Points for Transforms D and E. Skip gracefully if no relevant match exists. Supplements the vendor-grounding check — never bypasses it.
 - `opportunity_framework_summary` — MEDDPIC/BANT/SPICED/THREE_WHYS framework scores and gaps; feeds Slide 0's "What to probe" band only. Never appears on customer-facing slides — omit the band if unscored.
+- `search_target_accounts`, `get_target_account`, `get_stakeholder_research_brief` — optional, Outreach plan: thesis, buying committee, coverage gaps and dated external research for a confirmed matching target account (Step 2, item 9). Read-only; internal fields shape content and never appear on slides.
 
 Gate and discovery:
 
@@ -857,12 +877,13 @@ There are no blank template files; the guided setup in Step 0 describes the fiel
 
 ## Guardrails
 
-- Read-only against Summit53: no writes, notes or `refresh: true`. The only files this skill may write are the deck itself and — only on an explicit refresh or first-run setup the user approved — the two vendor reference files.
+- Read-only against Summit53: no writes, notes or `refresh: true`; never create, update or convert a target account, and never submit, accept or dismiss stakeholder suggestions. The only files this skill may write are the deck itself and — only on an explicit refresh or first-run setup the user approved — the two vendor reference files.
 - Do not invent capabilities, proof points, customer outcomes, competitor claims, pricing or implementation commitments. No bracketed TODOs, placeholder proof points, unconfirmed reference customers or expired cohort claims.
 - Verify date-sensitive vendor claims against a current source (vendor context last reviewed 2026-04-21); skip what cannot be verified.
 - Record a URL and access date for every web fact; never present a web snippet as CRM evidence or a hypothesis as fact.
 - Do not name competitors on customer slides unless the user explicitly asks and the evidence is current and relevant.
 - Never expose framework scores, risk or health labels, signal confidence, private notes, AE-only objections, or access-denied detail on Slides 1–9.
+- Never print target-account tier, fit rating, coverage %, touch history or committee-role labels on any slide, Slide 0 included.
 - Do not hide Slide 0 with a hidden-slide flag or `show="0"`; keep the visible visual forcing function.
 
 ## Final verification checklist
@@ -873,6 +894,7 @@ There are no blank template files; the guided setup in Step 0 describes the fiel
 - [ ] Transform Quality Check passed (grounding, voice, no scores, no placeholders, no competitor brands)
 - [ ] Slide 0 present, visible, unmistakably labelled; no `show="0"` anywhere
 - [ ] Fresh signals dated on-slide with URL + access date in notes
+- [ ] Target-account context used only after a confirmed match (or noted unavailable); no internal target-account field on any slide; nothing written
 - [ ] Fixture data excluded, or the demo label is on every slide
 - [ ] Every slide rendered and inspected at full size; one link returned with the gaps note
 - [ ] Reference files unchanged unless the user requested and approved a refresh

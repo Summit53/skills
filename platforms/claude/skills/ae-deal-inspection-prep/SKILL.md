@@ -1,7 +1,7 @@
 ---
 name: "ae-deal-inspection-prep"
 description: "Prepare the owning account executive for an internal inspection of one named Summit53 opportunity: a concise, read-only one-page evidence sheet with current deal facts, truthful gaps, likely manager questions, defensible answer evidence, and rep-owned next actions. Use when an AE says 'prepare me for deal inspection', 'prep me for my deal inspection on [deal]', 'help me answer questions on this deal', 'what am I missing before my 1:1', 'give me an inspection cheat sheet', or 'what will my manager ask about [deal]'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for a contested chronology or 'when did it go dark' — use deal-timeline-defence. Do not use for drafting re-engagement outreach — use deal-action-engine, if installed."
-version: "1.0.0"
+version: "1.1.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -65,6 +65,7 @@ Use logical capabilities only when exposed and permitted. Inspect each live sche
 | `opportunity_framework_summary` | Qualification evidence for the selected supported framework; do not average absent elements |
 | `get_opportunity_signals` | Access-gated ranked constraint and movement; optional, never a blocker |
 | `opportunity_stakeholder_intelligence` | Buying-committee coverage and explicit gaps; optional |
+| `search_target_accounts`, `get_target_account` | Optional, Outreach plan: committee coverage from the converted outreach target account (see below) |
 | `risk_heatmap` | Optional portfolio response: page and select the exact opportunity ID locally, disclose coverage, and treat bounded-page absence as unavailable |
 | `meeting_capture_history` | Optional, access-gated: recorded calls for this deal (filter by `opportunity_id`; default `view` is the caller's own sessions) |
 | `meeting_context` | Optional, access-gated: bounded intelligence for one recorded session by `session_id`; request a transcript only when a specific question needs it, and keep it within the capped segment and character limits |
@@ -80,6 +81,20 @@ Treat meeting intelligence as observed only for what the session record states; 
 summaries inside it are still **Inferred**. If the capability is unavailable, denied, or returns
 no session for the deal, record "recorded call evidence unavailable" in Sources and limits —
 never "no calls happened".
+
+**Target-account committee coverage (optional, Outreach plan).** When the opportunity came
+from a converted outreach target account and the tools are exposed and permitted, call
+`search_target_accounts` with `query` set to the account name and use a result only when its
+`opportunity_id` equals the selected opportunity (or its `crm_account` matches and the AE
+confirms). Then read `get_target_account(target_account_id)`: `coverage.roles[]` (missing,
+mapped, engaged), `coverage.gaps`, and each committee member's `engaged` and
+`last_touch_date`. Record mapped and engaged roles and the required-role gaps (for example "no
+economic buyer engaged") as **Observed — target-account record** with dates, under What the
+evidence says and Gaps to acknowledge; they also make good likely questions ("Who has spoken to
+the economic buyer since conversion?"). A single-threaded account has `coverage_pct: null` by
+design: coverage not measured, never 0%. If the tools are unavailable, plan-gated, denied or no
+target account matches, note "target-account coverage unavailable" in Sources and limits and
+continue. Never write to target accounts or stakeholder suggestions.
 
 **MEDDPICC partial rule.** The live methodology asset may identify `MEDDPICC` while the
 summary capability accepts `MEDDPIC`. Use only a token explicitly supported by the live
@@ -147,6 +162,8 @@ the slide before delivery. Route any formal pipeline-review or manager-facing de
       **Partial — Competition component unavailable**.
 - [ ] Recorded-call evidence, if used, is cited by session and its absence is never read as
       "no calls".
+- [ ] Target-account coverage, if used, matched by `opportunity_id` (or AE-confirmed), is
+      labelled Observed with dates, and no target-account write was called.
 - [ ] No timeline dispute was handled here instead of `deal-timeline-defence`.
 - [ ] No manager-led formal review was handled here instead of `deal-review-prep`.
 - [ ] Fixture evidence is excluded from real counts and the exact demo label is present when

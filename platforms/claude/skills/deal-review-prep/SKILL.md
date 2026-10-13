@@ -1,7 +1,7 @@
 ---
 name: "deal-review-prep"
 description: "Build a manager-led, evidence-based deal review PPTX for one Summit53 opportunity: health verdict, first constraint, MEDDPIC/BANT/SPICED scorecards, risk factors, blockers, account and stakeholder context, coaching questions and next steps. Use when a sales manager or revenue leader wants to prep for a deal review or pipeline review meeting, review a specific deal, do a deal deep-dive, build a deal scorecard or assess deal health, e.g. 'review this deal', 'deal review for opportunity [ID]', 'how healthy is the [deal] deal', 'what's the risk on [deal]', 'is this deal going to close', 'should I be worried about [deal]', 'give me the full picture on [deal]'. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for a contested deal chronology — use deal-timeline-defence. For a competitor response in an active deal use competitor-response-card; for drafting outreach or re-engagement use deal-action-engine (if installed)."
-version: "1.1.0"
+version: "1.2.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -26,7 +26,7 @@ Skill-specific gates:
 
 1. **Resolve exactly one opportunity before any other read.** Use the supplied opportunity ID when given. A deal or account name that matches more than one opportunity is ambiguous: list the candidates (name, account, amount, stage, close date, owner) and ask the user to pick. Never pick silently, and never merge two deals.
 2. **Confirm scope.** The opportunity's organization (and the account's, where returned) must match `scoped_org_id`. On mismatch, stop and report both IDs.
-3. **Check optional capabilities.** Use `list_available_tools` to confirm whether `get_opportunity_signals`, `prepare_dark_deal_rescue`, `opportunity_stakeholder_intelligence` and `get_battlecard` are exposed on this connector. Missing or access-gated enhancements remove their section, never the deck.
+3. **Check optional capabilities.** Use `list_available_tools` to confirm whether `get_opportunity_signals`, `prepare_dark_deal_rescue`, `opportunity_stakeholder_intelligence`, `get_battlecard` and the target-account tools (`search_target_accounts`, `get_target_account`; Outreach plan) are exposed on this connector. Missing or access-gated enhancements remove their section, never the deck.
 4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide.
 
 ## Why This Exists
@@ -88,6 +88,13 @@ Launch these calls in parallel where possible — they're mostly independent. Yo
 8. **Competitive Battlecard** (conditional — only if the notes summary or framework evidence names a specific competitor)
    - `get_battlecard` for the named competitor — differentiation talking points and positioning guidance. Powers the Competitive Positioning callout on Slide 4. Use only an exact match on the competitor named in the evidence; skip entirely if no competitor is named anywhere in the pulled data. A full competitor response belongs in `competitor-response-card`.
 
+9. **Target-Account Committee Coverage** (conditional — only if the opportunity came from a converted outreach target account; optional enhancement that requires the customer's Outreach plan)
+   - There is no direct opportunity → target-account lookup. Call `search_target_accounts` with `query` set to the account name. Use a result only when its `opportunity_id` equals this opportunity's ID (or, when `opportunity_id` is absent, its `crm_account` matches this account **and** the user confirms). A name match alone is not a match; several candidates without a matching `opportunity_id` means skip.
+   - `get_target_account(target_account_id)` for the confirmed match → `committee[]` (`committee_role`, `engaged`, `last_touch_date`), `coverage.roles[]` (each role `missing`, `mapped` or `engaged`), `coverage.gaps`, `engagement_model` and `converted_at`.
+   - Treat it as **Observed** evidence from the pre-opportunity outreach record, dated by each `last_touch_date` and the target account's `converted_at`: which buying roles were mapped, which were engaged, and which required roles are missing (e.g. "Economic buyer: mapped, never engaged — last touch 2026-08-14"). It feeds the Stakeholder Coverage subsection on Slide 8 and corroborates (or contradicts) `opportunity_stakeholder_intelligence`; where the two disagree, show both with their source and date rather than picking one.
+   - A `single_threaded` target account has `coverage_applicable: false` and `coverage_pct: null` — committee coverage was not measured by design. Say so; never render it as 0% or as a gap.
+   - Read-only. Never call create/update/convert target-account tools or any stakeholder-suggestion write.
+
 ### Handling Missing Data
 
 Don't fail if data is sparse — adapt. Missing data is **never zero and never a positive signal**: an unavailable tool, an access-gated field, a `null` or an empty list is "unavailable" (or "indeterminate"), stated with its reason in the Sources & Limits slide. Record every unavailable, empty, stale or contradictory source as you go.
@@ -102,6 +109,7 @@ Don't fail if data is sparse — adapt. Missing data is **never zero and never a
 - If `prepare_dark_deal_rescue` is unavailable (not deployed on this server) or the deal doesn't meet the cold/Red condition, skip the Dark Deal Rescue appendix on Slide 10 entirely
 - If `opportunity_stakeholder_intelligence` returns no data, note "Stakeholder map unavailable" on Slide 8 and skip the coverage-gap callouts
 - If `get_battlecard` returns no match for the named competitor, skip the Competitive Positioning callout on Slide 4
+- If the target-account tools are unavailable, plan-gated or denied, or no target account matches this opportunity, omit the target-account coverage lines on Slide 8 and list "Target-account committee coverage: unavailable" (or "no converted target account matched") on Sources & Limits. That is not evidence the deal is single-threaded
 - If `account_health_movement` returns no trend data, show the point-in-time `account_execution_health` score alone, with no trend arrow
 - The deal might be new with limited data — that's fine, the deck will just be lighter
 
@@ -142,7 +150,7 @@ From `get_opportunity_activities`, assess the deal's engagement health:
 - Is there a clear next step visible in recent activities/notes? If not, flag as "No next step defined"
 - Are activities spread across multiple contacts, or concentrated on one person? Single-threaded deals are higher risk.
 
-If this assessment flags the deal "Going cold," or the Deal Health Assessment above lands on Red, that's the trigger to pull `prepare_dark_deal_rescue` (Step 2, item 7) and build the Dark Deal Rescue appendix on Slide 10. Cross-check the single-threaded flag against `opportunity_stakeholder_intelligence`'s coverage gaps — a "concentrated on one person" read from activities and a missing economic buyer from stakeholder intelligence are the same underlying risk seen two ways.
+If this assessment flags the deal "Going cold," or the Deal Health Assessment above lands on Red, that's the trigger to pull `prepare_dark_deal_rescue` (Step 2, item 7) and build the Dark Deal Rescue appendix on Slide 10. Cross-check the single-threaded flag against `opportunity_stakeholder_intelligence`'s coverage gaps and, when a converted target account matched, its `coverage.roles[]` — a "concentrated on one person" read from activities, a missing economic buyer from stakeholder intelligence, and an economic buyer that was mapped but never engaged during outreach are the same underlying risk seen three ways.
 
 ### Suggested Coaching Questions
 
@@ -277,6 +285,7 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
   - Evidence confidence indicator
   - This flags expansion risk and opportunity early in the account context.
 - **Stakeholder Coverage subsection** (from `opportunity_stakeholder_intelligence`): Add a subsection mapping the buying committee — role, name, engagement level — with coverage gaps called out explicitly (e.g., "No confirmed Economic Buyer", "Champion identified, no VP-level sponsor"). Include the tool's suggested engagement moves as 1-2 short action bullets. This is where the "single-threaded deal" risk flag from Step 3 becomes concrete and actionable. If no data is returned, note "Stakeholder map unavailable" and omit the subsection.
+  - **Committee coverage from outreach** (only when Step 2 item 9 confirmed a converted target account): one compact line per buying role — missing / mapped / engaged — with the last-touch date, and the required-role gaps called out ("No economic buyer engaged during outreach; converted 2026-09-02"). Label it **Observed — target-account record, as of [date]** so it is visibly distinct from the stakeholder-intelligence map. Show role names as data, not as a judgment of any person.
 - If the account has multiple active deals, this context matters — a problematic deal at a healthy account is different from a problematic deal at a struggling account.
 - If no other deals exist, note "Single active deal at this account."
 
@@ -375,7 +384,7 @@ After generating the file:
 - **Let the notes tell the story.** The Deal Narrative slide exists because scores alone don't explain *why* a deal is at risk. If the notes say "competitive bake-off with Clari, pricing pressure from procurement, paper process unresolved" — that's the story. Lead with it.
 - **Frame gaps as opportunities, not failures.** "Here's where the biggest upside is hiding" beats "Here's what's wrong."
 - **Make the suggested questions specific.** "Who signs the PO at Acme?" beats "Have you identified the economic buyer?"
-- **Show the account context.** A $200K deal at an account with $1.5M in other active pipeline gets different treatment than a $200K standalone deal.
+- **Show the account context.** A USD 200K deal at an account with USD 1.5M in other active pipeline gets different treatment than a USD 200K standalone deal.
 - **Keep it tight.** About 11-12 slides including Sources & Limits (12 only if Value Realization is included). The goal is a focused 5-10 minute review, not a deep-dive marathon. Change slide count only when legibility or the evidence demands it.
 - **Stay evidence-first.** This is a coaching artifact, not a sales pitch: no causal claims, no invented numbers, and no recommendation that is not traceable to a source.
 
@@ -402,10 +411,11 @@ This skill pulls data from the following Summit53 tools (logical names; resolve 
 - `opportunity_stakeholder_intelligence` — buying-committee map, coverage gaps, and suggested engagement moves for the Stakeholder Coverage subsection
 - `get_battlecard` — competitive differentiation talking points, pulled only when a competitor is named in notes or framework evidence
 - `account_health_movement` — correlational trend direction (improving/declining) alongside the point-in-time account execution health score
+- `search_target_accounts`, `get_target_account` — optional, Outreach plan: committee coverage (mapped/engaged roles, required-role gaps) from the converted outreach target account, matched by `opportunity_id`; read-only
 
 ## Guardrails
 
-- Read-only. Never send rescue emails, create notes, or execute recommended actions; `prepare_dark_deal_rescue` is shadow-mode evidence only. Writes and outreach hand off to `deal-action-engine` (if installed) only on the user's explicit request.
+- Read-only. Never send rescue emails, create notes, write to target accounts or stakeholder suggestions, or execute recommended actions; `prepare_dark_deal_rescue` is shadow-mode evidence only. Writes and outreach hand off to `deal-action-engine` (if installed) only on the user's explicit request.
 - Never reveal access-denied detail, permission errors or stack traces inside the deck.
 - Never convert missing data into a zero, a green status or a positive signal.
 - Never claim causality from activity, framework, account-health or signal correlations.
@@ -421,5 +431,6 @@ This skill pulls data from the following Summit53 tools (logical names; resolve 
 - [ ] Every unavailable source listed on Sources & Limits, with no access-denied detail
 - [ ] No empty result rendered as "no gaps", "no risk" or green
 - [ ] Rescue appendix (if present) is labelled draft, evidence only, no email body
+- [ ] Target-account coverage used only when `opportunity_id` matched (or the user confirmed); labelled Observed with dates; single-threaded shown as not measured, not 0%
 - [ ] Fixture rows excluded, or the demo label is on every slide
 - [ ] Every slide rendered and inspected at full size; one link returned

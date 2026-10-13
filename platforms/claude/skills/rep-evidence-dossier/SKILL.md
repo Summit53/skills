@@ -1,7 +1,7 @@
 ---
 name: "rep-evidence-dossier"
 description: "Assemble a neutral, defensible Summit53 evidence dossier as a PPTX for a promotion case, PIP, talent calibration, documented performance concern or HR meeting. Screens structural confounders and documentary depth before any performance evidence, closes with an evidence register, and never renders an employment recommendation. Use when a manager says 'build the promotion case for [rep]', 'prep me for calibration', 'we're considering a PIP for [rep]', 'HR wants documentation on [rep]', 'pull together the performance record for [rep]', 'why them and not [other rep]?' or 'what have we done to help this rep?'. Do not use for routine coaching or 1:1 prep — use rep-coaching-report."
-version: "3.0.0"
+version: "3.1.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -161,7 +161,7 @@ order:
 |---|---|
 | 1. Flag base rate and persistence | `coaching_intervention_plan` (`coaching_flag_quality`, `ordering`, per-rep `evidence_sufficiency`) |
 | 1b. Benchmark meaning and verified values | `coaching_diagnostic(rep_id)` → `benchmark_context`, `results_scores._evidence` |
-| 2. Territory and segment | `segment_performance_summary`, plus the rep's book from `risk_heatmap(reps: [id], period_span: 2)` or `forecast_confidence(reps: [id])` |
+| 2. Territory, segment and sales region | `segment_performance_summary`, plus the rep's book from `risk_heatmap(reps: [id], period_span: 2)` or `forecast_confidence(reps: [id])`; region group and warnings from `capacity_to_target_planner(group_by: "sales_region", level: "leaf")`; `sales_team_at_close` from `get_opportunity` for closed deals, where exposed |
 | 3. Ramp status and survivorship | `ramp_cohort` (roster-level; select `user_id`) |
 | 4. Role–motion fit | `hunter_farmer_mix` (roster-level; select `user_id`) |
 | 5. Evidentiary depth | `coaching_history(rep_id)` **primary**; `coaching_development`, `coaching_meeting_analytics`, `coaching_agenda`, `rep_coaching_context` corroborate or fall back |
@@ -174,6 +174,25 @@ Screen notes:
   resolved and do not fall back to the blended average as if it were like-for-like. On
   `risk_heatmap`, check `scope_summary.truncated_by_period`; if `true`, widen
   `period_span` and re-pull before counting anything.
+- **Screen 2 — sales region (optional enhancement).** Call
+  `capacity_to_target_planner(group_by: "sales_region", level: "leaf")` at roster level
+  and locate the planning group containing the rep. Record the rep's leaf region as a
+  structural factor and compare within that region (or segment) before any team-wide
+  figure. Quote the grouping warnings verbatim in the evidence register:
+  `reps_without_team` (if it names this rep, region comparison could not be made — say
+  so on slide 3), `market_quota_unassigned`, `region_grouping`,
+  `owner_profile_attribution`. If the response is `insufficient_data`, falls back to a
+  single blended group, or the rep is in no group, record region membership as **not
+  resolved**; never infer it. Never attribute a region's quota, capacity or gap to the rep,
+  and never list other reps from the group's contributors.
+- **Screen 2 — team at close (pending deploy; optional).** Where the live `get_opportunity`
+  schema exposes `sales_team_at_close{id, name, team_type, source}` (null while open), read
+  it for each closed deal cited in the dossier and attribute the deal to the team the rep
+  was in at close, not their current team. For a rep who moved teams, closed-deal evidence
+  is compared against the region of the team at close, and slide 3 says the rep's history
+  spans more than one team. If the field is not exposed, record in the evidence register
+  that closed deals were attributed to the rep's current team assignment and add it to the
+  standing limits when the rep is known to have moved.
 - **Screens 3 and 4.** If the rep is absent from `ramp_cohort.reps[]`, ramp status is
   "not in a current ramp window", not "fully ramped". An empty payload with
   `requires_manager_role` means ramp status could not be established. A
@@ -375,6 +394,9 @@ record supports, and a decision-maker needs them.
 - **Intervention and coaching outcomes are correlational.** The ledger reports
   `causal_claim_supported: false`. Movement within an outcome window is association.
 - **Segment comparisons rest on territory resolution**, not an explicit segment field.
+- **Region comparisons rest on current Sales Org team membership** unless
+  `sales_team_at_close` was available; reps without a team, or market quota left
+  unassigned, weaken them (quote the warnings).
 - **Attainment is not adjusted for account quality or inherited pipeline.** No tool
   measures the book a rep was given versus the book they built.
 - **Meeting analytics cover recorded meetings only.** Unrecorded coaching does not
@@ -456,7 +478,8 @@ thin section is worse than no section.
    fired, the label is on every applicable downstream slide.
 4. **No recommendation.** Search visible text and notes for the banned list. Zero hits.
 5. **Comparators.** Every performance value has a named comparator, window, evidence
-   status, source date and source, and the evidence register reconciles them.
+   status, source date and source, and the evidence register reconciles them. Region or
+   segment comparators precede team-wide ones; region-grouping warnings are quoted.
 6. **Verified values only.** No `results_scores` value is cited where
    `_evidence[metric].verified` is not `true`; every P75 comparison carries the
    aspirational-benchmark warning and `peer_count`.
@@ -520,6 +543,8 @@ Logical names; resolve the prefix at runtime per
 | `list_available_tools` | Confirm which coaching capabilities are exposed |
 | `coaching_intervention_plan` | Roster and rep IDs, flag quality, persistence (Screen 1) |
 | `segment_performance_summary` | Territory comparator (Screen 2) |
+| `capacity_to_target_planner` (`group_by: "sales_region"`, `level: "leaf"`) | Rep's region group and grouping warnings (Screen 2; optional) |
+| `get_opportunity` | `sales_team_at_close` for cited closed deals (Screen 2; pending deploy, optional) |
 | `risk_heatmap` (`reps: [id]`, `period_span: 2`) | Rep's book and segment membership; deal health |
 | `ramp_cohort` (roster-level) | Ramp status and survivorship disclosure (Screen 3) |
 | `hunter_farmer_mix` (roster-level) | Role–motion fit (Screen 4) |

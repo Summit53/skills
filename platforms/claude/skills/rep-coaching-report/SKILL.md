@@ -1,7 +1,7 @@
 ---
 name: "rep-coaching-report"
 description: "Prepare an evidence-based Summit53 coaching deck (PPTX) for a routine developmental 1:1 with a sales rep, built around one Results/Effort/Knowledge/Skills coaching thesis from the stored diagnostic, call behaviour, coaching history, pipeline, deal risk, MEDDPICC gaps and activity. Also handles explicit post-session capture of notes, agreed actions or a later outcome when that capability is exposed and approved. Trigger on 'prep my 1:1 with [rep]', 'what should I coach [rep] on?', 'coaching report for [rep]', 'build a coaching deck', 'what's going on in [rep]'s pipeline before our 1:1', 'log my notes from the session with [rep]', 'close out the [rep] 1:1' or 'record the action items from my coaching session'. Do not use for promotion, PIP, calibration or HR decisions — use rep-evidence-dossier."
-version: "2.0.0"
+version: "2.1.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -48,6 +48,8 @@ its checklist before any data call. Then apply these coaching-specific gates:
    | `team_action_plan` | scalar `user_id` |
    | `deal_drag_summary` | no arguments: **organization-wide**, never rep totals |
    | `search_opportunities` | no owner filter: never use it to resolve or scope a rep |
+   | `capacity_to_target_planner` | `group_by: "sales_region"`, `level: "leaf"`: roster-level region context; read warnings and locate the rep's region group (optional) |
+   | `get_opportunity` | scalar `opportunity_id`; `sales_team_at_close` only once that field is exposed (pending deploy; optional) |
 
 4. **Resolve the rep from the roster.** Use the `user_id` from
    `coaching_intervention_plan` or another authorized coaching-roster response. If no rep
@@ -113,6 +115,11 @@ Each step is specified in full in
 - **Unavailable is not zero.** A bare `{}` from `activity_gaps`, an unavailable drag
   analytics block or a missing diagnostic is indeterminate. It is never rendered as
   "all accounts engaged", "no drag" or a green status.
+- **Region before team.** Treat sales region and segment as confounders: compare the
+  rep within their own sales region or segment before any team-wide comparator, surface
+  the region-grouping warnings (`reps_without_team`, `market_quota_unassigned`), and
+  attribute closed deals to the team the rep was in at close when `sales_team_at_close`
+  is exposed. Region context never becomes a rank or a named-peer comparison.
 - **Scope before attribution.** Never attribute an organization-wide figure
   (`deal_drag_summary`, unscoped `quota`, `coverageRatio`, `totalForecast`, `gap`) to
   the rep.
@@ -161,8 +168,9 @@ Before delivery:
 - [ ] No rank, leaderboard or named-rep comparison; flag quality stated where
       non-discriminating; P75 labelled aspirational; only verified diagnostic values
       cited
-- [ ] Every ramp figure carries the survivor-cohort caveat; motion and segment fairness
-      checks applied before any win-rate comparison
+- [ ] Every ramp figure carries the survivor-cohort caveat; motion, segment and sales-region
+      fairness checks applied before any win-rate comparison; region warnings surfaced or
+      region context stated unavailable
 - [ ] Coaching-history lifecycle states kept distinct; ledger rows not shown as coaching
 - [ ] Causal-chain links each carry a number and a sample size; no causal language
 - [ ] Fixture rows excluded, or **Demo data — not for real coaching** on every slide

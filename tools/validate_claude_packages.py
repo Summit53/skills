@@ -23,6 +23,9 @@ FORBIDDEN = {
     "openai.yaml reference": re.compile(r"openai\.yaml"),
     "Codex Presentations/Documents skill": re.compile(r"\b(?:Presentations|Documents) skill\b"),
 }
+# Skill hosts substitute $0, $1 ... with invocation arguments when a SKILL.md loads,
+# so a literal "$5,250,418" arrives as "<word>,250,418". Write amounts as "USD 5,250,418".
+ARG_PLACEHOLDER = re.compile(r"\$[0-9]")
 
 
 def frontmatter(text: str) -> dict[str, str] | None:
@@ -79,6 +82,10 @@ def main() -> None:
         body = FRONTMATTER.sub("", text, count=1)
         if re.search(r"^---\n(?:name|description):", body, re.MULTILINE):
             errors.append(f"{package.name}: second frontmatter block in body")
+        match = ARG_PLACEHOLDER.search(text)
+        if match:
+            line = text.count("\n", 0, match.start()) + 1
+            errors.append(f"{package.name}/SKILL.md:{line}: '$<digit>' is replaced by skill arguments at load time; write a currency code instead")
         if not (package / "references" / PREFLIGHT).is_file():
             errors.append(f"{package.name}: missing references/{PREFLIGHT}")
 
