@@ -1,0 +1,28 @@
+{
+  "name": "summit53",
+  "version": "1.0.0",
+  "description": "Evidence-grounded revenue workflows (forecast, deal, renewal, coaching, territory and board packs) on your Summit53 tenant, with the hosted Summit53 MCP connector bundled.",
+  "author": {
+    "name": "Summit53",
+    "url": "https://summit53.io"
+  },
+  "homepage": "https://github.com/j-sulliman/summit53-external-skills",
+  "repository": "https://github.com/j-sulliman/summit53-external-skills",
+  "keywords": ["summit53", "revenue", "forecast", "pipeline", "sales", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Summit53",
+    "shortDescription": "Revenue Engine skills and MCP connector for your Summit53 tenant.",
+    "longDescription": "Evidence-grounded forecast, deal, renewal, coaching, territory, win/loss and board workflows that read your own Summit53 tenant through the hosted Summit53 MCP connector. Read-only by default; every number is tenant-scoped and missing evidence is reported as unavailable, never zero.",
+    "developerName": "Summit53",
+    "category": "Productivity",
+    "capabilities": ["Skills", "MCP"],
+    "websiteURL": "https://summit53.io",
+    "defaultPrompt": [
+      "Why did our forecast move this week?",
+      "Prep a deal review for my biggest open deal.",
+      "Which Summit53 org am I connected to?"
+    ]
+  }
+}

@@ -1,9 +1,10 @@
 ---
 name: "summit53"
 description: "Start here for any Summit53 Revenue Engine request when the right workflow is unclear, and to set up or check the Summit53 connection. Confirms the Summit53 connector is attached and signed in, reports which organization it is scoped to, and routes to the matching Summit53 skill: forecast movement, board pack, internal QBR, customer QBR, deal review, deal inspection, deal chronology, competitor response, first-meeting deck, renewal outlook, renewal defence, rep coaching, rep evidence dossier, territory review, win/loss analysis or the revenue action brief. Use on 'set up Summit53', 'connect Summit53', 'is Summit53 connected', 'which Summit53 org am I in', 'what can Summit53 do', 'which Summit53 skill should I use', or a revenue question that names Summit53 without naming a workflow."
-version: "1.0.0"
-baselined: "2026-10-14"
-status: "active"
+metadata:
+  version: "1.0.0"
+  baselined: "2026-10-14"
+  status: "active"
 ---
 
 # Summit53 (start here)

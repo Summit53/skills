@@ -1,9 +1,10 @@
 ---
 name: "forecast-delta-brief"
 description: "Produce a one-slide 16:9 PPTX forecast delta brief for the weekly forecast or commit call: the current forecast-confidence number, its signed movement over a fixed seven-day window, which contributors arithmetically account for it, up to three corroborating deals, and the limits, plus a five-line chat summary readable on a phone. Read-only; can run on a Monday-morning schedule. Use when a user says 'why is the number different from last week?', 'what moved the forecast this week', 'prep me for the forecast call', 'commit call brief', 'weekly forecast delta', 'forecast confidence dropped, why', or 'explain this week's forecast movement'. Do not use for daily or monthly narratives (not supported). Do not use for a board or investor pack — use board-revenue-pack. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a renewal-book outlook — use cs-renewal-forecast."
-version: "3.1.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "3.1.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Forecast Delta Brief
@@ -26,8 +27,8 @@ dashboard of levels, followed by a five-line chat summary.
 ## Preflight
 
 Read [references/connector-preflight.md](references/connector-preflight.md) and complete its
-checklist before any data call: logical tool names, one ToolSearch `select:` batch for
-deferred tools, live-schema inspection, read-only discipline, fixture exclusion,
+checklist before any data call: logical tool names, deferred tools loaded in one batch
+([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), live-schema inspection, read-only discipline, fixture exclusion,
 unavailable-not-zero, correlational language, one-link delivery.
 
 ### Evidence gates — in this order, before any other call
@@ -74,8 +75,10 @@ not for customer or commercial decisions**.
   excluded-amount disclosure, constant currency and FX in movement attribution. Read it
   before writing any amount on the slide and before Step 2's FX line.
 
-Also read the `pptx` skill's SKILL.md (and its PptxGenJS reference, where installed)
-before writing slide code.
+- [references/host-adapters.md](references/host-adapters.md) — how this host loads tools,
+  builds and renders slides, and saves and delivers files. Load the host's presentation
+  toolchain per [Building slides](references/host-adapters.md#building-slides) before
+  writing slide code.
 
 ## The moment this serves
 
@@ -281,13 +284,15 @@ The decomposition names a driver. The room wants deal names. Bridge them careful
 
 ## Step 3 — Render exactly one slide
 
-Build with PptxGenJS following the `pptx` skill. Save
-`Forecast-Delta-Brief-{YYYY-MM-DD}.pptx` (the returned `current_date`) to the session's
-outputs directory. **Exactly one 16:9 slide** — no cover, appendix, or closing slide, and
+Build with the host's presentation toolchain
+([host-adapters.md](references/host-adapters.md#building-slides)). Save
+`Forecast-Delta-Brief-{YYYY-MM-DD}.pptx` (the returned `current_date`) where the host keeps
+deliverables ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)).
+**Exactly one 16:9 slide** — no cover, appendix, or closing slide, and
 no Markdown companion unless the user explicitly asks for one.
 
-- `pres.layout = "LAYOUT_WIDE"` (13.33" × 7.5"). `LAYOUT_16x9` is 10" × 5.625"; coordinates
-  written for the wide canvas silently render off-slide on it.
+- **Canvas:** 16:9 widescreen, 13.33" × 7.5". When building with PptxGenJS (Claude's pptx
+  skill), use `LAYOUT_WIDE`, never `LAYOUT_16x9` (see host-adapters).
 - **Midnight Executive**: navy `1E2761` framing, off-white `F8FAFC` editorial surface, ice
   blue `CADCFC` structure, charcoal `1E293B` text, slate `64748B` secondary text; emerald
   `10B981`, amber `F59E0B`, red `EF4444` only where a source band supports that status.
@@ -304,7 +309,8 @@ Compose one reading path, top to bottom:
    contributor, and one interpretation sentence containing the window. This is what the
    leader says in the room; it must be defensible verbatim.
 3. **Movement visual** — a native diverging bar chart of `contribution_pts`
-   (`invertedColors` for negatives), paired with or replaced by a compact
+   (negatives in a contrasting colour; when building with PptxGenJS (Claude's pptx skill),
+   use `invertedColors`), paired with or replaced by a compact
    `Was / Now / Moved / Contribution / Band` table when clearer. Show the total and any
    explicit residual. **Exclude uninstrumented contributors from the chart data** — a null
    plots as a zero-length bar — and list them beneath as **not yet measured**.
@@ -344,7 +350,7 @@ the edge in the room cannot.
 
 ### Speaker notes — `[Sources]`
 
-Put full provenance in `slide.addNotes(...)`, not a tiny footer. Begin with a `[Sources]`
+Put full provenance in the slide's speaker notes, not a tiny footer. Begin with a `[Sources]`
 block listing: organization name; `scoped_org_id` and the matched `entity_id` / citation
 `object_id` (speaker notes only — never on the visible slide); every logical capability
 name used (no tool prefixes); `as_of` and window dates; reporting currency, `rates_as_of`
@@ -369,11 +375,12 @@ Check content, not exit status. Do not deliver unless all fifteen pass:
    as arithmetic attribution or corroboration.
 8. The file is a `.pptx` with exactly one 16:9 slide — no cover, closing slide, placeholder
    text, or accidental Markdown companion.
-9. The slide is rendered to an image (the `pptx` skill's `scripts/office/soffice.py` → PDF →
-   `pdftoppm`) and inspected at full size; every overlap, clipping, wrap failure, illegible
-   label, imbalance, and source-to-visual mismatch is fixed; the rightmost element is
-   visible.
-10. The `pptx` skill's `scripts/office/validate.py` passes on the final file.
+9. The slide is rendered to an image with the host's render step
+   ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)) and
+   inspected at full size; every overlap, clipping, wrap failure, illegible label,
+   imbalance, and source-to-visual mismatch is fixed; the rightmost element is visible.
+10. The host's presentation validation passes on the final file
+    ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)).
 11. All body text is ≥16 pt and every interpretation-changing limitation is on the slide.
 12. Speaker notes contain the complete `[Sources]` block; no organization ID or tool prefix
     appears on the visible slide; no `healthScore` delta or rep rank appears anywhere.
@@ -405,11 +412,11 @@ Do not print the slide as Markdown, and do not paste tables into chat.
 
 ## Scheduling
 
-Pairs with the `schedule` skill. Run the morning of the forecast call — the brief is about
-the last seven days, so it must be fresh.
+Where the host supports scheduled runs, run it the morning of the forecast call — the brief
+is about the last seven days, so it must be fresh.
 
 ```
-cronExpression: "0 7 * * 1"   # Mondays 7am, adjust to the call
+cron: "0 7 * * 1"   # Mondays 7am, adjust to the call
 ```
 
 Prompt: *"Run the forecast delta brief for {organization name} with the fixed seven-day

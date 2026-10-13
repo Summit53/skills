@@ -1,9 +1,10 @@
 ---
 name: "renewal-defence-pack"
 description: "Prepare an evidence-grounded, read-only renewal defence for one named account and one renewal contract: contract facts, a promise-to-impact evidence table matched only by recorded outcome links, procurement-ready proof points with safe wording, gaps that weaken the defence, and questions to resolve — or an evidence-readiness finding when the records can't support a defence. Use when Customer Success must defend an active renewal, procurement challenge, commercial review, or renewal-risk meeting, e.g. 'build a renewal defence for [account]', 'procurement is pushing back on [customer]'s renewal', 'help me defend this renewal', 'renewal risk meeting prep for [account]', or 'save plan for [customer]'. Do not use for a portfolio renewal forecast or NRR outlook — use cs-renewal-forecast. Do not use for a customer-facing business review — use customer-qbr. Internal quarterly revenue review — use qbr-generator."
-version: "1.0.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.0.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Renewal Defence Pack
@@ -23,7 +24,8 @@ those records do not support a defence, deliver an evidence-readiness finding in
 
 Read [references/connector-preflight.md](references/connector-preflight.md) and complete its
 checklist before any data call. It covers connector and tenant resolution
-(`current_context` first), deferred-tool loading, live-schema inspection, read-only
+(`current_context` first), deferred-tool loading
+([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), live-schema inspection, read-only
 discipline, fixture exclusion, unavailable-not-zero, correlational language, and delivery.
 
 Skill-specific gates:
@@ -152,7 +154,9 @@ Sources: {logical capability names, IDs, timestamps, warnings, and provenance ex
 
 If the user requests customer-ready wording, keep the same evidence gates and omit internal
 scores, risk categories, expansion-readiness labels, and speculative recommendations. If they
-request a DOCX, use the `docx` skill with the same content and gates.
+request a DOCX, build it with the host's document toolchain
+([host-adapters.md](references/host-adapters.md#building-documents)) using the same content and
+gates.
 
 ## 5. Verify
 

@@ -8,9 +8,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_CODEX = 16
-# Plugin-only packages with no Codex counterpart yet (the router).
-CLAUDE_ONLY = {"summit53"}
+SKILLS = ROOT / "plugins" / "summit53" / "skills"
+# The 16 workflow skills plus the summit53 router.
+EXPECTED_PACKAGES = 17
 FORBIDDEN_ROOTS = {"skills", "provenance", "_canonical", "patches", "private"}
 TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 FORBIDDEN_PATTERNS = {
@@ -35,15 +35,11 @@ def main() -> None:
     if present_forbidden:
         errors.append(f"forbidden public roots present: {present_forbidden}")
 
-    codex = package_names(ROOT / "platforms" / "codex" / "skills")
-    claude = package_names(ROOT / "plugins" / "summit53" / "skills") - CLAUDE_ONLY
-    if len(codex) != EXPECTED_CODEX:
-        errors.append(f"expected {EXPECTED_CODEX} Codex packages, found {len(codex)}")
-    if claude != codex:
-        if claude - codex:
-            errors.append(f"Claude packages absent from Codex tree: {sorted(claude - codex)}")
-        if codex - claude:
-            errors.append(f"Codex packages absent from Claude tree: {sorted(codex - claude)}")
+    packages = package_names(SKILLS)
+    if len(packages) != EXPECTED_PACKAGES:
+        errors.append(f"expected {EXPECTED_PACKAGES} packages, found {len(packages)}")
+    if (ROOT / "platforms").exists():
+        errors.append("platforms/ is retired; packages live only under plugins/summit53/skills")
 
     for path in sorted(item for item in ROOT.rglob("*") if item.is_file()):
         if path == Path(__file__).resolve():
@@ -62,10 +58,7 @@ def main() -> None:
         for error in errors:
             print(f"ERROR: {error}")
         raise SystemExit(1)
-    print(
-        f"Validated public boundary: {len(codex)} Codex packages, "
-        f"{len(claude)} Claude packages"
-    )
+    print(f"Validated public boundary: {len(packages)} packages")
 
 
 if __name__ == "__main__":

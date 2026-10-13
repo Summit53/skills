@@ -478,11 +478,12 @@ fabricated critique.
 
 ## Step 4: Build the deck
 
-Build with PptxGenJS following the `pptx` skill. Read that skill's SKILL.md (and its
-PptxGenJS reference where present) before writing code: set the layout before adding
-slides, never use `#` in hex colours, build fresh option objects per call, use
-`addNotes` for speaker notes, keep charts native, and build a structured deck with a
-theme, layouts and sections.
+Build with the host's presentation toolchain; load it per
+[host-adapters.md](host-adapters.md#building-slides) before writing code. Set the 16:9
+layout before adding slides, put sources in speaker notes, keep charts native, and build
+a structured deck with a theme, layouts and sections. When building with PptxGenJS
+(Claude's pptx skill), never use `#` in hex colours, build fresh option objects per call,
+and use `addNotes` for speaker notes.
 
 ### Design system
 
@@ -507,7 +508,7 @@ theme, layouts and sections.
   slides.
 - **Callouts and status:** use a tinted card background, a small coloured status dot or
   an icon in a coloured circle. Do not use left-edge colour bars, single-side borders or
-  accent stripes (the `pptx` skill's avoid list).
+  accent stripes.
 - **Colour is for deal and data health, never a rating of the person.** Every
   health-coloured cell follows `score_semantics.direction` (see Slide 4).
 - **Helpers:** define small factory helpers (`addStatCard`, `addSectionTitle`,
@@ -739,7 +740,9 @@ emerald positive callout (see [On-target reps](#on-target-reps)).
      are the actions recorded when the last session was completed. Each has a `task` and
      a `completed` flag; render a short checklist with an emerald check for completed
      and an amber open circle for outstanding. Show only actions carried from an
-     attested or completed session. If the list is empty, skip this section.
+     attested or completed session; if any item is excluded on that basis, say so in the
+     slide's speaker notes rather than dropping it silently, and never add a commitment
+     the manager did not record. If the list is empty, skip this section.
   2. **CRM action plan: execution status**: from `team_action_plan`, completion rate
      ("Last period: 7 of 9 CRM actions completed (78%)") and any missed or flagged
      items. Frame this as deal-execution accountability, not coaching. **Do not conflate
@@ -790,23 +793,23 @@ emerald positive callout (see [On-target reps](#on-target-reps)).
 
 ## Step 5: Generate, QA and deliver
 
-Write one Node.js PptxGenJS script that:
+Write one generator with the host's presentation toolchain
+([host-adapters.md](host-adapters.md#building-slides)) that:
 
 1. embeds all pulled data directly (no external data files);
-2. uses the factory helpers above (fresh option objects per call; PptxGenJS mutates
-   them);
+2. uses the factory helpers above (when building with PptxGenJS (Claude's pptx skill),
+   fresh option objects per call, because PptxGenJS mutates them);
 3. builds every slide in the specification, skipping optional slides without evidence;
 4. handles missing data, empty arrays, indeterminate payloads and zero values per
    [Handling missing data](#handling-missing-data);
-5. saves `Rep-Coaching-Report-{RepName}-{YYYY-MM-DD}.pptx` to the session's outputs
-   directory.
+5. saves `Rep-Coaching-Report-{RepName}-{YYYY-MM-DD}.pptx` where the host keeps
+   deliverables ([host-adapters.md](host-adapters.md#saving-and-delivering-files)).
 
-Then QA, following the `pptx` skill:
+Then QA, following [host-adapters.md](host-adapters.md#rendering-and-inspecting-slides):
 
-1. Run the `pptx` skill's `validate.py` on the deck and fix every failure in the
+1. Run the host's presentation validation on the deck and fix every failure in the
    generator.
-2. Render every slide: `soffice.py --headless --convert-to pdf`, then
-   `pdftoppm -jpeg -r 150`. Inspect **each slide at full size**.
+2. Render every slide with the host's render step. Inspect **each slide at full size**.
 3. Fix overlap, clipping, wrapping, a number split from its unit, low contrast and
    leftover placeholder copy.
 4. **Content check:** spot-check every number against the tool payload; confirm health
@@ -944,8 +947,8 @@ knowing what was agreed last time.
 ## Tools
 
 Logical names; resolve the connector prefix at runtime per
-[connector-preflight.md](connector-preflight.md) and load them in one ToolSearch
-`select:` batch.
+[connector-preflight.md](connector-preflight.md) and load them in one batch per
+[host-adapters.md](host-adapters.md#loading-the-summit53-tools).
 
 | Tool | Role | Required? |
 |---|---|---|

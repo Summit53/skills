@@ -1,9 +1,10 @@
 ---
 name: "qbr-generator"
 description: "Build an internal quarterly revenue and sales operating review as an executive PPTX from live Summit53 data: quota and revenue performance, ARR growth and retention, pipeline health, risk and stalled pipeline, account portfolio, wins and losses, and next-quarter actions. DOCX only when explicitly requested. Use when a revenue or sales leader says 'prep for my QBR', 'build my quarterly deck', 'quarterly business review', 'quarterly sales review', 'executive revenue review', 'pull together the numbers for this quarter', 'I need a revenue review', or wants the quarter's CRM performance compiled into an internal presentation. Despite the name, do not use for a customer-facing QBR or value review — use customer-qbr. Do not use for board or investor reporting — use board-revenue-pack. Do not use for the weekly 'why did the number move' brief — use forecast-delta-brief."
-version: "1.2.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # QBR Generator
@@ -19,11 +20,13 @@ Turn live Summit53 revenue evidence into an internal quarterly operating review:
 
 ## Preflight
 
-Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one ToolSearch `select:` batch, live-schema discovery, read-only discipline (never `refresh: true`), fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), live-schema discovery, read-only discipline (never `refresh: true`), fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
 
 Read [references/async-envelopes.md](references/async-envelopes.md) before the first `unified_forecast_summary` call: it defines how to poll processing envelopes with `get_job` and re-call for the payload.
 
 Read [references/currency-and-fx.md](references/currency-and-fx.md) before writing any amount on a slide: it defines reporting-currency labels, disclosure of excluded or unconverted amounts, constant currency and FX effect. Its checklist is part of this skill's final verification.
+
+Read [references/host-adapters.md](references/host-adapters.md) for how this host loads tools, builds and renders the deck, builds any DOCX, and saves and delivers files.
 
 Skill-specific gates (resolve these up front — see Step 1):
 
@@ -165,7 +168,7 @@ This is what separates a good QBR from a data dump. Before building slides, reco
 
 ## Step 4: Build the Deck
 
-Build with PptxGenJS following the `pptx` skill: read its SKILL.md (and its PptxGenJS reference, where the installed version has one) before writing any code. The deck structure below is your blueprint — favor a coherent executive story over exhaustive dashboard coverage, and drop a slide whose sources were all unavailable rather than rendering an empty frame.
+Build with the host's presentation toolchain: load it per [host-adapters.md](references/host-adapters.md#building-slides) before writing any code. The deck structure below is your blueprint — favor a coherent executive story over exhaustive dashboard coverage, and drop a slide whose sources were all unavailable rather than rendering an empty frame.
 
 **Preserve the evidence on the slide.** Show denominators and sample sizes next to rates (win rate "(n = 42 closed)", logo churn "3 of 57 renewal logos", time-to-value "median 41 days, 18 contracts measured", revenue per rep "across 9 quota-carrying reps"), the as-of timestamp of each source in the slide footer, and any data-quality caveat the tool returned. A rate without its denominator is not shippable.
 
@@ -340,34 +343,35 @@ Build these slides in order. Each slide description includes what data to use an
 
 **Money formatting**: any `formatCurrency`-style helper in the deck script takes the reporting currency code from the response and renders the ISO code or its unambiguous symbol (`NZ$`, `A$`, `US$`, `€`, `£`) — never a hard-coded `$`. A bare `$` is acceptable only when the reporting currency is USD and the audience is US-only. Chart value-axis labels follow the same rule.
 
-Use native PptxGenJS charts (`addChart()` — bar, line, pie, stacked bar); they're editable in PowerPoint and look sharper. Follow the `pptx` skill's chart guidance: set titles and data labels, pass `chartColors` from the palette, muted axis labels and subtle grid lines. Fall back to an image only for a chart type PowerPoint cannot draw natively.
+Use native charts (bar, line, pie, stacked bar); they're editable in PowerPoint and look sharper. Set titles and data labels, use palette colours, muted axis labels and subtle grid lines. When building with PptxGenJS (Claude's pptx skill), use `addChart()` and pass `chartColors` from the palette. Fall back to an image only for a chart type PowerPoint cannot draw natively.
 
 ## Step 5: Generate the File
 
-Use the `pptx` skill's approach:
+Use the host's presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)):
 
-1. Write a Node.js script using PptxGenJS that constructs all slides
-2. Embed the reconciled data directly in the script (no external data files needed)
-3. Use factory functions for option objects (PptxGenJS mutates them — never reuse one across calls)
-4. Run the script to generate the .pptx file
-5. Save to the session's outputs directory as `QBR-[Quarter]-[Year].pptx`
+1. Write one generator that constructs all slides
+2. Embed the reconciled data directly in the generator (no external data files needed)
+3. When building with PptxGenJS (Claude's pptx skill), use factory functions for option objects (PptxGenJS mutates them — never reuse one across calls)
+4. Run the generator to produce the .pptx file
+5. Save as `QBR-[Quarter]-[Year].pptx` where the host keeps deliverables ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files))
 
-Only if the user explicitly requested a document, also build the DOCX described under DOCX Companion with the `docx` skill (read its SKILL.md first), from the **same reconciled figures** as the deck.
+Only if the user explicitly requested a document, also build the DOCX described under DOCX Companion with the host's document toolchain ([host-adapters.md](references/host-adapters.md#building-documents)), from the **same reconciled figures** as the deck.
 
 ## Step 6: QA
 
 After generating the file:
 
-1. Render every slide to an image using the `pptx` skill's render flow (its `soffice.py` wrapper to PDF, then `pdftoppm`). Use the full-resolution renders, not the thumbnail grid.
+1. Run the host's presentation validation, then render every slide to an image with the host's render step ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)). Use the full-resolution renders, not the thumbnail grid.
 2. Open and inspect **every slide at full size** — check for clipping, overlapping text, awkward wrapping, chart errors, color-contrast issues, placeholder text or bracketed TODOs
 3. Verify every data point, denominator and timestamp matches what the tools returned, and that the DOCX (if any) uses the same figures as the deck
-4. Confirm no slide shows a permission error, an "unavailable" metric rendered as zero, or per-rep detail on an executive-audience deck
-5. Fix any issues, re-render the changed slides, and re-inspect
-6. Deliver: return **one clickable link** to the PPTX (plus one to the DOCX only if it was requested), followed by a short note on the stated assumptions, material gaps and excluded access-gated metrics
+4. If a DOCX was built, run the host's document-toolchain checks on it ([host-adapters.md](references/host-adapters.md#building-documents)) and confirm headings, tables and the Sources & Limits section render with no placeholder text
+5. Confirm no slide shows a permission error, an "unavailable" metric rendered as zero, or per-rep detail on an executive-audience deck
+6. Fix any issues, re-render the changed slides, and re-inspect
+7. Deliver: return **one clickable link** to the PPTX (plus one to the DOCX only if it was requested), followed by a short note on the stated assumptions, material gaps and excluded access-gated metrics
 
 ## DOCX Companion (only on explicit request)
 
-Produce a DOCX only when the user explicitly asks for a document. Build it with the `docx` skill, from the same reconciled figures as the deck (if the user asked for the document *instead of* a deck, still reconcile the figures the same way). Keep the same assumptions line, denominators, timestamps and Sources & Limits section. Structure it as:
+Produce a DOCX only when the user explicitly asks for a document. Build it with the host's document toolchain ([host-adapters.md](references/host-adapters.md#building-documents)), from the same reconciled figures as the deck (if the user asked for the document *instead of* a deck, still reconcile the figures the same way). Keep the same assumptions line, denominators, timestamps and Sources & Limits section. Structure it as:
 
 ```
 QUARTERLY BUSINESS REVIEW — [Quarter] [Year]

@@ -1,9 +1,10 @@
 ---
 name: "win-loss-analysis"
 description: "Analyse a cohort of closed Summit53 deals and build a win/loss PPTX: outcome rates with denominators, framework, activity and stakeholder patterns associated with wins and losses, coded qualitative themes with deal counts, loss patterns, segment differences, and recommendations framed as measurable validation tests. For sales leaders, RevOps and offsites. Use for win/loss reports, win-rate analysis, closed-deal analysis, deal post-mortems, 'why are we losing deals', 'what do our wins have in common', 'what separates wins from losses', 'what predicts a win', 'loss reasons', 'win loss patterns', 'help me understand our win rate', 'how can we improve our close rate'. Do not use for a live competitor in an active deal — use competitor-response-card. Do not use for individual rep coaching — use rep-coaching-report."
-version: "1.2.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Win/Loss Pattern Analysis
@@ -24,7 +25,7 @@ Every sales org asks "why do we win?" and "why do we lose?", but few have eviden
 
 ## Preflight
 
-Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. If the tools below are deferred, load them in one ToolSearch `select:` call.
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. If the tools below are deferred, load them in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)).
 
 Skill-specific gates:
 
@@ -237,7 +238,7 @@ One sentence, in association language, with n:
 
 ## Step 4: Build the deck
 
-Build with PptxGenJS following the `pptx` skill: read its SKILL.md and its `pptxgenjs.md` reference before writing code.
+Build the deck with the host's presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)).
 
 ### Design system
 
@@ -332,22 +333,22 @@ Slide 4 appears only when a region cut or ICP fit evidence is available; without
 
 ### Chart generation
 
-Prefer native PptxGenJS charts (BAR, DOUGHNUT, PIE) so they stay editable. Match colours to the palette; use the `pptxgenjs.md` styling guidance (custom colours, clean backgrounds, muted axis labels, subtle grids). For Slide 5 use two series (Won, Lost) with `barDir: 'col'` in emerald and cherry. Start value axes at zero; no truncated axes that exaggerate gaps.
+Prefer native, editable charts (bar, doughnut, pie). Match colours to the palette, with custom colours, clean backgrounds, muted axis labels and subtle grids. For Slide 5 use a horizontal grouped bar chart with two series (Won, Lost) in emerald and cherry. Start value axes at zero; no truncated axes that exaggerate gaps. When building with PptxGenJS (Claude's pptx skill), use the BAR chart type with `barDir: 'bar'` for Slide 5 and follow the skill's `pptxgenjs.md` styling guidance.
 
 ## Step 5: Generate the file
 
-Write one Node.js PptxGenJS script that:
+Generate the deck in one build ([host-adapters.md](references/host-adapters.md#building-slides)) that:
 
 1. Embeds all pulled and calculated data directly (no external data files).
 2. Uses helpers for stat cards, pattern cards and comparison bars.
-3. Uses factory functions for shadows and option objects (never reuse option objects across `addShape` / `addText` calls).
+3. When building with PptxGenJS (Claude's pptx skill), uses factory functions for shadows and option objects (never reuse option objects across `addShape` / `addText` calls).
 4. Builds every slide above.
 5. Handles missing data, empty arrays, nulls and small samples — renders "unavailable" rather than `0`, and counts alongside percentages.
-6. Saves to the session's outputs directory as `Win-Loss-Analysis-[CompanyName]-[Date].pptx`.
+6. Saves as `Win-Loss-Analysis-[CompanyName]-[Date].pptx` where the host saves files ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)).
 
 ## Step 6: Render, QA and deliver
 
-1. Render **every** slide to an image using the `pptx` skill's render/thumbnail flow (or `soffice --headless --convert-to pdf` then `pdftoppm -jpeg -r 150`).
+1. Render **every** slide to an image with the host's render step ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)).
 2. Inspect each slide at full size: overlap, clipping, wrapping, contrast, misleading scales, placeholder text, small-sample overstatement.
 3. Check every number against the source payloads, and every percentage for its n.
 4. Fix and re-render; do not declare success before at least one fix-and-verify cycle.

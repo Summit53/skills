@@ -1,9 +1,10 @@
 ---
 name: "revenue-action-brief-s53"
 description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows. Do not use for weekly forecast movement ('why did the number move') — use forecast-delta-brief. Do not use to draft emails or write CRM records — the brief only hands off to a write-capable skill after the user explicitly asks for and approves that action."
-version: "1.2.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Revenue Action Brief
@@ -22,7 +23,7 @@ Read [references/connector-preflight.md](references/connector-preflight.md) and 
 
 Skill-specific gates:
 
-- **Preflight every read capability** this skill uses before the first data call: the eight data reads in Step 2 (`unified_forecast_summary`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`) plus `get_job` for the async flow, `deal_drag_dashboard` if a C8 handoff is requested, and the **optional** `target_account_funnel_summary` (pipeline-generation signals; requires the customer's Outreach plan — if it is not exposed or is access-denied, Domain E is not assessed and the brief continues). If they are deferred, load them all in one ToolSearch `select:` call, then inspect each live schema. Tool names and arguments in this file are semantic guidance; follow the live schema when it differs and note the difference.
+- **Preflight every read capability** this skill uses before the first data call: the eight data reads in Step 2 (`unified_forecast_summary`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`) plus `get_job` for the async flow, `deal_drag_dashboard` if a C8 handoff is requested, and the **optional** `target_account_funnel_summary` (pipeline-generation signals; requires the customer's Outreach plan — if it is not exposed or is access-denied, Domain E is not assessed and the brief continues). If they are deferred, load them all in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), then inspect each live schema. Tool names and arguments in this file are semantic guidance; follow the live schema when it differs and note the difference.
 - **Missing source ≠ zero.** If a capability is not exposed, errors, or is access-denied, record a missing-source note for it and suppress **only** the signals whose `source` depends on it (per the catalog). Never substitute zero, never treat the silence as health, and never let a missing source make the brief look calmer than the data supports.
 - **Demo label.** Commercial artifact: if fixture rows cannot be separated, put **Demo data — not for customer or commercial decisions** under the brief's header.
 - **Read-only.** No `refresh: true`. The brief never drafts, sends, logs, or writes. Handoffs follow Step 7.
@@ -33,6 +34,7 @@ References:
 - [references/async-envelopes.md](references/async-envelopes.md) — read before calling `unified_forecast_summary`; governs `get_job` polling and the identical-arguments re-call.
 - [references/connector-preflight.md](references/connector-preflight.md) — the shared tenant, schema, fixture, read-only, missing-evidence and delivery contract.
 - [references/currency-and-fx.md](references/currency-and-fx.md) — read before rendering any amount: reporting-currency labels, disclosure of excluded or unconverted amounts, constant currency, and why FX effect is never performance.
+- [references/host-adapters.md](references/host-adapters.md) — how to load tools, save and deliver files, and refer to other skills on the current host.
 
 ## Why This Exists
 
@@ -167,7 +169,7 @@ Omit any horizon section the leader did not ask for (per Step 1 scope), but if s
 
 If any source was missing, end the brief with a **Not assessed** line listing each missing source and the areas it covers (e.g. "Not assessed: retention signals — ARR growth analytics unavailable"). Keep the wording plain; never show raw errors. If the demo label applies, place it directly under the header.
 
-Deliver the brief in chat. Optionally, if the leader wants a copy, also save it as a Markdown file in the session's outputs directory (or the workspace) and give one clickable link to it.
+Deliver the brief in chat. Optionally, if the leader wants a copy, also save it as a Markdown file where the host saves files ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)) and give one clickable link to it.
 
 ### Output template
 
@@ -249,7 +251,7 @@ When the leader picks an item, route by the signal's domain:
 **Handoff protocol** (for the routable rows):
 
 1. Identify the item's `signal_id` and the entity it concerns — the opportunity ID (Domain A) or rep ID (Domain B).
-2. Load the target skill's `SKILL.md` and follow it, scoped to that entity.
+2. Invoke the target skill by its plain name ([host-adapters.md](references/host-adapters.md#referring-to-other-summit53-skills)) and follow it, scoped to that entity.
 3. Pass the brief's diagnosis as known context — the signal, the evidence line, and the specific blocker. This is the point of the bridge: `deal-action-engine` should draft against the obstacle the brief already identified (e.g. "silent 16 days, closes today"), not open a generic check-in.
 4. These execution skills can **write** — they draft messages, create notes, and log to the CRM. The brief itself is strictly read-only. Hand off to a skill that drafts messages or writes CRM records **only after the leader has explicitly requested or approved that specific next action** in this conversation — naming the item number is a request to act on it; a general "thanks" is not. State what the target skill will do (e.g. "deal-action-engine will draft a re-engagement email for {deal}; it can also log to the CRM — go ahead?") and wait for a clear yes. The handoff is a deliberate step from diagnosis into action; name it as such. Any approval flow inside the target skill still applies.
 

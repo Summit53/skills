@@ -1,9 +1,10 @@
 ---
 name: "first-meeting-deck"
 description: "Build a grounded, customer-facing first-meeting or discovery PPTX for one Summit53 account or opportunity: assertive-but-invitational hypotheses, discovery agenda, market point of view, vendor-grounded capabilities and next steps, plus a visibly quarantined AE prep slide. Detects net-new vs expansion meetings and adapts to meeting length. Use when an AE is preparing for a first or early-stage customer meeting, e.g. 'first meeting deck for [deal/account]', 'prep a discovery deck', 'build slides for my call with [prospect]', 'I'm meeting [stakeholder] tomorrow — make me a deck', 'generate a hypothesis deck', 'customer-facing deck for [deal]', 'what should I show in the first meeting', 'turn this opportunity into a discovery deck'. Also use for an explicit 'refresh vendor context' or 'refresh vendor branding' request. Do not use for a value or success review with an existing customer — use customer-qbr. For a one-screen response to a named competitor in an active deal use competitor-response-card."
-version: "1.2.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # First Meeting Deck
@@ -19,7 +20,7 @@ Generate a customer-facing first meeting deck for a specific opportunity. The de
 
 ## Preflight
 
-Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one ToolSearch `select:` batch, capability discovery with `list_available_tools`, live-schema inspection before every call (tool names and sample arguments in this file are semantic guidance), read-only discipline, fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), capability discovery with `list_available_tools`, live-schema inspection before every call (tool names and sample arguments in this file are semantic guidance), read-only discipline, fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
 
 Skill-specific gates:
 
@@ -306,7 +307,7 @@ If skip, proceed to Step 4. If yes:
 
 ### Targeted Category Search
 
-Run **five bounded `web_search` queries**, one per category. Keep queries short (3–6 words):
+Run **five bounded web searches** with the host's web search tool, one per category. Keep queries short (3–6 words):
 
 1. **Capital events** — `"[Account name] funding acquisition [current year]"`
 2. **Leadership changes** — `"[Account name] CEO appointment hire"`
@@ -319,7 +320,7 @@ Adapt based on what the account actually is. Drop irrelevant categories silently
 ### Curate and Present
 
 From the search results, select at most **1–2 findings per category** that are:
-- Dated within the last 90 days of today's date (check the publication date on the page itself, not the search snippet)
+- Dated within the last 90 days of the run's as-of date (the org-scoped `as_of` the Summit53 tools return; see [host-adapters.md](references/host-adapters.md#dates)) (check the publication date on the page itself, not the search snippet)
 - Clearly about *this* company (not a namesake)
 - From a primary or reputable source — prefer the prospect's own site, filings and press releases
 - Relevant to the Why Change / Why Now narrative
@@ -343,7 +344,7 @@ Proceed without blocking.
 
 ## Step 4: Transform Narratives (Hybrid LLM Step)
 
-This is the quality-critical step. Pre-computed narratives are tuned for internal strategic use; the deck needs customer-facing voice. Transform the existing narratives using Claude, grounded in the vendor context from Step 0.
+This is the quality-critical step. Pre-computed narratives are tuned for internal strategic use; the deck needs customer-facing voice. Transform the existing narratives with the host model, grounded in the vendor context from Step 0.
 
 **Every transform that makes capability or outcome claims must take `vendor-context.md` as an input** — this is the guardrail against over-claiming.
 
@@ -574,7 +575,7 @@ Detect once, early. Build the whole deck in that mode. Do not mix.
 
 ## Step 6: Build the Deck
 
-Build with PptxGenJS following the `pptx` skill: read its SKILL.md (and its PptxGenJS reference, where the installed version has one) before writing any code. Apply the **design system from [references/vendor-branding.md](references/vendor-branding.md)** — colours, typefaces, background strategy, slide design tokens, visual tone. All branding choices come from that file, never hardcoded in this skill. The slide-level instructions below use the token names defined in `vendor-branding.md`'s **Slide Design Tokens** table — resolve each token to its hex value at generation time.
+Build the deck with the host presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)); read that toolchain's instructions before writing any code. Apply the **design system from [references/vendor-branding.md](references/vendor-branding.md)** — colours, typefaces, background strategy, slide design tokens, visual tone. All branding choices come from that file, never hardcoded in this skill. The slide-level instructions below use the token names defined in `vendor-branding.md`'s **Slide Design Tokens** table — resolve each token to its hex value at generation time.
 
 ### Layout Philosophy (vendor-agnostic)
 
@@ -620,9 +621,9 @@ Slide 0 (AE Prep Notes) is **always** included and **always** visually distinct.
 
 This is the only slide the prospect must never see. It is the AE's cockpit: a single-page view of the narrative arc, the raw internal discovery questions (the unsanitised versions, not the "we'd like to understand" rewrites on Slide 4), the full Value Pyramid across all four stakeholder tiers (not just the filtered layer on Slide 7), the objection watchouts, and the deal's qualification framework gaps. Reviewed before the meeting, glanced at during, and — because no hidden-slide safety net is assumed — consciously skipped when entering presentation mode. The visual treatment below is the forcing function that makes accidental presentation essentially impossible.
 
-- **No hidden flag**: Slide 0 is rendered as a normal, visible slide. Do NOT set PptxGenJS's `{ hidden: true }` option or inject `show="0"` into the XML. This is a deliberate change from a prior iteration of this skill: Google Slides and several preview clients silently skip hidden slides from the editor as well as from presentation mode, which hides the prep material from the AE who needs it most. The AE is expected to manually skip Slide 0 when starting presentation mode (right-click the thumbnail → "Skip slide" in Google Slides; simply advance past it in PowerPoint/Keynote). The visual signals below make this a conscious one-keystroke action, not something the AE can miss.
+- **No hidden flag**: Slide 0 is rendered as a normal, visible slide. Do NOT set any hidden-slide option in the build toolchain (for example PptxGenJS's `{ hidden: true }`) or inject `show="0"` into the XML. This is a deliberate change from a prior iteration of this skill: Google Slides and several preview clients silently skip hidden slides from the editor as well as from presentation mode, which hides the prep material from the AE who needs it most. The AE is expected to manually skip Slide 0 when starting presentation mode (right-click the thumbnail → "Skip slide" in Google Slides; simply advance past it in PowerPoint/Keynote). The visual signals below make this a conscious one-keystroke action, not something the AE can miss.
 - **Background**: `content-slide-bg` with a subtle `muted` overlay (~10% opacity) so the slide is visually distinct from customer-facing slides even on a casual scroll-through. Combined with the header strip below, the "this doesn't look like the rest of the deck" cue is unmissable.
-- **Top header strip (0.4" band — taller than it was, because it's now the primary safety net)**: `accent-primary` fill spanning the slide width. Left: bold caps **"AE PREP  ·  DO NOT PRESENT"** in `title-on-dark`, tracked wide (charSpacing ≥ 4). Right: account name · meeting date · attendee names in `body-on-dark` 10pt. This strip must be the ONLY place in the entire deck where `accent-primary` appears as a full-width solid fill — so the AE's eye catches the orange bar instantly in the slide navigator thumbnail, distinguishing it from every other slide at a glance.
+- **Top header strip (0.4" band — taller than it was, because it's now the primary safety net)**: `accent-primary` fill spanning the slide width. Left: bold caps **"AE PREP  ·  DO NOT PRESENT"** in `title-on-dark`, tracked wide (letter-spacing ≥ 4pt; `charSpacing` when building with PptxGenJS). Right: account name · meeting date · attendee names in `body-on-dark` 10pt. This strip must be the ONLY place in the entire deck where `accent-primary` appears as a full-width solid fill — so the AE's eye catches the orange bar instantly in the slide navigator thumbnail, distinguishing it from every other slide at a glance.
 - **Band 1 — Narrative arc (single line, below header)**: one-sentence story compressed from Three Whys `why_change` + `why_now` + `why_us` power phrases. Shape: *"Why change → Why now → Why us."* Example: *"Advisory firms are stuck producing when they should be interpreting; AI has collapsed the production cost to zero; Summit53 is the Revenue Engine that lets them redirect the freed time."* Header typeface 14pt semibold, coloured `title-on-light`.
 - **Band 2 — Discovery questions (left half of body)**:
   - Small caps label *"DISCOVERY — ANSWERS YOU WANT"* in `accent-primary`
@@ -759,26 +760,26 @@ This slide does more work than any other content slide. It is the one place wher
 
 ## Step 7: Generate the File
 
-Write a complete Node.js script using PptxGenJS that:
+Generate the deck in one build script with the host toolchain ([host-adapters.md](references/host-adapters.md#building-slides)) that:
 
 1. Embeds all pulled data, transformed content, and vendor-context design tokens directly
 2. Uses helper functions for repeated patterns (hypothesis blocks, numbered agenda items, outcome blocks)
-3. Uses factory functions for shadows and styles (create fresh objects; never reuse option objects across `addShape`/`addText` calls)
+3. When building with PptxGenJS (Claude's pptx skill), uses factory functions for shadows and styles (a fresh options object for every `addShape`/`addText` call)
 4. Adapts to the meeting-length slide set from Step 1
 5. Adapts to net-new vs expansion mode from Step 5
 6. **Resolve all colour and typeface values at generation time from `vendor-branding.md`** — map each design token (e.g., `title-slide-bg`, `accent-primary`) to its hex value from the branding file's Slide Design Tokens table. Never hardcode colour values in the generation script.
-7. **Renders Slide 0 as visible with strong visual distinctness** — do NOT set `slide.hidden = true` or inject `show="0"` into the slide XML. Slide 0 is rendered as a normal, visible slide so it survives Google Slides, Claude Desktop preview, and other viewers that silently drop hidden slides from their editor. The safety net is visual: a full-width `accent-primary` header strip labelled **"AE PREP  ·  DO NOT PRESENT"** (0.4" tall, the only full-width `accent-primary` fill in the whole deck), plus the muted overlay and dense layout specified in the Slide 0 section above. Verify the treatment in Step 8 — do not skip the verification.
+7. **Renders Slide 0 as visible with strong visual distinctness** — do NOT set any hidden-slide flag (for example PptxGenJS `slide.hidden = true`) or inject `show="0"` into the slide XML. Slide 0 is rendered as a normal, visible slide so it survives Google Slides, desktop-assistant PPTX previews, Quick Look, and other viewers that silently drop hidden slides from their editor. The safety net is visual: a full-width `accent-primary` header strip labelled **"AE PREP  ·  DO NOT PRESENT"** (0.4" tall, the only full-width `accent-primary` fill in the whole deck), plus the muted overlay and dense layout specified in the Slide 0 section above. Verify the treatment in Step 8 — do not skip the verification.
 8. Handles edge cases (missing data, empty sections, no fresh signals, unauthorized Revenue Signals access, no battlecard/KB match, unscored framework)
 9. Writes speaker notes: Slide 2 carries each fresh signal's URL + access date; Slide 0 carries the verified vendor-fact sources (URL + access date) and the list of claims skipped as unverified
 10. Adds the demo label to every slide footer when the preflight requires it
-11. Saves to the session's outputs directory as `First-Meeting-[AccountName]-[Date].pptx`
+11. Saves as `First-Meeting-[AccountName]-[Date].pptx` in the host's output location ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files))
 
 ## Step 8: QA
 
 After generating the file:
 
-1. Render every slide to an image using the `pptx` skill's render flow (its `soffice.py` wrapper to PDF, then `pdftoppm`). Use the full-resolution renders for inspection; the thumbnail grid is only for the Slide 0 thumbnail check below.
-2. Open and inspect **every slide individually at full size** for clipping, overlapping text, awkward wrapping, cramped layouts and colour-contrast issues. The branding typeface (Inter) is not a QA-safe font in LibreOffice, so leave ~10% width slack in text boxes rather than trusting an apparent fit
+1. Render every slide to a full-resolution image with the host render path ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)). Use the full-resolution renders for inspection; a thumbnail or contact-sheet view is only for the Slide 0 thumbnail check below.
+2. Open and inspect **every slide individually at full size** for clipping, overlapping text, awkward wrapping, cramped layouts and colour-contrast issues. When rendering through LibreOffice, the branding typeface (Inter) may be substituted, so leave ~10% width slack in text boxes rather than trusting an apparent fit
 3. **Placeholder and grounding scan** — no bracketed TODOs, placeholder values, lorem text, "[Account Name]"-style tokens, unconfirmed reference customers, expired cohort or offer claims, or competitor brand names the user didn't ask for, on any slide
 4. **Voice audit** — read every slide out loud:
    - Slide 3 assertive-but-invitational, not preachy?
@@ -910,7 +911,7 @@ The skill is designed to be vendor-agnostic so it can ship to any vendor using S
 Asking users to fill a blank template has low conversion. Guided setup combining web research (what's already published) with focused questions (what the web can't answer) gets to a usable file in ~5 minutes with less cognitive load, and catches honest-boundaries information that self-written templates often skip.
 
 **Why hybrid LLM (transform) rather than raw pre-computed narratives?**
-CRM-generated strategic narratives are tuned for internal strategic use and typically run on lighter-weight LLMs. The deck needs assertive-but-invitational customer-facing voice, stakeholder-filtered messaging, and vendor-grounded capability claims — a different job. Transforming with Claude preserves the strategic investment in the in-product prompts while upgrading voice, tone, and grounding for customer consumption.
+CRM-generated strategic narratives are tuned for internal strategic use and typically run on lighter-weight LLMs. The deck needs assertive-but-invitational customer-facing voice, stakeholder-filtered messaging, and vendor-grounded capability claims — a different job. Transforming with the host model preserves the strategic investment in the in-product prompts while upgrading voice, tone, and grounding for customer consumption.
 
 **Why stakeholder filtering on the Value Pyramid?**
 Showing the Executive layer to a technical champion kills the meeting. Filtering by attendee tier is not optional.
@@ -930,7 +931,7 @@ Positioning evolves on a different cadence than brand palette. A vendor may ship
 **Why an in-deck prep slide — and why visible rather than hidden?**
 The first question (in-deck vs separate prep doc) has two answers. First, portability — one PPTX the AE opens on a laptop / phone / in a pre-meeting huddle beats a deck-plus-separate-brief workflow every time. Second, context proximity — the prep notes sit next to the customer slides they drive, so if the AE edits a hypothesis on Slide 3 they can eyeball whether the underlying question on Slide 0 still matches.
 
-The second question (visible vs hidden) got answered the hard way. The original design used PPTX's native hidden-slide flag (`show="0"`), reasoning that PowerPoint would skip it in Slide Show mode while keeping it visible in the editor. That assumption holds in PowerPoint desktop; it breaks in Google Slides (which silently drops hidden slides from the editor navigator unless the user deliberately unhides them), in Claude Desktop's PPTX preview, in some mobile PowerPoint clients, and in Quick Look. For an AE whose workflow lives in Google Slides, the hidden flag meant the prep material was invisible — which is the worst of both worlds.
+The second question (visible vs hidden) got answered the hard way. The original design used PPTX's native hidden-slide flag (`show="0"`), reasoning that PowerPoint would skip it in Slide Show mode while keeping it visible in the editor. That assumption holds in PowerPoint desktop; it breaks in Google Slides (which silently drops hidden slides from the editor navigator unless the user deliberately unhides them), in desktop-assistant PPTX previews, in some mobile PowerPoint clients, and in Quick Look. For an AE whose workflow lives in Google Slides, the hidden flag meant the prep material was invisible — which is the worst of both worlds.
 
 So Slide 0 is now rendered as a fully visible slide, and the "don't present this" guardrail is moved from an XML attribute to a **visual forcing function**: a 0.4" `accent-primary` header strip labelled "AE PREP · DO NOT PRESENT", enforced as the only full-width accent-primary fill in the deck so it's instantly spottable in thumbnail views. The AE manually skips the slide when entering presentation mode (one keystroke in any viewer). Trade-off accepted: slightly more AE discipline required, vastly better cross-client compatibility. If vendors using a PowerPoint-only workflow want the hidden-slide safety back, it can become a per-vendor preference in `vendor-branding.md` rather than a skill default — but the default is visible.
 

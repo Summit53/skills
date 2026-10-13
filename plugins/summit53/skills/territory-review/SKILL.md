@@ -1,9 +1,10 @@
 ---
 name: "territory-review"
 description: "Build a strategic territory planning or review deck (PPTX) from live Summit53 account, pipeline, health, activity, ARR, capacity and renewal evidence: sales-region and market-region performance, who sells where, TAM penetration, capacity per region, coverage questions and evidence-backed rebalancing options for CROs, VPs and regional leaders. Use for territory reviews, territory planning, geo or regional performance reviews, territory scorecards, whitespace analysis, prospecting allocation, territory health checks and rebalancing. Triggers: 'how are my territories doing', 'territory breakdown', 'where should we prospect', 'which territories are underperforming', 'regional pipeline review', 'show me territory coverage', 'how penetrated are we in each market', 'who is selling into which region'. Do not use for individual rep coaching — use rep-coaching-report. Do not use for a board or investor pack — use board-revenue-pack."
-version: "1.2.1"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.1"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Territory Review
@@ -18,7 +19,7 @@ Build a decision-ready territory review deck from live Summit53 evidence: where 
 
 ## Preflight
 
-Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. Load every tool named in Step 2 in one ToolSearch `select:` call if they are deferred.
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. Load every tool named in Step 2 in one batch if they are deferred ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)).
 
 Skill-specific gates:
 
@@ -192,7 +193,7 @@ Avoid generic advice like "improve territory coverage".
 
 ## Step 5: Build the deck
 
-Build with PptxGenJS following the `pptx` skill: read its SKILL.md and its `pptxgenjs.md` reference before writing code. Use the **Midnight Executive** design system for consistency with other Summit53 decks.
+Build the deck with the host's presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)). Use the **Midnight Executive** design system for consistency with other Summit53 decks.
 
 ### Design system
 
@@ -282,14 +283,14 @@ Slide 4 appears only when the `sales_region` × `market_region` cross-tab is ava
 
 ## Step 6: Generate the file
 
-Write one Node.js PptxGenJS script that:
+Generate the deck in one build ([host-adapters.md](references/host-adapters.md#building-slides)) that:
 
 1. Embeds all pulled and calculated data directly (no external data files).
-2. Uses factory functions for shadows and option objects (PptxGenJS mutates option objects; never reuse them across calls).
-3. Defines helpers: `addStatCard()`, `addSectionTitle()`, `healthBandColor()`, `healthColor()`, `coverageColor()`, `formatCurrency()`, `penetrationShare()`, `fitColor()`, `crosstabCell()`, `territoryCard()`.
+2. When building with PptxGenJS (Claude's pptx skill), uses factory functions for shadows and option objects (PptxGenJS mutates option objects; never reuse them across calls).
+3. Defines helpers (the patterns below are reference logic in JavaScript; implement the same semantics in any toolchain): `addStatCard()`, `addSectionTitle()`, `healthBandColor()`, `healthColor()`, `coverageColor()`, `formatCurrency()`, `penetrationShare()`, `fitColor()`, `crosstabCell()`, `territoryCard()`.
 4. Builds every slide above.
 5. Handles missing data, empty arrays, nulls and unassigned records, rendering "unavailable" rather than `0`.
-6. Saves to the session's outputs directory as `Territory-Review-[Date].pptx`.
+6. Saves as `Territory-Review-[Date].pptx` where the host saves files ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)).
 
 ### Helper patterns
 
@@ -315,7 +316,7 @@ function coverageColor(ratio) {
   return "EF4444";
 }
 
-// Fresh shadow object per call (avoids the PptxGenJS mutation issue).
+// PptxGenJS-specific (Claude's pptx skill): fresh shadow object per call (avoids the mutation issue).
 const makeShadow = () => ({ type: "outer", color: "000000", blur: 6, offset: 2, angle: 135, opacity: 0.15 });
 
 // Reporting currency comes from the response (metadata.currency or top-level currency), never assumed.
@@ -348,6 +349,7 @@ function fitColor(rating) {
 }
 
 // Cross-tab cell: shade by share of the server's row total; outline cells the server flags as cross_market.
+// The thresholds and colours are the spec; the returned object is PptxGenJS table-cell options.
 function crosstabCell(value, rowTotal, isCrossMarket) {
   const share = rowTotal ? value / rowTotal : null;
   const fill = share == null ? "F8FAFC" : share >= 0.4 ? "1E2761" : share >= 0.15 ? "CADCFC" : "F8FAFC";
@@ -361,11 +363,11 @@ function crosstabCell(value, rowTotal, isCrossMarket) {
 
 ## Step 7: Render, QA and deliver
 
-1. Render **every** slide to an image using the `pptx` skill's render/thumbnail flow (or `soffice --headless --convert-to pdf` then `pdftoppm -jpeg -r 150`).
+1. Render **every** slide to an image with the host's render step ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)).
 2. Inspect each slide at full size: overlap, clipping, wrapping, chart scales, mislabelled territories, placeholder text, colour contrast.
 3. Spot-check every headline number against the source payloads, including the unassigned/ambiguous counts.
 4. Fix and re-render until clean.
-5. Return **one clickable link** to the PPTX, followed by a short note on territory basis, coverage limitations, unavailable sources and anything excluded.
+5. Return **one clickable link** to the PPTX ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)), followed by a short note on territory basis, coverage limitations, unavailable sources and anything excluded.
 
 ## Tips for great territory reviews
 

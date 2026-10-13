@@ -1,9 +1,10 @@
 ---
 name: "deal-timeline-defence"
 description: "Reconstruct a defensible, read-only chronology for one Summit53 opportunity when a close date, activity sequence, ownership or stakeholder handoff, intervention, or dark-deal rescue decision is challenged. Returns a one-line verdict plus a timestamped chronology that separates observed, corroborated, inferred, disputed, and unavailable evidence. Use for requests such as 'what actually happened on this deal', 'defend this timeline', 'when did the deal go dark', 'show the evidence trail', 'who owned this deal when it slipped', or 'should we start a dark-deal rescue'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for drafting re-engagement outreach or a CRM note — use deal-action-engine, if installed."
-version: "1.0.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.0.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Deal Timeline Defence
@@ -141,8 +142,9 @@ Return a compact response with:
    fixture exclusions, optional capabilities used or unavailable, and non-causal caveats.
 
 Default to an in-chat brief or Markdown artifact. Do not create a presentation unless the user
-explicitly asks for one (then use the `pptx` skill and render and inspect every slide); a
-formal manager review deck remains `deal-review-prep`.
+explicitly asks for one (then use the host presentation toolchain in
+[host-adapters.md](references/host-adapters.md#building-slides), and render and inspect every
+slide); a formal manager review deck remains `deal-review-prep`.
 
 ## Verify before delivery
 

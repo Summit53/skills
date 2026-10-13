@@ -1,9 +1,10 @@
 ---
 name: "board-revenue-pack"
 description: "Build a board-ready Summit53 revenue pack (8-slide PPTX, optional regional slide) for a non-operational audience: what changed since last quarter, what arithmetically accounts for it, and whether the evidence points to a market, execution or currency explanation. Pulls ARR, retention, segment performance, the quarterly forecast-confidence decomposition, pipeline, renewals, account health and data readiness, and stops safely when no genuine prior-quarter anchor exists. Use when a user says 'build my board deck', 'board revenue pack', 'prep the numbers for the board', 'investor update', 'I have a board meeting', 'quarterly revenue deck for investors', 'the board is going to ask why this changed', 'is this a market or execution problem', or 'fundraise deck with live metrics'. Do not use for the weekly forecast call — use forecast-delta-brief. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a customer-facing review — use customer-qbr."
-version: "2.4.1"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "2.4.1"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Board Revenue Pack
@@ -27,8 +28,9 @@ brief, and do not fall back to a legacy investor-report skill to produce a deck 
 ## Preflight
 
 Read [references/connector-preflight.md](references/connector-preflight.md) and complete its
-checklist before any data call: logical tool names, one ToolSearch `select:` batch for
-deferred tools, `current_context` first, `scoped_org_id`, live-schema inspection, read-only
+checklist before any data call: logical tool names, one batch load of deferred tools
+([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)),
+`current_context` first, `scoped_org_id`, live-schema inspection, read-only
 discipline, fixture exclusion, unavailable-not-zero, correlational language, one-link
 delivery.
 
@@ -74,9 +76,11 @@ Skill-specific gates, stricter than the preflight and run **before any slide is 
   labels, disclosure of excluded or unconverted amounts, constant currency and FX effect.
   Read it before writing any amount on a slide and before building Step 5's currency
   reading; the pack inherits its checklist.
+- [references/host-adapters.md](references/host-adapters.md) — how this host loads tools,
+  builds and renders slides, and delivers files.
 
-Also read the `pptx` skill's SKILL.md (and its PptxGenJS reference, where installed)
-before writing deck code.
+Before writing deck code, load the host's presentation toolchain per
+[host-adapters.md](references/host-adapters.md#building-slides).
 
 ## The moment this serves
 
@@ -492,24 +496,28 @@ safe.
 
 ## Step 8 — Build the deck
 
-Build with PptxGenJS following the `pptx` skill. Prefer native PptxGenJS charts (BAR,
-DOUGHNUT) over images — editable in PowerPoint, which matters because this deck goes
-through 4–6 revision cycles. Write the file to the session's outputs directory as
-`Board-Revenue-Pack-{quarter}-{YYYY-MM-DD}.pptx`.
+Build with the host's presentation toolchain
+([host-adapters.md](references/host-adapters.md#building-slides)). Prefer native, editable
+bar and doughnut charts over images — editable in PowerPoint, which matters because this
+deck goes through 4–6 revision cycles. Save the file as
+`Board-Revenue-Pack-{quarter}-{YYYY-MM-DD}.pptx` in the host's output location
+([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)).
 
 **Design system — Midnight Executive**, unchanged for continuity with decks the board has
 already seen: Navy `1E2761`, Ice Blue `CADCFC`, Emerald `10B981`, Amber `F59E0B`, Red
 `EF4444`, Charcoal `1E293B`, Off-white `F8FAFC`, Slate `64748B`. Georgia headers 36–44pt,
-Calibri body 14–16pt, 16:9, 0.5" margins. Georgia renders with substitute metrics in the
-LibreOffice preview, so give header boxes ~10% width slack and do not trust preview fit on
-them. Green, amber, and red only where a source band supports that status.
+Calibri body 14–16pt, 16:9 wide canvas (13.33" × 7.5"), 0.5" margins. Give header boxes
+~10% width slack and do not trust a preview's fit on them: preview renderers such as
+LibreOffice substitute Georgia with different metrics
+([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)). Green,
+amber, and red only where a source band supports that status.
 
-> ⚠ **Set `pptx.layout = "LAYOUT_WIDE"`, not `"LAYOUT_16x9"`.** Both are 16:9, but
-> `LAYOUT_16x9` is **10" × 5.625"** while `LAYOUT_WIDE` is **13.33" × 7.5"**. Coordinates
-> written for a 13.33" canvas silently render off-slide on `LAYOUT_16x9` — the deck
-> generates without error and the right-hand third of every slide is missing. This was hit
-> during a test build and only caught by rendering slides to images. Verify by rendering
-> and confirming the rightmost element on every slide is visible.
+> ⚠ **Canvas check.** Every coordinate assumes the 13.33" × 7.5" canvas. Verify by
+> rendering and confirming the rightmost element on every slide is visible — a deck can
+> generate without error with the right-hand third of every slide missing. When building
+> with PptxGenJS (Claude's pptx skill), set `pptx.layout = "LAYOUT_WIDE"`, never
+> `"LAYOUT_16x9"` (10" × 5.625"); this was hit during a test build and only caught by
+> rendering slides to images.
 
 ### Slides — 8 (9 with the optional regional view), ordered by the questions
 
@@ -577,10 +585,10 @@ error into the deck; summarise access gaps on the limits slide.
 
 ## Step 9 — Verify, then deliver
 
-1. Run the `pptx` skill's `scripts/office/validate.py` on the file and fix every failure in
-   the generator.
-2. Convert to images (the `pptx` skill's `scripts/office/soffice.py` → PDF → `pdftoppm`)
-   and **look at every slide at full size**.
+1. Run the host's package validator on the file and fix every failure in the generator
+   ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)).
+2. Render every slide to an image with the host's render path (same section) and **look at
+   every slide at full size**.
 3. Content checks, not exit status. Do not deliver unless:
    - The quarter-anchor gate passed, and the delta slide shows the returned
      `previous_date → current_date` window spanning 75–105 days — not a weekly or daily
@@ -616,8 +624,10 @@ error into the deck; summarise access gaps on the limits slide.
      text; the demo label is present on every slide if it applies.
 4. Fix and re-verify. Do not declare done until one full fix-and-verify cycle has run. A
    deck that generates without error but has a blank contributor table has failed.
-5. Return one clickable link to the PPTX, the prior-deck limitation note, and a short note
-   on material evidence gaps and anything excluded.
+5. Deliver the PPTX per
+   [host-adapters.md](references/host-adapters.md#saving-and-delivering-files) (one
+   clickable link where the host supports it), with the prior-deck limitation note and a
+   short note on material evidence gaps and anything excluded.
 
 ## Tools
 
@@ -629,7 +639,7 @@ error into the deck; summarise access gaps on the limits slide.
 | `unified_forecast_summary` | Headline confidence and levels, current and prior quarter (async) |
 | `get_job` | Async lifecycle |
 | `arr_growth_analytics` | ARR, NRR, GRR, logo churn, time-to-value |
-| `arr_growth_narrative` | Retention narrative, quoted not paraphrased |
+| `arr_growth_narrative` | Retention insight only — restate its numbers; never paste its text |
 | `renewal_forecast_summary` | Portfolio renewal bands (permission-gated) |
 | `list_account_contracts` | Labelled top-account fallback for the above |
 | `account_health_movement` | Health trend, correlational wording only |

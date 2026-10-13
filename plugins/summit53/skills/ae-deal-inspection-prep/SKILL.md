@@ -1,9 +1,10 @@
 ---
 name: "ae-deal-inspection-prep"
 description: "Prepare the owning account executive for an internal inspection of one named Summit53 opportunity: a concise, read-only one-page evidence sheet with current deal facts, truthful gaps, likely manager questions, defensible answer evidence, and rep-owned next actions. Use when an AE says 'prepare me for deal inspection', 'prep me for my deal inspection on [deal]', 'help me answer questions on this deal', 'what am I missing before my 1:1', 'give me an inspection cheat sheet', or 'what will my manager ask about [deal]'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for a contested chronology or 'when did it go dark' — use deal-timeline-defence. Do not use for drafting re-engagement outreach — use deal-action-engine, if installed."
-version: "1.1.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.1.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # AE Deal Inspection Prep
@@ -30,7 +31,8 @@ belongs to `deal-review-prep`; an AE challenging the chronology still belongs to
 
 Read [references/connector-preflight.md](references/connector-preflight.md) and complete its
 checklist before any data call. It covers connector and tenant resolution
-(`current_context` first, `scoped_org_id`), loading deferred tools in one ToolSearch batch,
+(`current_context` first, `scoped_org_id`), loading deferred tools in one batch
+([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)),
 `list_available_tools` and live-schema inspection, read-only discipline, fixture exclusion,
 unavailable-not-zero, correlational language, and delivery.
 
@@ -148,8 +150,10 @@ Default to a one-page in-chat or Markdown inspection sheet with these sections:
 - Sources and limits
 
 Do not create a PPTX unless the user explicitly requests a personal one-page aid and the
-request remains AE-owned. If they do, build it with the `pptx` skill and render and inspect
-the slide before delivery. Route any formal pipeline-review or manager-facing deck to
+request remains AE-owned. If they do, build it with the host's presentation toolchain
+([host-adapters.md](references/host-adapters.md#building-slides)) and render and inspect
+the slide before delivery
+([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)). Route any formal pipeline-review or manager-facing deck to
 `deal-review-prep`.
 
 ## Verify before delivery

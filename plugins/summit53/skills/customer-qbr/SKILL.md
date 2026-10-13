@@ -1,9 +1,10 @@
 ---
 name: "customer-qbr"
 description: "Prepare a customer-facing Summit53 success and value review grounded only in verified value-contract and impact evidence: agreed outcomes, verified progress, measurement gaps, and mutual next commitments, with a customer-safety gate that strips internal scores, forecasts, and notes. Default output is a customer-safe brief or deck specification; PPTX or DOCX only on explicit request. Use for customer QBRs, executive business reviews (EBRs), value-realisation reviews, outcome progress, and mutual success plans, e.g. 'customer QBR for Acme', 'prep the EBR with [customer]', 'what value have we delivered to [account] this quarter', or 'customer-safe value review'. Do not use for an internal revenue or sales operating QBR — use qbr-generator. Do not use for renewal risk, a save plan, or renewal defence — use renewal-defence-pack. Board or investor pack — use board-revenue-pack."
-version: "1.0.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.0.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Customer QBR
@@ -118,14 +119,19 @@ factual, collaborative, and free of internal labels.
 
 ## Create an artifact only when requested
 
-- **PPTX — explicit request only.** Read the `pptx` skill (its SKILL.md and pptxgenjs.md)
-  before writing code, build the deck with PptxGenJS from the reconciled claim ledger, render
-  every slide to an image (the `pptx` skill's render flow, or soffice → pdftoppm), inspect
+- **PPTX — explicit request only.** Build the deck from the reconciled claim ledger with the
+  host presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)),
+  render every slide to an image
+  ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)), inspect
   each at full size, correct every finding, and re-inspect affected slides before delivery.
-- **DOCX — explicit request only.** Use the `docx` skill and perform its required QA.
+- **DOCX — explicit request only.** Use the host document toolchain
+  ([host-adapters.md](references/host-adapters.md#building-documents)) and perform its
+  required QA.
 - Otherwise return the customer-safe brief or deck specification in chat or Markdown.
 
-Write file outputs to the session's outputs directory and return one clickable link.
+Save and deliver file outputs as described in
+[host-adapters.md](references/host-adapters.md#saving-and-delivering-files) and return one
+clickable link.
 
 ## Final checks
 

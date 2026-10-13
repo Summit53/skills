@@ -1,9 +1,10 @@
 ---
 name: "rep-evidence-dossier"
 description: "Assemble a neutral, defensible Summit53 evidence dossier as a PPTX for a promotion case, PIP, talent calibration, documented performance concern or HR meeting. Screens structural confounders and documentary depth before any performance evidence, closes with an evidence register, and never renders an employment recommendation. Use when a manager says 'build the promotion case for [rep]', 'prep me for calibration', 'we're considering a PIP for [rep]', 'HR wants documentation on [rep]', 'pull together the performance record for [rep]', 'why them and not [other rep]?' or 'what have we done to help this rep?'. Do not use for routine coaching or 1:1 prep — use rep-coaching-report."
-version: "3.1.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "3.1.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Rep Evidence Dossier
@@ -31,8 +32,10 @@ its checklist before any data call. Then apply these dossier-specific gates:
    tenant, or provenance cannot cleanly separate fixtures from real records, every slide
    carries **Demo data — not for employment decisions**. Every Staging forward test
    carries it on every slide, even when fixture rows were excluded.
-2. **Load tools in one batch.** Use one ToolSearch `select:` call for every tool in the
-   [tools table](#tools), resolved to the connector that passed `current_context`.
+2. **Load tools in one batch.** If the tools are deferred, load every tool in the
+   [tools table](#tools) in one batch
+   ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), resolved
+   to the connector that passed `current_context`.
 3. **Inspect the live schema of every tool before calling it.** As at 2026-10-13 the
    live connector has these shapes, and the workflow below is written against them. If
    the live schema differs, follow it and note the difference in the evidence register:
@@ -58,7 +61,9 @@ its checklist before any data call. Then apply these dossier-specific gates:
 
 ## References
 
-Read all four before the first data call:
+Read all four before the first data call, and
+[references/host-adapters.md](references/host-adapters.md) for how to load tools, build,
+render and deliver on the current host:
 
 - [references/connector-preflight.md](references/connector-preflight.md): the tenant,
   schema, fixture, read-only, missing-evidence, correlation and delivery contract.
@@ -314,12 +319,14 @@ positive finding and belongs in the dossier.
 
 ## Step 4 — Build the PPTX
 
-Save `Rep-Evidence-Dossier-{RepName}-{YYYY-MM-DD}.pptx` to the session's outputs
-directory. Build it with PptxGenJS following the `pptx` skill: read that skill's
-SKILL.md (and its PptxGenJS reference where present) before writing code, and build a
-structured 16:9 deck with a theme, layouts and sections. A DOCX companion is produced
-only on explicit request, after the PPTX, from the same reconciled evidence, using the
-`docx` skill. Do not create a standalone Markdown dossier by default.
+Save `Rep-Evidence-Dossier-{RepName}-{YYYY-MM-DD}.pptx` where the host saves files
+([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)). Build a
+structured 16:9 deck with a theme, layouts and sections using the host's presentation
+toolchain ([host-adapters.md](references/host-adapters.md#building-slides)). A DOCX
+companion is produced only on explicit request, after the PPTX, from the same reconciled
+evidence, using the host's document toolchain
+([host-adapters.md](references/host-adapters.md#building-documents)), and verified with
+that toolchain before delivery. Do not create a standalone Markdown dossier by default.
 
 ### Deck structure follows the gate
 
@@ -498,11 +505,14 @@ thin section is worse than no section.
     rep-filtered.
 12. **Fixtures and writes.** No fixture record is presented as admissible; the demo
     label is on every slide where required; no write capability was called.
-13. **Visual QA.** Render every slide to an image (the `pptx` skill's soffice → pdftoppm
-    flow) and inspect each at full size. Fix overlap, clipping, wrapping, unresolved
+13. **Visual QA.** Render every slide to an image with the host's render step and
+    inspect each at full size. Fix overlap, clipping, wrapping, unresolved
     placeholders, unreadable labels, exposed sensitive detail and source mismatches. Run
-    the `pptx` skill's `validate.py` and require no errors. Body text is at least 16 pt,
-    and `[Sources]` notes are present on every evidence-bearing slide.
+    the host's presentation validator and require no errors
+    ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)).
+    Body text is at least 16 pt, and `[Sources]` notes are present on every
+    evidence-bearing slide. Interpretation-changing limits are visible on the slide, not
+    only in speaker notes.
 
 Fail any of 2, 3 or 4 and the dossier must not be delivered.
 

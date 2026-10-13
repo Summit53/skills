@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate or verify deterministic package fingerprints for the durable dual tree."""
+"""Generate or verify deterministic package fingerprints for the skill packages."""
 
 from __future__ import annotations
 
@@ -37,9 +37,8 @@ def inventory(root: Path) -> list[dict[str, object]]:
 
 def render() -> str:
     payload = {
-        "schema_version": 1,
-        "claude": inventory(ROOT / "plugins" / "summit53" / "skills"),
-        "codex": inventory(ROOT / "platforms" / "codex" / "skills"),
+        "schema_version": 2,
+        "packages": inventory(ROOT / "plugins" / "summit53" / "skills"),
         "shared": [
             {
                 "path": path.relative_to(ROOT).as_posix(),

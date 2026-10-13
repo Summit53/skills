@@ -39,12 +39,11 @@ def main() -> None:
         errors.append(f"{CLAUDE_PLUGIN.relative_to(ROOT)}: name must be {PLUGIN.name!r}")
 
     # Every manifest that carries a version must agree, or updates reach one host only.
-    if CODEX_PLUGIN.exists():
-        codex_plugin = load(CODEX_PLUGIN, errors)
-        if codex_plugin.get("version") != version:
-            errors.append(f"version mismatch: claude {version!r} vs codex {codex_plugin.get('version')!r}")
-        if codex_plugin.get("name") != PLUGIN.name:
-            errors.append(f"{CODEX_PLUGIN.relative_to(ROOT)}: name must be {PLUGIN.name!r}")
+    codex_plugin = load(CODEX_PLUGIN, errors)
+    if codex_plugin.get("version") != version:
+        errors.append(f"version mismatch: claude {version!r} vs codex {codex_plugin.get('version')!r}")
+    if codex_plugin.get("name") != PLUGIN.name:
+        errors.append(f"{CODEX_PLUGIN.relative_to(ROOT)}: name must be {PLUGIN.name!r}")
 
     marketplace = load(CLAUDE_MARKETPLACE, errors)
     entries = {entry.get("name"): entry for entry in marketplace.get("plugins", [])}
@@ -54,16 +53,13 @@ def main() -> None:
     elif (ROOT / entry.get("source", "")).resolve() != PLUGIN.resolve():
         errors.append(f"{CLAUDE_MARKETPLACE.relative_to(ROOT)}: source does not point at {PLUGIN.relative_to(ROOT)}")
 
-    if CODEX_MARKETPLACE.exists():
-        codex_market = load(CODEX_MARKETPLACE, errors)
-        codex_entries = {e.get("name"): e for e in codex_market.get("plugins", [])}
-        codex_entry = codex_entries.get(PLUGIN.name)
-        if not codex_entry:
-            errors.append(f"{CODEX_MARKETPLACE.relative_to(ROOT)}: no {PLUGIN.name!r} entry")
-        else:
-            path = codex_entry.get("source", {}).get("path", "")
-            if (ROOT / path).resolve() != PLUGIN.resolve():
-                errors.append(f"{CODEX_MARKETPLACE.relative_to(ROOT)}: source path does not point at {PLUGIN.relative_to(ROOT)}")
+    codex_market = load(CODEX_MARKETPLACE, errors)
+    codex_entries = {e.get("name"): e for e in codex_market.get("plugins", [])}
+    codex_entry = codex_entries.get(PLUGIN.name)
+    if not codex_entry:
+        errors.append(f"{CODEX_MARKETPLACE.relative_to(ROOT)}: no {PLUGIN.name!r} entry")
+    elif (ROOT / codex_entry.get("source", {}).get("path", "")).resolve() != PLUGIN.resolve():
+        errors.append(f"{CODEX_MARKETPLACE.relative_to(ROOT)}: source path does not point at {PLUGIN.relative_to(ROOT)}")
 
     servers = load(MCP, errors).get("mcpServers", {})
     server = servers.get("summit53", {})

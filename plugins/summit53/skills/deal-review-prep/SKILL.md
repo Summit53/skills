@@ -1,9 +1,10 @@
 ---
 name: "deal-review-prep"
 description: "Build a manager-led, evidence-based deal review PPTX for one Summit53 opportunity: health verdict, first constraint, MEDDPIC/BANT/SPICED scorecards, risk factors, blockers, account and stakeholder context, coaching questions and next steps. Use when a sales manager or revenue leader wants to prep for a deal review or pipeline review meeting, review a specific deal, do a deal deep-dive, build a deal scorecard or assess deal health, e.g. 'review this deal', 'deal review for opportunity [ID]', 'how healthy is the [deal] deal', 'what's the risk on [deal]', 'is this deal going to close', 'should I be worried about [deal]', 'give me the full picture on [deal]'. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for a contested deal chronology — use deal-timeline-defence. For a competitor response in an active deal use competitor-response-card; for drafting outreach or re-engagement use deal-action-engine (if installed)."
-version: "1.2.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.2.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Deal Review Prep
@@ -20,7 +21,7 @@ Generate a structured, coaching-ready deal review deck for one opportunity by pu
 
 ## Preflight
 
-Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one ToolSearch `select:` batch, live-schema discovery, read-only discipline, fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
+Read [references/connector-preflight.md](references/connector-preflight.md) and complete its checklist before any data call. It covers tenant resolution (`current_context` first), picking between multiple Summit53 connectors, loading deferred tools in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), live-schema discovery, read-only discipline, fixture exclusion, unavailable-is-not-zero, correlational language and one-link delivery.
 
 Skill-specific gates:
 
@@ -169,7 +170,7 @@ Based on the full picture, synthesize 3-5 specific next steps. Each should:
 
 ## Step 4: Build the Deck
 
-Build with PptxGenJS following the `pptx` skill: read its SKILL.md (and its PptxGenJS reference, where the installed version has one) before writing any code. Use the **Midnight Executive** design system for visual consistency with other Summit53 deliverables.
+Build the deck with the host presentation toolchain ([host-adapters.md](references/host-adapters.md#building-slides)); read that toolchain's instructions before writing any code. Use the **Midnight Executive** design system for visual consistency with other Summit53 deliverables.
 
 ### Design System
 
@@ -347,24 +348,24 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
 
 ## Step 5: Generate the File
 
-Write a complete Node.js script using PptxGenJS that:
+Generate the deck in one build script with the host toolchain ([host-adapters.md](references/host-adapters.md#building-slides)) that:
 
 1. Embeds all the pulled data directly (no external data files)
 2. Uses helper functions for repeated patterns (stat cards, colored score cells, risk factor cards, activity timeline entries, outcome cards)
-3. Uses factory functions for shadows and styles to avoid PptxGenJS's object mutation issue (create a fresh object each time, never reuse option objects across addShape/addText calls)
+3. When building with PptxGenJS (Claude's pptx skill), uses factory functions for shadows and styles (a fresh options object for every `addShape`/`addText` call)
 4. Constructs all slides following the structure above
 5. Handles edge cases (missing data, empty arrays, zero values, null fields, no notes summary, null/empty value contract, missing value impact card)
 6. Conditionally includes the Value Realization Roadmap slide only for Closed Won deals
 7. Adds the Sources & Limits slide, and the demo label on every slide when the preflight requires it
-8. Saves to the session's outputs directory as `Deal-Review-[DealName]-[Date].pptx`
+8. Saves as `Deal-Review-[DealName]-[Date].pptx` in the host's output location ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files))
 
 ## Step 6: QA
 
 After generating the file:
 
-1. Render every slide to an image using the `pptx` skill's render flow (its `soffice.py` wrapper to PDF, then `pdftoppm` to JPEG). Use the full-resolution renders, not the thumbnail grid.
+1. Render every slide to a full-resolution image with the host render path ([host-adapters.md](references/host-adapters.md#rendering-and-inspecting-slides)). Inspect the full-resolution renders, not a thumbnail grid.
 2. Open and inspect **every slide at full size** for clipping, overlapping text, awkward wrapping, unreadable charts, colour-contrast issues, unresolved placeholders or bracketed TODOs
-3. Verify data accuracy — spot-check that numbers match what the MCP tools returned
+3. Verify data accuracy — spot-check that numbers match what the Summit53 tools returned
 4. Verify that conditional slides render correctly:
    - For Closed Won deals: confirm Value Realization Roadmap slide is present and properly populated
    - For open deals: confirm Value Realization Roadmap is NOT included

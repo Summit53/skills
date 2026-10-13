@@ -1,9 +1,10 @@
 ---
 name: "rep-coaching-report"
 description: "Prepare an evidence-based Summit53 coaching deck (PPTX) for a routine developmental 1:1 with a sales rep, built around one Results/Effort/Knowledge/Skills coaching thesis from the stored diagnostic, call behaviour, coaching history, pipeline, deal risk, MEDDPICC gaps and activity. Also handles explicit post-session capture of notes, agreed actions or a later outcome when that capability is exposed and approved. Trigger on 'prep my 1:1 with [rep]', 'what should I coach [rep] on?', 'coaching report for [rep]', 'build a coaching deck', 'what's going on in [rep]'s pipeline before our 1:1', 'log my notes from the session with [rep]', 'close out the [rep] 1:1' or 'record the action items from my coaching session'. Do not use for promotion, PIP, calibration or HR decisions — use rep-evidence-dossier."
-version: "2.1.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "2.1.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Rep Coaching Report
@@ -30,9 +31,10 @@ its checklist before any data call. Then apply these coaching-specific gates:
 1. **Demo label.** Exclude `synthetic`, `demo_seed` and `demo_fixture` rows from a real
    1:1. A Staging or demo run that uses them carries **Demo data — not for real
    coaching** on every slide.
-2. **Load tools in one batch.** One ToolSearch `select:` call covering the read tools in
-   [references/workflow-spec.md](references/workflow-spec.md#tools), resolved to the
-   connector that passed `current_context`.
+2. **Load tools in one batch.** Load the read tools in
+   [references/workflow-spec.md](references/workflow-spec.md#tools) in one batch, per
+   [host-adapters.md](references/host-adapters.md#loading-the-summit53-tools), resolved
+   to the connector that passed `current_context`.
 3. **Inspect the live schema of every tool before calling it.** As at 2026-10-13 the
    live connector has the shapes below, and the workflow is written against them. If the
    live schema differs, follow it and say so in the run summary.
@@ -70,6 +72,8 @@ its checklist before any data call. Then apply these coaching-specific gates:
 - [references/connector-preflight.md](references/connector-preflight.md): the shared
   tenant, schema, fixture, read-only, missing-evidence, correlation and delivery
   contract.
+- [references/host-adapters.md](references/host-adapters.md): how this host loads tools,
+  builds and renders the deck, and saves and delivers files.
 
 ## Workflow overview
 
@@ -91,7 +95,8 @@ Each step is specified in full in
 4. **Analyse.** Ten pattern checks, a causal chain whose every link is evidenced, the
    fairness checks, and 3–5 specific recommendations. On-target reps get a short,
    honest deck.
-5. **Build the deck** with PptxGenJS following the `pptx` skill, using the Midnight
+5. **Build the deck** with the host's presentation toolchain
+   ([host-adapters.md](references/host-adapters.md#building-slides)), using the Midnight
    Executive slide spec (Slides 1–10, with optional 2b, 2c, 4b and 8b).
 6. **QA and deliver.** Render every slide, inspect each at full size, fix defects, and
    return one clickable link with a short note on evidence gaps.
@@ -112,6 +117,10 @@ Each step is specified in full in
 - **Coaching history is lifecycle-precise.** Planned is not delivered; delivered is not
   acknowledged; a later outcome is not proof of causation. Intervention-ledger rows are
   deal-execution accountability, never coaching delivered.
+- **Carry prior commitments forward intact.** Render every qualifying
+  `previous_action_items` entry, completed or outstanding. If any is excluded (for
+  example because its session was not attested), say so in the slide's speaker notes;
+  never drop one silently and never add a commitment the manager did not record.
 - **Unavailable is not zero.** A bare `{}` from `activity_gaps`, an unavailable drag
   analytics block or a missing diagnostic is indeterminate. It is never rendered as
   "all accounts engaged", "no drag" or a green status.

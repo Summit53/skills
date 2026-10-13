@@ -1,9 +1,10 @@
 ---
 name: "competitor-response-card"
 description: "Prepare a concise, read-only, one-screen response card for an AE handling a named competitor or competitive objection in an active Summit53 deal: verified battlecard and reactive-play evidence kept separate from suggested talk track, discovery questions, proof to use, what to avoid, and one safe next action. Use for late-entering competitors and battlecard-backed objection handling, e.g. '[competitor] just showed up in [deal]', 'how do I respond to [competitor] on this deal', 'give me a competitive talk track', 'they said [competitor] is cheaper — what do I say', or 'prep an evidence-grounded response for this active deal'. Do not use for historical or portfolio competitive patterns, recurring loss reasons, or win-rate drivers — use win-loss-analysis."
-version: "1.0.0"
-baselined: "2026-10-13"
-status: "active"
+metadata:
+  version: "1.0.0"
+  baselined: "2026-10-13"
+  status: "active"
 ---
 
 # Competitor Response Card

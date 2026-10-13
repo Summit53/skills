@@ -1,12 +1,13 @@
 # Connector Preflight — Canonical Contract
 
-**Canonical file. Version 1.1.0 · 2026-10-13.**
+**Canonical file. Version 1.2.0 · 2026-10-14.**
 
 Maintained once and copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy with `tools/sync_canonical_references.py --write`. If two copies
 disagree, the higher version wins.
 
-Consumers: every package under `platforms/claude/skills/`.
+Consumers: every Summit53 skill package. Host-specific mechanics (tool loading, slide
+toolchains, rendering, delivery) live in `host-adapters.md`, vendored alongside.
 
 ## Contents
 
@@ -46,8 +47,8 @@ not relax these.
    by their **logical name** (`current_context`, `risk_heatmap`, …) and resolve the prefix
    at runtime. Never write a prefix, hash, or organization ID into an artifact.
 2. If the tools are deferred (listed by name only), load their schemas before calling
-   them. In Claude Code, use one ToolSearch call with a `select:` list naming every tool
-   the skill needs, rather than loading tools one at a time.
+   them, in one batch naming every tool the skill needs rather than one at a time (see
+   [host-adapters.md](host-adapters.md#loading-the-summit53-tools)).
 3. Call `current_context` **first**, before any data read. Require:
    - a non-empty `organization.id`;
    - an active organization and an active user;
@@ -151,15 +152,13 @@ Keep tool-provided scores separate from model-derived judgments, and label which
 
 - Return one clickable link to the final artifact (or the artifact inline when the skill
   delivers in chat), followed by a short note on material evidence gaps and anything
-  excluded.
+  excluded. Save and deliver files as
+  [host-adapters.md](host-adapters.md#saving-and-delivering-files) describes.
 - For slide artifacts, render every slide to an image and inspect it at full size before
   delivery. Fix clipping, overlap, wrapping, placeholder text, chart errors, and any
-  number that does not match the source payload.
-- If LibreOffice is not installed, macOS Quick Look is a usable fallback:
-  `qlmanage -p -o <dir> deck.pptx` writes `Preview.html`, which a browser can show slide
-  by slide (serve the folder on localhost if the browser will not open local files). It
-  does not draw native charts or some shapes, so say which elements could not be checked
-  visually rather than claiming a full render.
+  number that does not match the source payload. Use the host's render path and its
+  fallbacks in [host-adapters.md](host-adapters.md#rendering-and-inspecting-slides), and
+  say which elements could not be checked visually rather than claiming a full render.
 - No bracketed TODOs, placeholder values, or lorem text in a delivered artifact.
 
 ## Preflight checklist

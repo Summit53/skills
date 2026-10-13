@@ -1,0 +1,20 @@
+{
+  "name": "summit53",
+  "interface": {
+    "displayName": "Summit53"
+  },
+  "plugins": [
+    {
+      "name": "summit53",
+      "source": {
+        "source": "local",
+        "path": "./plugins/summit53"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
