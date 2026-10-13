@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SHARED = ROOT / "shared" / "canonical"
 PLATFORMS = (
-    ROOT / "platforms" / "claude" / "skills",
+    ROOT / "plugins" / "summit53" / "skills",
     ROOT / "platforms" / "codex" / "skills",
 )
 

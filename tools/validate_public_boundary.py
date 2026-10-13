@@ -9,6 +9,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_CODEX = 16
+# Plugin-only packages with no Codex counterpart yet (the router).
+CLAUDE_ONLY = {"summit53"}
 FORBIDDEN_ROOTS = {"skills", "provenance", "_canonical", "patches", "private"}
 TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 FORBIDDEN_PATTERNS = {
@@ -34,7 +36,7 @@ def main() -> None:
         errors.append(f"forbidden public roots present: {present_forbidden}")
 
     codex = package_names(ROOT / "platforms" / "codex" / "skills")
-    claude = package_names(ROOT / "platforms" / "claude" / "skills")
+    claude = package_names(ROOT / "plugins" / "summit53" / "skills") - CLAUDE_ONLY
     if len(codex) != EXPECTED_CODEX:
         errors.append(f"expected {EXPECTED_CODEX} Codex packages, found {len(codex)}")
     if claude != codex:

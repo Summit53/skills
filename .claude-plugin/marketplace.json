@@ -1,0 +1,16 @@
+{
+  "name": "summit53",
+  "description": "Official Summit53 Revenue Engine skills and hosted MCP connector for Claude.",
+  "owner": {
+    "name": "Summit53",
+    "url": "https://summit53.io"
+  },
+  "plugins": [
+    {
+      "name": "summit53",
+      "description": "Evidence-grounded revenue workflows (forecast, deal, renewal, coaching, territory and board packs) on your Summit53 tenant, with the hosted Summit53 MCP connector bundled.",
+      "source": "./plugins/summit53",
+      "category": "productivity"
+    }
+  ]
+}

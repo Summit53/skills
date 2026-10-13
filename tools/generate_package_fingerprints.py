@@ -38,7 +38,7 @@ def inventory(root: Path) -> list[dict[str, object]]:
 def render() -> str:
     payload = {
         "schema_version": 1,
-        "claude": inventory(ROOT / "platforms" / "claude" / "skills"),
+        "claude": inventory(ROOT / "plugins" / "summit53" / "skills"),
         "codex": inventory(ROOT / "platforms" / "codex" / "skills"),
         "shared": [
             {

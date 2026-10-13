@@ -8,11 +8,15 @@ skill directories and are vendored into self-contained packages.
 ## Repository layout
 
 ```text
-platforms/claude/skills/  Claude packages
-platforms/codex/skills/   Codex packages, including agents/openai.yaml
-shared/canonical/         Shared preflight, evidence and asynchronous-lifecycle contracts
-manifests/                Deterministic package fingerprints
-tools/                    Validation, synchronization and fingerprint tools
+.claude-plugin/marketplace.json  Claude plugin marketplace (lists the summit53 plugin)
+plugins/summit53/                The summit53 plugin
+  .claude-plugin/plugin.json     Plugin manifest (name, version)
+  .mcp.json                      Bundled hosted Summit53 MCP connector
+  skills/                        Skill packages, including the `summit53` router
+platforms/codex/skills/          Codex packages, including agents/openai.yaml
+shared/canonical/                Shared preflight, evidence and asynchronous-lifecycle contracts
+manifests/                       Deterministic package fingerprints
+tools/                           Validation, synchronization and fingerprint tools
 ```
 
 This public repository intentionally excludes Summit53's internal GTM skills, personal
@@ -23,6 +27,7 @@ provenance.
 
 | Skill | Claude | Codex | Primary use |
 |---|:---:|:---:|---|
+| `summit53` | ✓ | | Start here: connection check, setup help and routing |
 | `ae-deal-inspection-prep` | ✓ | ✓ | AE preparation for an internal single-deal inspection |
 | `board-revenue-pack` | ✓ | ✓ | Board and investor revenue reporting |
 | `competitor-response-card` | ✓ | ✓ | Active-deal competitive response guidance |
@@ -53,19 +58,40 @@ server namespaces, generated capability hashes or organization IDs. Claude packa
 
 ## Install
 
-Clone the repository, then copy only the desired package directory into the platform's
-configured skills directory.
-
-For Codex, copy from:
+### Claude Code
 
 ```text
-platforms/codex/skills/<skill-name>
+/plugin marketplace add j-sulliman/summit53-external-skills
+/plugin install summit53@summit53
+/reload-plugins
 ```
 
-For Claude, copy from:
+The plugin bundles the hosted Summit53 MCP connector. Run `/mcp`, select **summit53**, choose
+**Authenticate** and sign in with your Summit53 account. To verify, ask
+*"Which Summit53 organization am I connected to?"*
 
-```text
-platforms/claude/skills/<skill-name>
+Update with `/plugin marketplace update summit53`; turn on auto-update for the marketplace in
+`/plugin` so new versions arrive without asking. Uninstall with `/plugin uninstall summit53@summit53`.
+
+### claude.ai, Claude Desktop and Cowork
+
+Add this repository as a marketplace under **Customize › Plugins › Add**, install **summit53**,
+then connect **Summit53** on the plugin's **Connectors** tab. Plugins installed here also sync
+into Claude Code.
+
+Team and Enterprise Owners can roll it out to everyone from **Organization settings › Plugins &
+skills** (set the plugin to **Installed by default** or **Required**) and must also add the
+Summit53 connector under **Organization settings › Connectors**; each member then signs in
+with their own account.
+
+### Codex
+
+Copy the desired package from `platforms/codex/skills/<skill-name>` into Codex's skills
+directory, and connect the MCP server:
+
+```bash
+codex mcp add summit53 --url https://api.summit53.io/mcp
+codex mcp login summit53
 ```
 
 Restart or begin a new task after installation so the platform refreshes skill discovery.
@@ -90,6 +116,9 @@ python tools\sync_canonical_references.py --check
 python tools\validate_codex_packages.py
 python tools\validate_claude_packages.py
 python tools\validate_public_boundary.py
+python tools\validate_plugin_manifests.py
+claude plugin validate .
+claude plugin validate plugins\summit53
 python tools\generate_package_fingerprints.py
 python tools\generate_package_fingerprints.py --check
 ```
@@ -100,8 +129,10 @@ the materialized changes in both platform trees, then rerun all validation. To m
 consume a canonical file, copy it into that package's `references/` folder once; the sync tool
 discovers consumers by presence.
 
-Both platform trees must contain the same package names; `validate_public_boundary.py`
-enforces this.
+Both platform trees must contain the same package names (apart from the plugin-only
+`summit53` router); `validate_public_boundary.py` enforces this. Bump `version` in
+`plugins/summit53/.claude-plugin/plugin.json` on every release: Claude Code only delivers an
+update when the version changes.
 
 ## Contributing
 

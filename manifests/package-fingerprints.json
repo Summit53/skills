@@ -307,6 +307,21 @@
       ]
     },
     {
+      "name": "summit53",
+      "files": [
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 5038,
+          "sha256": "33d44a12fb09275e59b030aa0ba29dfca6484752a9ef79ae3285737ae35b6ecf"
+        }
+      ]
+    },
+    {
       "name": "territory-review",
       "files": [
         {

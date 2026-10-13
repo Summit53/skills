@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CLAUDE = ROOT / "platforms" / "claude" / "skills"
+CLAUDE = ROOT / "plugins" / "summit53" / "skills"
 SHARED = ROOT / "shared" / "canonical"
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -16,9 +16,9 @@ ALLOWED_KEYS = {"name", "description", "version", "baselined", "status"}
 REQUIRED_KEYS = {"name", "description"}
 MAX_DESCRIPTION = 1024
 PREFLIGHT = "connector-preflight.md"
-# Codex-only constructs that must not leak into Claude packages.
+# Codex-only constructs that must not leak into Claude packages. Naming Codex is fine
+# (the plugin documents setup for both hosts); Codex-only invocation syntax is not.
 FORBIDDEN = {
-    "Codex reference": re.compile(r"\bCodex\b"),
     "Codex skill invocation": re.compile(r"(?<![\w$])\$[a-z][a-z0-9]*(?:-[a-z0-9]+)+\b"),
     "openai.yaml reference": re.compile(r"openai\.yaml"),
     "Codex Presentations/Documents skill": re.compile(r"\b(?:Presentations|Documents) skill\b"),
