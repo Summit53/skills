@@ -1,7 +1,7 @@
 ---
 name: "forecast-delta-brief"
 description: "Produce a one-slide 16:9 PPTX forecast delta brief for the weekly forecast or commit call: the current forecast-confidence number, its signed movement over a fixed seven-day window, which contributors arithmetically account for it, up to three corroborating deals, and the limits, plus a five-line chat summary readable on a phone. Read-only; can run on a Monday-morning schedule. Use when a user says 'why is the number different from last week?', 'what moved the forecast this week', 'prep me for the forecast call', 'commit call brief', 'weekly forecast delta', 'forecast confidence dropped, why', or 'explain this week's forecast movement'. Do not use for daily or monthly narratives (not supported). Do not use for a board or investor pack — use board-revenue-pack. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a renewal-book outlook — use cs-renewal-forecast."
-version: "3.0.0"
+version: "3.1.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -70,6 +70,9 @@ not for customer or commercial decisions**.
 - [references/async-envelopes.md](references/async-envelopes.md) — `unified_forecast_summary`
   returns a processing envelope on a cold cache. Reading it as data produces a blank
   headline and no error. A processing envelope is lifecycle state, not forecast data.
+- [references/currency-and-fx.md](references/currency-and-fx.md) — reporting-currency labels,
+  excluded-amount disclosure, constant currency and FX in movement attribution. Read it
+  before writing any amount on the slide and before Step 2's FX line.
 
 Also read the `pptx` skill's SKILL.md (and its PptxGenJS reference, where installed)
 before writing slide code.
@@ -98,8 +101,12 @@ which compared against four weeks prior; the number being defended is the one re
 After the gates pass, request these together so the forecast poll overlaps the others:
 
 1. `unified_forecast_summary` — authoritative current levels: `quota_metrics`,
-   `kpis.pipeline_coverage`, `revenue_at_risk`, `forecasts.manual.commit`. **Follow the
-   async reference exactly.**
+   `kpis.pipeline_coverage`, `revenue_at_risk`, `forecasts.manual.commit`,
+   `projected_landing` `{value, basis, closed_won, floored_to_closed_won, fallback_reason,
+   rep_commit, weighted_pipeline, window}`, the quota `constant_currency` block
+   (`attainment_percentage`, `fx_effect_pts`, `label`) and `metadata.currency`
+   (`rates_as_of`, `normalization`, `unconverted_amounts`). **Follow the async reference
+   exactly.**
 
    ⚠ **It cannot give you last week's levels.** It is period-scoped — `period_offset: -1`
    returns the *prior reporting period*, not the prior week. Only
@@ -238,6 +245,24 @@ Follow [references/delta-attribution.md](references/delta-attribution.md) exactl
    conditions**. They did not move; they are also not fine.
 5. Carry `partially_instrumented` and every other source warning into the limits.
 
+### Currency — one line, never a contributor
+
+The decomposition does not instrument exchange rates, so currency movement can only land in
+the residual or be misread as a business contributor. Rates are monthly: currency can move
+the number week over week only when new rates took effect inside the window. Read
+`constant_currency.status` and `metadata.currency` from `unified_forecast_summary`:
+
+- `single_currency`, or no `constant_currency` block → no FX line.
+- `rates_as_of` falls inside `previous_date → current_date` (a new rate month started in
+  the window) **and** `fx_effect_pts` on attainment is material (more than about 2 pts, or
+  it flips attainment across a threshold) → add **one FX attribution line** beneath the
+  movement visual: "Currency: attainment at {label} differs by {±fx_effect_pts} pts from
+  reported; new {rates_as_of} rates took effect this window." It is its own line — not a
+  bar in the contributor chart, not folded into another contributor, and not described as
+  execution or a forecast miss. Because no week-ago constant-currency reading exists, do
+  not claim how many of this week's points it explains; say the residual may include it.
+- Otherwise → no FX line; `fx_effect_pts` is a standing level, not this week's movement.
+
 ### Attaching deals to the movement
 
 The decomposition names a driver. The room wants deal names. Bridge them carefully:
@@ -286,9 +311,14 @@ Compose one reading path, top to bottom:
 4. **Corroboration** — up to three deals consistent with the movement (or the "no
    individual deal" statement), plus any standing conditions. Keep current-state deal
    evidence visually distinct from arithmetic attribution.
-5. **Current-reference strip** — manual commit, pipeline coverage, quota attainment,
-   revenue at risk. Prior and delta blank, with "weekly prior not available from this
-   source".
+5. **Current-reference strip** — projected landing, manual commit, pipeline coverage,
+   quota attainment, revenue at risk. Prior and delta blank, with "weekly prior not
+   available from this source". The projected landing cell carries its basis in plain
+   words — "reps' commit roll-up" or "weighted pipeline (fallback)" — and the
+   `fallback_reason` goes on the slide if it fits at ≥16 pt, otherwise in the speaker
+   notes. Every amount carries the reporting currency code or unambiguous symbol (`NZ$`,
+   `A$`, `US$`, `€`, `£`) read from `metadata.currency`; any formatting helper in the slide
+   code takes that code rather than a hard-coded `$`.
 6. **Visible limits** — concise and non-empty: every limitation that could change
    interpretation (below).
 
@@ -305,6 +335,9 @@ Include each that applies, on the slide:
 - **Coaching flag excluded** — "fired on N of M reps and is not discriminating."
 - **Missing sources** — any async note or unavailable source, summarised (no raw errors).
 - **Window** — if the returned span is not seven days.
+- **Excluded currency amounts** — when `normalization` is `converted_excluding_unconverted`
+  or `fx_unconverted_amounts_excluded` appears: "Commit and pipeline exclude €240k in EUR
+  deals with no rate for Sep 2026." Never convert them yourself.
 
 A leader who knows the edge of the artifact can defend the middle of it. One who discovers
 the edge in the room cannot.
@@ -314,13 +347,15 @@ the edge in the room cannot.
 Put full provenance in `slide.addNotes(...)`, not a tiny footer. Begin with a `[Sources]`
 block listing: organization name; `scoped_org_id` and the matched `entity_id` / citation
 `object_id` (speaker notes only — never on the visible slide); every logical capability
-name used (no tool prefixes); `as_of` and window dates; citation freshness; score ages;
+name used (no tool prefixes); `as_of` and window dates; reporting currency, `rates_as_of`
+and any `unconverted_amounts` by currency; `projected_landing.basis`, `fallback_reason`
+and `floored_to_closed_won`; citation freshness; score ages;
 warnings verbatim; the residual calculation; excluded evidence (coaching flag, stale or
 fixture rows); and async lifecycle notes.
 
 ## Step 4 — Verify before delivering
 
-Check content, not exit status. Do not deliver unless all twelve pass:
+Check content, not exit status. Do not deliver unless all fifteen pass:
 
 1. `organization.id`, decomposition `entity_id`, and citation `object_id` all equal
    `scoped_org_id`; `period.current_date == as_of`; the citation is acceptably fresh.
@@ -342,6 +377,14 @@ Check content, not exit status. Do not deliver unless all twelve pass:
 11. All body text is ≥16 pt and every interpretation-changing limitation is on the slide.
 12. Speaker notes contain the complete `[Sources]` block; no organization ID or tool prefix
     appears on the visible slide; no `healthScore` delta or rep rank appears anywhere.
+13. Reporting currency read from the response and shown once; no bare `$` unless it is
+    USD; excluded or unconverted amounts disclosed beside the affected level; no
+    self-computed conversions.
+14. Constant-currency `status` checked; any FX effect appears as its own line (only when
+    new rates took effect in the window and the effect is material), never as a
+    contributor bar or as performance; omitted for single-currency orgs.
+15. Projected landing shows its value with `basis`, and any `fallback_reason` is on the
+    slide or in the speaker notes.
 
 ## Step 5 — Deliver
 
@@ -388,7 +431,7 @@ step, no deduplication, no approval gate.
 |---|---|
 | `current_context` | Tenant gate — called first |
 | `forecast_confidence_decomposition` | Weekly delta and contributor attribution — **core**, `lookback_days: 7` |
-| `unified_forecast_summary` | Authoritative current levels (async — follow the envelope reference) |
+| `unified_forecast_summary` | Authoritative current levels, projected landing and constant-currency attainment (async — follow the envelope reference) |
 | `get_job` | Async lifecycle for the above |
 | `risk_heatmap` | Current-state deal corroboration (paginate; `healthScore`, never `riskScore`) |
 | `get_opportunity_signals` | First constraint per named deal |

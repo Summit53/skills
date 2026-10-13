@@ -1,16 +1,17 @@
 ---
 name: "board-revenue-pack"
-description: "Build a board-ready Summit53 revenue pack (8-slide PPTX) for a non-operational audience: what changed since last quarter, what arithmetically accounts for it, and whether the evidence points to a market or an execution problem. Pulls ARR, retention, segment performance, the quarterly forecast-confidence decomposition, pipeline, renewals, account health and data readiness, and stops safely when no genuine prior-quarter anchor exists. Use when a user says 'build my board deck', 'board revenue pack', 'prep the numbers for the board', 'investor update', 'I have a board meeting', 'quarterly revenue deck for investors', 'the board is going to ask why this changed', 'is this a market or execution problem', or 'fundraise deck with live metrics'. Do not use for the weekly forecast call — use forecast-delta-brief. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a customer-facing review — use customer-qbr."
-version: "2.3.0"
+description: "Build a board-ready Summit53 revenue pack (8-slide PPTX, optional regional slide) for a non-operational audience: what changed since last quarter, what arithmetically accounts for it, and whether the evidence points to a market, execution or currency explanation. Pulls ARR, retention, segment performance, the quarterly forecast-confidence decomposition, pipeline, renewals, account health and data readiness, and stops safely when no genuine prior-quarter anchor exists. Use when a user says 'build my board deck', 'board revenue pack', 'prep the numbers for the board', 'investor update', 'I have a board meeting', 'quarterly revenue deck for investors', 'the board is going to ask why this changed', 'is this a market or execution problem', or 'fundraise deck with live metrics'. Do not use for the weekly forecast call — use forecast-delta-brief. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a customer-facing review — use customer-qbr."
+version: "2.4.0"
 baselined: "2026-10-13"
 status: "active"
 ---
 
 # Board Revenue Pack
 
-Build an eight-slide, read-only board or investor revenue pack that answers three
-questions from evidence: what changed since the prior quarter, what arithmetically
-accounts for the change, and whether the pattern looks structural (market) or executional.
+Build an eight-slide (nine with the optional regional view), read-only board or investor
+revenue pack that answers three questions from evidence: what changed since the prior
+quarter, what arithmetically accounts for the change, and whether the pattern looks
+structural (market), executional, or — for multi-currency organizations — partly currency.
 The pack reports evidence and its limits. It never names reps, deals, or accounts.
 
 ## Route first
@@ -69,6 +70,10 @@ Skill-specific gates, stricter than the preflight and run **before any slide is 
   `unified_forecast_summary` and, under cache pressure, `segment_performance_summary` and
   `revenue_engine_context` return processing envelopes. An unhandled envelope produces a
   board slide with a blank number. Read it before the first async-capable call.
+- [references/currency-and-fx.md](references/currency-and-fx.md) — reporting-currency
+  labels, disclosure of excluded or unconverted amounts, constant currency and FX effect.
+  Read it before writing any amount on a slide and before building Step 5's currency
+  reading; the pack inherits its checklist.
 
 Also read the `pptx` skill's SKILL.md (and its PptxGenJS reference, where installed)
 before writing deck code.
@@ -187,18 +192,35 @@ the section it belongs to. Do not discard the prefix and do not drop the warning
 2. `unified_forecast_summary` with `period_offset: -1` — prior-quarter levels, for deltas
    the decomposition does not cover. Async: follow the envelope reference.
 3. `arr_growth_analytics` (`include_trends`, `include_changes`, `include_benchmarks` all
-   true) — ARR, NRR, GRR, logo churn, time-to-value.
+   true) — ARR, NRR, GRR, logo churn, time-to-value. `include_changes` also returns the
+   `constant_currency` block (`delta`, `actual_delta`, `fx_effect`, `status`, `label`,
+   `footnote`) and `include_trends` returns `trends.constant_currency` for the trend chart.
+   Read `metadata.currency` on this and every revenue response (see the currency reference).
 4. `arr_growth_narrative` — quote it where it surfaces a retention insight; do not
    paraphrase it into a stronger claim than it makes.
 5. `renewal_forecast_summary` — portfolio-wide renewal bands. Permission-gated; on failure
    fall back to `list_account_contracts` on top accounts **and label the fallback** as a
    top-account inference, never a portfolio forecast.
 6. `account_health_movement` — portfolio health trend, correlational wording only.
-7. `data_quality_score` — a qualifier on every other number, never a headline.
+7. `data_quality_score` — a qualifier on every other number, never a headline. Its
+   `issues.accounts_missing_country` and deal-currency-without-rate counts are the coverage
+   caveats for the optional regional slide and the FX disclosure.
+8. `arr_operating_summary` (optional) — read only `by_dimension.dimension_options` to learn
+   whether `sales_region` or `market_region` is `available` for this organization. If
+   neither is, or the call is unavailable, skip the regional slide and say so in the
+   sources note.
+
+The quota block of `unified_forecast_summary` (current quarter) carries a
+`constant_currency` object `{label, attainment_percentage, fx_effect_pts,
+spans_fiscal_years, …}` on team and organization rollups. Capture it with the levels.
 
 **Do NOT also call `segment_performance_summary`, `organization_revenue_readiness`,
 `revenue_engine_snapshot` or `revenue_engine_state`** — the bundle carries them, and a
-second copy invites two slightly different numbers on two slides.
+second copy invites two slightly different numbers on two slides. **One exception:** the
+optional regional slide calls `segment_performance_summary(dimension="sales_region" or
+"market_region", level="top")`. That is a different cut (region, not segment), so it never
+duplicates a bundle number; still do not re-request the default segment view. It requires
+analytics permission — on access denial, skip the slide and note the gap.
 
 ---
 
@@ -244,6 +266,23 @@ uniformly; `pipeline_coverage_gap` present in every segment.
 converting poorly (`pipeline_conversion_mismatch` signals); win-rate spread across segments
 much wider than cycle-time spread; framework/qualification signals dominating
 `engine_state.stageStates.pipeline`.
+
+**Currency — the third explanation.** For an organization selling in more than one
+currency, part of a quarter's ARR movement can be exchange rates alone. Read
+`arr_growth_analytics.constant_currency.status` first:
+
+- `single_currency` — FX is irrelevant; leave currency out of the pack entirely.
+- `partial` or `complete` — compare `actual_delta` (reported) with `delta` (constant
+  currency at the plan rates named in `label`). When `fx_effect` is material (more than
+  about 2% of the reported change, or it flips the sign of growth), the answer to "market
+  or execution?" may be "partly neither": say how much of the reported movement is
+  currency, then apply the market/execution reading to the constant-currency movement
+  only. A `partial` status carries its `footnote` and `excluded_currencies` on the slide.
+- No `constant_currency` block — plan rates are not configured; say constant currency is
+  unavailable. Never derive it from spot rates.
+
+FX effect is never execution, churn, contraction or a forecast miss. State it plainly as
+arithmetic ("currency reduced reported ARR by NZ$180k").
 
 State the strength and uncertainty of the reading. An arithmetic pattern is consistent
 with one explanation; it is not causal proof.
@@ -443,7 +482,7 @@ them. Green, amber, and red only where a source band supports that status.
 > during a test build and only caught by rendering slides to images. Verify by rendering
 > and confirming the rightmost element on every slide is visible.
 
-### Slides — 8, ordered by the questions
+### Slides — 8 (9 with the optional regional view), ordered by the questions
 
 1. **Title** — navy. Organization/company name, "Revenue Review", quarter, comparison
    quarter.
@@ -453,13 +492,32 @@ them. Green, amber, and red only where a source band supports that status.
    belongs **before** the ARR slide.
 3. **ARR and retention** — the defined ARR with growth comparison and its basis; NRR and GRR
    paired (a wide gap means expansion is masking churn — call it out in one line); logo
-   churn; time-to-value. `data_quality_score` as a corner footnote.
+   churn; time-to-value. `data_quality_score` as a corner footnote. When constant-currency
+   `status` is not `single_currency` and the FX effect is material, show **reported and
+   constant-currency growth side by side** with the FX effect as its own line (a three-row
+   bridge: constant-currency movement, FX effect, reported movement), labelled with the
+   plan-rate `label`. The ARR trend chart may add the `trends.constant_currency` series
+   alongside the reported one, filtered by the same data-quality rule.
 4. **Market or execution** — segment table (ARR, win rate + n, coverage, cycle days, ACV),
    the `pipeline_conversion_mismatches` signals, and one explicit sentence naming which way
-   the evidence leans and how strongly. Segment-basis caveat line beneath.
+   the evidence leans and how strongly — market, execution, and (for multi-currency
+   organizations with material FX effect) how much of the movement is currency.
+   Segment-basis caveat line beneath.
+   - **Optional 4b — Revenue by region.** Only when `dimension_options` shows
+     `sales_region` or `market_region` available. One table or bar chart from
+     `segment_performance_summary(dimension=…, level="top")`: ARR, new ARR, win rate + n,
+     coverage per top-level region, **including the Unassigned row** (with
+     `accounts_missing_market` where present). Market rows may carry `tam`; never sum a
+     parent TAM when any child TAM is missing. Name `dimension_source` in one line. If a
+     region trades in several currencies, `metrics.native_by_currency` may show the
+     foreign share — never sum native amounts across currencies. Top level only; no rep,
+     manager or account names. Skip the slide rather than render a thin one.
 5. **Pipeline and forecast** — headline confidence, coverage, quota attainment,
    commit/best-case/pipeline, win rate by deal-size band, ACV drift (flagged only when
-   `is_significant: true`).
+   `is_significant: true`). Where the quota `constant_currency` block is present and
+   `fx_effect_pts` is material, show **reported and constant-currency attainment** side by
+   side with `fx_effect_pts` named as currency, not performance; note `spans_fiscal_years`
+   when true.
 6. **Renewals and customer health** — renewal bands from `renewal_forecast_summary` (or the
    labelled top-account fallback), logo churn, `account_health_movement` worded as a
    correlational trend.
@@ -467,7 +525,19 @@ them. Green, amber, and red only where a source band supports that status.
    an appendix. It is the credibility slide.
 8. **Close** — navy, mirrors the title.
 
-If a demo label applies, place it on the slide layout so it appears on all eight slides.
+If a demo label applies, place it on the slide layout so it appears on every slide.
+
+### Currency on every slide
+
+State the reporting currency once on the title slide (from `metadata.currency`, never
+assumed USD). Write every amount with the ISO code or its unambiguous symbol (`NZ$`, `A$`,
+`US$`, `€`, `£`); a bare `$` only when the reporting currency is USD and the audience is
+US-only. If any deck code formats money (a `formatCurrency`-style helper), pass the
+response's currency code into it rather than hard-coding `$`. When `normalization` is
+`converted_excluding_unconverted` or the `fx_unconverted_amounts_excluded` warning
+appears, put the exclusion beside the affected total ("Excludes €240k in EUR deals with no
+rate for Sep 2026") and list it on the limits slide; if it could change a conclusion, call
+the conclusion provisional. Never convert an amount yourself.
 
 ### Aggregation rule
 
@@ -501,6 +571,14 @@ error into the deck; summarise access gaps on the limits slide.
    - Any ramp figure carries the survivorship caveat adjacent to it; no cohort median when
      n < 3.
    - The limits slide is present and non-empty.
+   - Reporting currency read from the response and shown once on the title slide; no bare
+     `$` unless the reporting currency is USD; no self-computed conversions.
+   - Excluded or unconverted amounts are disclosed beside the affected totals.
+   - Constant-currency `status` checked; FX discussion omitted for single-currency orgs;
+     a material FX effect appears as its own line, never as execution or market
+     performance.
+   - Any regional slide shows top-level regions with the Unassigned row, no partial TAM
+     sum, and no rep, manager or account names.
    - Search the deck text for "caused", "because", "drove", "resulted in". Rewrite each
      unsupported causal claim.
    - The rightmost element is visible on every slide and nothing is clipped, overlapped,
@@ -526,4 +604,6 @@ error into the deck; summarise access gaps on the limits slide.
 | `renewal_forecast_summary` | Portfolio renewal bands (permission-gated) |
 | `list_account_contracts` | Labelled top-account fallback for the above |
 | `account_health_movement` | Health trend, correlational wording only |
-| `data_quality_score` | Footnote qualifier only |
+| `data_quality_score` | Footnote qualifier only; regional and FX coverage caveats |
+| `arr_operating_summary` | Optional — `dimension_options` only, to decide whether a regional slide is possible |
+| `segment_performance_summary` | Optional regional slide only (`dimension` = `sales_region` or `market_region`, `level="top"`) |

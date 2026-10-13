@@ -1,6 +1,6 @@
 # Rep Coaching Report — Workflow Specification
 
-Version 2.0.0 · 2026-10-13. The full workflow behind [../SKILL.md](../SKILL.md). Read it
+Version 2.1.0 · 2026-10-13. The full workflow behind [../SKILL.md](../SKILL.md). Read it
 completely before the first data pull. The shared tenant, schema, fixture, read-only,
 missing-evidence and delivery rules live in
 [connector-preflight.md](connector-preflight.md). The rules for flags, benchmarks, ramp,
@@ -198,6 +198,31 @@ and continue. Don't block the report on them.
   ramp figure appears, state n and use the wording and n-thresholds in
   [structural-confounders.md](structural-confounders.md) Screen 3 (at n = 1, show no
   cohort median: it is the rep's own number).
+- **Region context** (optional enhancement):
+  `capacity_to_target_planner(group_by: "sales_region", level: "leaf")` at roster level.
+  It places sellers in leaf Sales Org region groups. Use it for two things only:
+  - **The rep's region group**, as the context for comparisons. Locate the planning group
+    that contains `repId` in the live response. If the response is `insufficient_data`,
+    falls back to a single blended group (check `data_quality.group_by` and
+    `grouping_strategy`), or the rep is not in any group, region membership is **not
+    resolved**: say so and do not guess a region from accounts or opportunities.
+  - **Grouping warnings, surfaced as confounders.** `reps_without_team` (if it includes
+    this rep, region comparison cannot be made for them), `market_quota_unassigned`,
+    `region_grouping` and `owner_profile_attribution` change what any region figure means;
+    quote them in Slide 2's speaker notes and as a muted line where they bear on a
+    comparison.
+  Never present a region's quota, capacity or gap as the rep's figure, and never list
+  other reps from the group's contributors. Where `segment_performance_summary(dimension:
+  "sales_region", level: "leaf")` is exposed and permitted (it needs analytics
+  permission), the rep's region row is the like-for-like comparator for win rate and cycle
+  time; otherwise the comparator stays "team, all segments" and is labelled so.
+- **Team at close** (pending deploy; optional): once `get_opportunity` exposes
+  `sales_team_at_close{id, name, team_type, source}` (null while a deal is open), read it
+  for the closed deals cited in the deck and attribute each to the team the rep was in at
+  close, not their current team. This matters for a rep who moved teams: their closed-won
+  history belongs to the earlier region's comparator. If the field is absent from the live
+  schema, skip it and note in the run summary that closed deals were attributed to the
+  current team assignment. Never use `search_opportunities` to scope a rep's closed deals.
 - **Methodology playbooks**: `list_methodology_playbooks`. The org's own published
   MEDDPICC or BANT definitions, "what good looks like" per element in the org's own
   language. This grounds Slides 5 and 6.
@@ -405,9 +430,13 @@ Run these before any comparison reaches a slide. Each one changes what a number 
   closed-won is mostly renewal is not like-for-like. Where the mix differs materially,
   compare against the same motion and say which comparison you used. "Lowest win rate on
   the team" without that caveat is technically true and substantively misleading.
-- **Segment and territory.** A team comparator spans segments; label it. Where segment
-  data exists, compare within segment
-  ([structural-confounders.md](structural-confounders.md) Screen 2).
+- **Segment, territory and sales region.** A team comparator spans segments and regions;
+  label it. Where the rep's sales region (from the region-context lens) or segment is
+  resolved, compare within that region or segment first and only then against the team,
+  saying which comparator each figure uses
+  ([structural-confounders.md](structural-confounders.md) Screen 2). Attribute closed
+  deals to `sales_team_at_close` where exposed. A rep in `reps_without_team`, or an
+  unresolved region, gets the team comparator with that caveat, never a guessed region.
 - **Ramp.** Ramp figures carry the survivor-cohort caveat and n.
 - **Sample size.** State n for every call-behaviour claim and every "X of Y deals".
 
@@ -535,6 +564,10 @@ stays near 10 slides.
   win-rate comparison. If the layer is `results` and the rep's motion mismatches the
   territory, add: "Consider whether this is a skill gap or a role-fit/territory
   mismatch." If the classification is `unknown`, say role-fit could not be assessed.
+- **Region context** (if the region-context lens resolved the rep's group): a small inline
+  note, e.g. "Sales region: ANZ Mid-Market (leaf); comparisons below are within region
+  where marked". If grouping warnings apply to this rep (for example `reps_without_team`),
+  say region comparison was not possible. Never show a region rank or other reps' names.
 - **Ramp context** (if the rep is in `ramp_cohort.reps[]`): a muted note, "[Rep] is in
   month N of ramp; current metrics are tracking within X% of expected cohort pace",
   followed by the survivor-cohort caveat and n.
@@ -542,9 +575,10 @@ stays near 10 slides.
 **Bottom half: pipeline snapshot (supporting context).**
 - Four compact stat cards, visibly smaller than the diagnosis block: total pipeline
   value, active deal count, forecast confidence (with its scale), average deal size.
-- Under each, the team comparator labelled "team, all segments". Colour emerald, amber or
-  red only when the comparator is like-for-like (same segment and motion); otherwise use
-  a neutral fill.
+- Under each, the team comparator labelled "team, all segments" (or "region" when a
+  region-scoped comparator was available). Colour emerald, amber or red only when the
+  comparator is like-for-like (same segment or region, and motion); otherwise use a
+  neutral fill.
 
 **Session footer** (small, muted, bottom-right): if `coaching_agenda` returned a
 session, "Next 1:1 · Week N · {week type} · {coaching model} model · scheduled {date}".
@@ -925,6 +959,9 @@ Logical names; resolve the connector prefix at runtime per
 | `coaching_history` | Delivered-coaching record | Required |
 | `rep_coaching_context` | Aggregate fallback | Fallback |
 | `revenue_loop_diagnosis`, `hunter_farmer_mix`, `ramp_cohort` | Lenses (permission-gated) | Optional |
+| `capacity_to_target_planner` (`group_by: "sales_region"`, `level: "leaf"`) | Rep's region group and grouping warnings | Optional |
+| `segment_performance_summary` (`dimension: "sales_region"`) | Region comparator (analytics permission) | Optional |
+| `get_opportunity` | `sales_team_at_close` for cited closed deals (pending deploy) | Optional |
 | `list_methodology_playbooks` | Org's framework definitions | Required |
 | `forecast_confidence`, `risk_heatmap`, `pipeline_risk_summary` | Pipeline, deal health, distribution | Required |
 | `activity_gaps`, `get_opportunity_activities` | Engagement and cadence | Required |

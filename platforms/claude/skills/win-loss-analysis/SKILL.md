@@ -1,7 +1,7 @@
 ---
 name: "win-loss-analysis"
 description: "Analyse a cohort of closed Summit53 deals and build a win/loss PPTX: outcome rates with denominators, framework, activity and stakeholder patterns associated with wins and losses, coded qualitative themes with deal counts, loss patterns, segment differences, and recommendations framed as measurable validation tests. For sales leaders, RevOps and offsites. Use for win/loss reports, win-rate analysis, closed-deal analysis, deal post-mortems, 'why are we losing deals', 'what do our wins have in common', 'what separates wins from losses', 'what predicts a win', 'loss reasons', 'win loss patterns', 'help me understand our win rate', 'how can we improve our close rate'. Do not use for a live competitor in an active deal — use competitor-response-card. Do not use for individual rep coaching — use rep-coaching-report."
-version: "1.1.0"
+version: "1.2.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -33,20 +33,24 @@ Skill-specific gates:
 - **Read-only.** No `refresh`, no notes, no writes.
 - **Missing source stop.** If the canonical deal-size band definition from `unified_forecast_summary` remains unavailable after the async flow, stop and state the missing source (see Step 2, item 13).
 
+- **Optional enhancements stay optional.** Region cuts, `sales_team_at_close` and ICP fit evidence are enhancements. If a field or tool is absent from the live schema, access-denied or plan-gated, continue without it and state the gap in the closing limits (preflight §5).
+
 Read [references/async-envelopes.md](references/async-envelopes.md) before calling `unified_forecast_summary`; it can return a processing envelope that is not data.
+
+Read [references/currency-and-fx.md](references/currency-and-fx.md) before stating any deal size or ARR figure: label amounts in the reporting currency from `metadata.currency`, disclose deals excluded for a missing rate, and never compare amounts across currencies.
 
 ## Tools used
 
 Inspect each live schema before the first call; argument names below are semantic guidance.
 
-- `search_opportunities` — won/lost deal list and metadata (cohort source)
+- `search_opportunities` — won/lost deal list and metadata (cohort source); `sales_team_at_close{id, name, team_type, source}` when exposed (optional, pending rollout; null while open)
 - `risk_heatmap` — deal `healthScore` (0.0–1.0, higher = healthier), `healthBand`, framework scores and risk factors; paginated
 - `opportunity_framework_summary` — element-by-element framework scoring for sampled deals
 - `get_opportunity_signals` — win-probability movement and the flagged first constraint for sampled deals (access-guarded to leader / owning rep)
 - `get_opportunity_notes_summary` — AI summary of deal notes
 - `get_opportunity_notes` — raw deal notes (especially lost deals)
 - `get_battlecard` — differentiators and objection handling for competitors named in lost-deal notes
-- `get_opportunity` — full deal details, health, owner, account linkage, stage history
+- `get_opportunity` — full deal details, health, owner, account linkage, stage history; `sales_team_at_close` when exposed
 - `get_opportunity_activities` — activity log (calls, emails, meetings) per sampled deal
 - `opportunity_stakeholder_intelligence` — buying-committee coverage per sampled deal
 - `forecast_confidence` — historical forecast accuracy patterns
@@ -58,6 +62,9 @@ Inspect each live schema before the first call; argument names below are semanti
 - `deal_drag_dashboard` — waste scores and staleness for lost deals
 - `deal_drag_summary` — per-deal top qualification gaps
 - `coaching_diagnostic` — Results/Effort/Knowledge/Skills layer for rep-level recommendation language (manager/team-permission gated)
+- `arr_operating_summary` — `by_dimension.dimension_options`: which of `segment` / `sales_region` / `market_region` the org supports
+- `segment_performance_summary` — win rate and closed counts by `dimension` (`sales_region` or `market_region`) and `level`; analytics-permission gated; read-only (no `refresh`)
+- `icp_fit_evidence` — lead fit buckets and account-fit win rates (optional: pending rollout and requires the Outreach plan)
 
 ## Step 1: Clarify scope and define the cohort
 
@@ -67,7 +74,7 @@ Confirm with the user (use defaults if they say "just do it"):
 - **Company name** for the title slide: default to the organization name from `current_context`.
 - **Focus**: all deals or a segment (deal size, motion, region, rep team). Default: all.
 - **Framework**: MEDDPIC primary; include BANT and SPICED by default for comparison.
-- **Currency**: the org's reporting currency.
+- **Currency**: the org's reporting currency, read from the response per [references/currency-and-fx.md](references/currency-and-fx.md). Deal-size bands are in that currency.
 - **Audience**: sales leadership (operational) or executive (strategic). Default: sales leadership.
 
 Write down the cohort definition before pulling data: which stage names count as **won**, which as **lost**, the closed-date window, currency, and any segment filters. Every rate in the deck refers back to this definition.
@@ -78,7 +85,7 @@ Write down the cohort definition before pulling data: which stage names count as
 
 1. **Won and lost lists.** `search_opportunities` with the won stage, then the lost stage. Its live schema exposes `limit` but no page or offset, and sorts by `updated_at` by default. Retrieve the cohort in **bounded windows**: if a call returns exactly `limit` rows, treat it as possibly truncated and split it into value bands with `min_value` / `max_value` (and/or reverse `sort_direction`), re-querying each band until every window returns fewer than `limit` rows. Cap the effort at about 10 windows per outcome. Filter by closed date client-side.
 2. **Deal health and framework at close.** `risk_heatmap` with the won and lost stages (or unfiltered and filtered client-side if stage filtering is unsupported), plus the close-date window where the schema allows. It paginates: read `total` on the first page and page until every row is retrieved. `healthScore` is higher-is-healthier; `riskScore` is a deprecated alias with the same direction.
-3. **Reconcile** the two sources by opportunity ID.
+3. **Reconcile** the two sources by opportunity ID. When `sales_team_at_close` is exposed, record it per closed deal: attribute each deal to the team that owned it **at close**, not the current owner's team (reps move). If it is absent or null for a closed deal, fall back to the current owner's team and label that cut "current team — may differ from team at close".
 4. **If the cohort cannot be completed** within the bounded windows, do not present a partial list as the whole. Record "Cohort truncated: {n_won} won and {n_lost} lost retrieved; true totals unknown (or {total} per `risk_heatmap`)" and carry it onto Slide 3 and the closing limits.
 
 ### Clean the cohort
@@ -88,7 +95,7 @@ Exclude, and count each exclusion for the limits section:
 - **Open** deals (any non-closed stage) and deals closed outside the window.
 - **Duplicates** (same opportunity under two IDs, or the same deal re-created after a stage reset — keep one).
 - **Deleted or archived** records.
-- **Incomparable** records: different currency without a conversion, renewals mixed into a new-business cohort (unless the user asked for both and they are segmented), no-decision/withdrawn outcomes unless the cohort definition includes them explicitly.
+- **Incomparable** records: different currency without a conversion (amounts excluded for a missing rate — see [references/currency-and-fx.md](references/currency-and-fx.md) §3), renewals mixed into a new-business cohort (unless the user asked for both and they are segmented), no-decision/withdrawn outcomes unless the cohort definition includes them explicitly.
 - **Fixture rows** per the preflight.
 
 ### Sample deep-dives (batched)
@@ -98,8 +105,8 @@ Choose the sample: the top 5–8 won and top 5–8 lost deals by amount from the
 3. **Framework deep-dives** — `opportunity_framework_summary` with `framework: "MEDDPIC"`; also BANT and SPICED if requested. Record **when** each score was captured (stage at capture) — see the stage-capture bias rule in Step 3b.
 4. **Deal narratives** — `get_opportunity_notes_summary` for each sampled deal; for lost deals also `get_opportunity_notes`. When a lost deal's notes name a competitor, call `get_battlecard` for that competitor. Notes reveal pricing objections, competitor names, procurement blockers and stated loss reasons; won-deal notes reveal champion language, urgency triggers and proof points.
 5. **Deal details** — `get_opportunity`: health at close, owner, account linkage, stage history, current stage.
-6. **Activity sequences** — `get_opportunity_activities`: volume by type, cadence between touches, last activity type before outcome, momentum. Feeds Slide 8 and Step 3e.
-7. **Revenue Signal Layer** — `get_opportunity_signals` (same sample only; it is per-deal and access-guarded). Win-probability movement and the flagged first constraint. If unauthorized or empty for a deal, drop that deal from the signal analysis only and note the reduced n on Slide 5.
+6. **Activity sequences** — `get_opportunity_activities`: volume by type, cadence between touches, last activity type before outcome, momentum. Feeds Slide 9 and Step 3e.
+7. **Revenue Signal Layer** — `get_opportunity_signals` (same sample only; it is per-deal and access-guarded). Win-probability movement and the flagged first constraint. If unauthorized or empty for a deal, drop that deal from the signal analysis only and note the reduced n on Slide 6.
 8. **Stakeholder coverage** — `opportunity_stakeholder_intelligence` (same sample only). Engaged-stakeholder counts and roles, to state a measured multi-threading figure instead of inferring it from note text.
 
 ### Context pulls (parallel with the above)
@@ -110,6 +117,8 @@ Choose the sample: the top 5–8 won and top 5–8 lost deals by amount from the
 12. **Account engagement and drag** — `activity_gaps`; `deal_drag_dashboard` filtered to closed-lost; `deal_drag_summary` for the sampled lost deals. "Stalled-then-lost" (failure to sustain urgency) is a different pattern from "lost in active evaluation" (lost on merit).
 13. **Canonical win rate by deal size** — `unified_forecast_summary`, `kpis.win_rate.by_deal_size`. On a processing envelope, poll `get_job` to terminal and re-call with identical arguments. These bands are auto-detected from p25/p50/p75 of the org's trailing-12-month closed-won history. Use them as the canonical band definition for Step 3a and as a cross-check against your cohort; if your cohort's band rates diverge sharply, note that the windows differ. **If the band definition remains unavailable, stop and state the missing source; do not substitute hard-coded brackets.**
 14. **Rep coaching grounding** (optional, permission-gated) — `coaching_diagnostic` per rep represented in the sample. If unauthorized for a rep or the team, skip it and keep pattern-level language.
+15. **Region check** (optional) — `arr_operating_summary` (no `refresh`): read `by_dimension.dimension_options`. For each of `sales_region` / `market_region` that is `available`, call `segment_performance_summary` with that `dimension` (`level: "top"`, then `"leaf"` if the top level hides a split) and the period arguments that best match the cohort window; state any window mismatch. Read win rate and won/lost counts per group, plus the always-present `unassigned` row. Feeds Step 3a and Slide 4. Analytics-permission gated.
+16. **ICP fit evidence** (optional) — only when the live schema exposes `icp_fit_evidence` (pending rollout; requires the Outreach plan). Feeds Step 3f and Slide 4.
 
 ### Handling missing data
 
@@ -117,6 +126,7 @@ Choose the sample: the top 5–8 won and top 5–8 lost deals by amount from the
 - Framework errors for some deals → skip those deals in that comparison and show the reduced n.
 - Empty forecast-confidence history → drop the forecast-accuracy content and note "Forecast history unavailable."
 - `get_opportunity_signals` or `coaching_diagnostic` unauthorized → drop that enhancement only, note it, keep the deck.
+- No region dimension available, `segment_performance_summary` denied, or `icp_fit_evidence` absent / plan-gated → skip that cut, note it in the closing limits, keep the deck. If both are unavailable, drop Slide 4.
 - A null, empty or access-denied field is **unavailable**, never zero, and never a reason (see Step 3d).
 
 ## Step 3: Analyse and synthesise
@@ -128,12 +138,14 @@ Write internal findings before building slides. Every number carries its n.
 Define each rate where it is first shown:
 
 - **Win rate** = won ÷ (won + lost) within the cohort definition. State whether no-decision/withdrawn outcomes are excluded.
-- **Win rate by deal-size band** — use the org-adaptive bands from `kpis.win_rate.by_deal_size` (`rate`, `won`, `total`, `label` per band). Show `won`/`total` beside each rate. A blended win rate usually hides a weak band; this is often the single most useful cut.
+- **Win rate by deal-size band** — use the org-adaptive bands from `kpis.win_rate.by_deal_size` (`rate`, `won`, `total`, `label` per band). Band labels are in the reporting currency; label them with its code (never a bare `$` unless the reporting currency is USD and the audience US-only). Show `won`/`total` beside each rate. A blended win rate usually hides a weak band; this is often the single most useful cut.
 - **Win rate by rep** — only with n per rep, only where the audience is authorized, and never ranked on tiny denominators.
 - **Stage reached before loss** — where did lost deals stop?
 - **Cycle time** — median days from create to close, wins vs losses.
 
 **Segment when confounded.** If deal size, motion (new business vs expansion vs renewal), region, customer tenure or stage history differ materially between the won and lost pools, the blended comparison can mislead. Split by that dimension and compare like with like; if a segment is too small to compare, say so.
+
+**Region as a confounder** (when item 15 returned region data). Compare win rate by `sales_region` and/or `market_region` group, each with won/total. If region win rates differ materially (for example a gap of 15+ points with at least 10 closed deals per group) or the won and lost pools sit in different regions in different proportions, segment the cohort by region before reading framework or activity gaps — otherwise a "pattern" may just be where the deals were sold. Show the Unassigned group as its own row; never fold it into a region. For team cuts, attribute deals by `sales_team_at_close` where exposed; otherwise label the cut "current team". Region and team differences are associations, not verdicts on a region or team.
 
 ### 3b: Framework score comparison
 
@@ -192,7 +204,18 @@ Absent logged activity is not proof of no engagement — reps may not log everyt
 
 Use `deal_drag_dashboard` waste scores or activity recency as the criteria and state the threshold. Where `deal_drag_summary` names a top qualification gap, a stalled-loss with a named gap (e.g. missing Economic Buyer) is a coaching target; an active-loss with clean qualification but high drag points to competitive or pricing pressure.
 
-### 3f: Recommendations as validation tests
+### 3f: Does our ICP predict outcomes? (optional)
+
+Run only when `icp_fit_evidence` is exposed. The user's question is "does it predict?"; the answer is written as **association** — whether fit tiers are associated with different outcomes — never "predicts".
+
+- **Gate on sample flags.** Lead buckets (`strong`, `good`, `moderate`, `weak`, `unrated`) carry `sample` (conversion) and `win_rate_sample` (win rate), each `sufficient`, `insufficient` or `empty`. Show `conversion_rate` only where `sample` is `sufficient` and `win_rate` only where `win_rate_sample` is `sufficient`. An insufficient or empty bucket is **unknown** — show its raw counts ("2 won of 3 closed — too few to rate"), never a rate, and never compute one yourself from its counts.
+- **Compare only when `comparison_ready` is true** (at least two rated buckets sufficient). Otherwise say "Not enough fit-rated outcomes yet to compare tiers" and show counts only.
+- **Account fit.** `accounts` groups every CRM opportunity by its account's `icp_fit_rating` (`unknown` = never scored, not weak) with `win_rate`, `win_rate_sample` and its own `comparison_ready`. Use these for account-fit win rates under the same rules.
+- **Provenance.** State the share of fit ratings scored on the current ICP (`provenance.scored_on_current_icp` over the total; for accounts also `manual`) and name `current_icp`. If most ratings were scored on an older ICP or outside Summit53, say the evidence describes an earlier definition of fit; mention `rescore` counts.
+- **Window mismatch.** This evidence covers the organization's whole history, not your cohort window, and fit is the account's current rating, not its rating when the deal was open. Say so; do not merge it into cohort rates.
+- **Wording.** "Strong-fit accounts won 48% of closed opportunities (24 of 50) vs 21% for weak-fit (6 of 29) — associated with higher win rates; not proof the ICP caused it."
+
+### 3g: Recommendations as validation tests
 
 Generate 5–7 recommendations. Each one is a **measurable validation test**, not a proven fix:
 
@@ -204,7 +227,7 @@ Generate 5–7 recommendations. Each one is a **measurable validation test**, no
 
 Order by expected impact. Frame as process, not blame ("Add a Champion checkpoint", not "Reps aren't finding champions"). Where `coaching_diagnostic` is available and authorized for a rep, ground that rep's line in the flagged layer; otherwise keep it at pattern level and route individual coaching to `rep-coaching-report`.
 
-### 3g: Headline
+### 3h: Headline
 
 One sentence, in association language, with n:
 
@@ -237,40 +260,48 @@ Use the **Cherry Bold** palette — this is an analytical/diagnostic deck, not a
 **Typography**: Georgia headers (36–44pt), Calibri body (14–16pt).
 **Layout**: 16:9 widescreen, 0.5" minimum margins. Dark title/close slides, light content slides. Demo label on every slide if it applies. Every percentage on every slide carries its n (e.g. "71% (5/7)").
 
-### Slide structure (11 slides)
+### Slide structure (up to 12 slides)
+
+Slide 4 appears only when a region cut or ICP fit evidence is available; without it the deck is 11 slides and later slides move up one (slide numbers in this file assume it is present).
 
 #### Slide 1: Title
 - Cherry background. Company name, "Win/Loss Pattern Analysis", period covered, date. Large Georgia title in white, Calibri subtitle in off-white.
 
 #### Slide 2: Executive summary
-- Cherry background. The Step 3g headline as a large callout (28–32pt, white), then 3 key findings (16–18pt, off-white), each with n.
+- Cherry background. The Step 3h headline as a large callout (28–32pt, white), then 3 key findings (16–18pt, off-white), each with n.
 - Answers: "What's the one thing to take away — and how confident should we be?"
 
 #### Slide 3: Win/loss summary
 - Sources: Step 3a; health at close from `get_opportunity`.
-- Four stat cards: win rate (with won/total), won count, lost count, median deal size (won vs lost). Bar chart of win rate by org-adaptive deal-size band with `won/total` labels. Emerald for wins, cherry for losses.
+- Four stat cards: win rate (with won/total), won count, lost count, median deal size (won vs lost, labelled in the reporting currency). Bar chart of win rate by org-adaptive deal-size band with `won/total` labels. Emerald for wins, cherry for losses.
 - Cohort line beneath: window, stage definitions, exclusions by reason, and the truncation note if the cohort is incomplete.
 - Optional: median health score at close, won vs lost, with the caveat that health at close partly reflects the outcome.
 
-#### Slide 4: Framework score comparison (MEDDPIC)
+#### Slide 4: Region and ICP fit cuts (conditional)
+- Sources: Step 3a region check, Step 3f.
+- Left — **Win rate by region**: one bar per `sales_region` or `market_region` group with `won/total` labels, plus the Unassigned row. If the cohort was segmented by region, say so and which later slides use the segmented view. Team cuts say "team at close" or "current team".
+- Right — **Is ICP fit associated with outcomes?**: account-fit win rates by `icp_fit_rating` and, if useful, lead-fit conversion by bucket. Only `sufficient` buckets get a bar; insufficient/empty buckets show counts and "too few to rate"; `unknown` shown separately in slate. Footer: provenance share on the current ICP, "whole history, current fit rating — not this cohort", and "Associations, not proof the ICP caused outcomes."
+- Only one side available → full width. Neither → skip the slide.
+
+#### Slide 5: Framework score comparison (MEDDPIC)
 - Source: Step 3b.
 - Horizontal grouped bar chart, one pair per MEDDPIC element; emerald won, cherry lost; n in the legend.
 - Callout: the element with the largest gap, phrased as an association, plus the stage-capture bias note where it applies.
 - Limited data → table: element, win avg, loss avg, gap, n.
 
-#### Slide 5: Patterns associated with wins
+#### Slide 6: Patterns associated with wins
 - Sources: ranked elements from Step 3b, trajectory data from `get_opportunity_signals`.
 - Top 5 elements by gap, each as a card: element name; win avg → loss avg with gap; **n for each side**; one-line interpretation in association language ("Wins in this cohort had markedly stronger Champion scores (n=7 vs 6)").
 - Navy numbered circles (1–5). Colour the gap emerald when it favours wins, cherry when a low score is associated with loss.
 - Trajectory strip where signal data exists (state how many deals): e.g. "On 4 of 6 lost deals with signal data, a first constraint was flagged a median 5 weeks before close."
-- Footer: "Associations in this cohort — not validated predictors. See validation tests on Slide 10."
+- Footer: "Associations in this cohort — not validated predictors. See validation tests on Slide 11."
 
-#### Slide 6: BANT and SPICED comparison
+#### Slide 7: BANT and SPICED comparison
 - Source: Step 3b. Two columns: BANT (Budget, Authority, Need, Timeline) and SPICED (Situation, Pain, Impact, Critical Event, Decision), win vs loss averages with n, as mini-bars or a compact table.
 - Score colours: emerald ≥ 70%, amber 40–69%, red < 40%, slate unavailable.
 - Only one framework → full width. Neither → skip the slide.
 
-#### Slide 7: What the field is saying (qualitative themes)
+#### Slide 8: What the field is saying (qualitative themes)
 - Sources: Step 3d coding, `opportunity_stakeholder_intelligence`, `get_battlecard`.
 - Two columns: "Why we win" (emerald left-border cards) and "Why we lose" (cherry left-border cards), 3–4 cards each. Each card: theme name, **deal count** ("4 of 7 sampled losses"), 1–2 paraphrased lines of evidence.
 - Stat line: measured engaged stakeholders, won vs lost, with n.
@@ -278,30 +309,30 @@ Use the **Cherry Bold** palette — this is an analytical/diagnostic deck, not a
 - Competitive intelligence callout if competitors appear in lost-deal notes, with mention count and battlecard counters.
 - Sparse notes → single column and a limited-sample note.
 
-#### Slide 8: Activity and engagement patterns
+#### Slide 9: Activity and engagement patterns
 - Sources: Step 3e, `activity_gaps`, `deal_drag_dashboard`, `deal_drag_summary`.
 - Three sections: logged activity volume by type (won vs lost, n); cadence (average days between touches); final activity type in the last 7 days (counts).
 - Key insight in association language: "Won deals in this cohort logged a touch roughly every 5 days; lost deals showed ~13-day gaps (n=7 vs 6). Tighter cadence is associated with wins here — validate before treating it as a rule."
 - Callout: "Of {X} lost deals, {Y} active-losses and {Z} stalled-losses (threshold: {criterion})." Add the most common named qualification gap on stalled-losses where `deal_drag_summary` provides it.
 
-#### Slide 9: Common loss patterns
+#### Slide 10: Common loss patterns
 - Sources: Steps 3c, 3d, 3e and `deal_drag_summary`.
 - Cards with a cherry left border: pattern name; loss-type badge ("Active loss" or "Stalled loss"); frequency as a count ("5 of 9 lost deals"); one line of evidence blending quantitative and qualitative. Top 5–6 patterns, active and stalled grouped separately.
 - A named top qualification gap shared across several stalled-losses gets its own card.
 - Include an "Unknown reason" card if the unknown count is material.
 
-#### Slide 10: Recommendations as validation tests
-- Source: Step 3f.
+#### Slide 11: Recommendations as validation tests
+- Source: Step 3g.
 - 5–7 numbered items (navy circles): bold change headline; evidence with n; test (cohort, window, metric); success threshold; loss-type tag.
 - Order by expected impact. Process framing, not blame.
 
-#### Slide 11: Close — cohort, definitions and limits
+#### Slide 12: Close — cohort, definitions and limits
 - Cherry background. Company name, "Evidence to improve win rates", date, "Powered by Summit53".
-- Lower block (off-white): cohort definition, rate definitions, exclusions, sample selection rule, truncation status, unavailable sources (summarised), stage-capture bias note, the demo label if it applies, and "Associations, not validated predictors."
+- Lower block (off-white): cohort definition, rate definitions, exclusions, sample selection rule, truncation status, reporting currency and any deals excluded for a missing FX rate, team attribution basis (team at close or current team), unavailable sources and optional capabilities (summarised), stage-capture bias note, the demo label if it applies, and "Associations, not validated predictors."
 
 ### Chart generation
 
-Prefer native PptxGenJS charts (BAR, DOUGHNUT, PIE) so they stay editable. Match colours to the palette; use the `pptxgenjs.md` styling guidance (custom colours, clean backgrounds, muted axis labels, subtle grids). For Slide 4 use two series (Won, Lost) with `barDir: 'col'` in emerald and cherry. Start value axes at zero; no truncated axes that exaggerate gaps.
+Prefer native PptxGenJS charts (BAR, DOUGHNUT, PIE) so they stay editable. Match colours to the palette; use the `pptxgenjs.md` styling guidance (custom colours, clean backgrounds, muted axis labels, subtle grids). For Slide 5 use two series (Won, Lost) with `barDir: 'col'` in emerald and cherry. Start value axes at zero; no truncated axes that exaggerate gaps.
 
 ## Step 5: Generate the file
 
@@ -333,10 +364,13 @@ Write one Node.js PptxGenJS script that:
 ## Verification checklist
 
 - [ ] Preflight checklist complete; `scoped_org_id` matched on returned data
-- [ ] Cohort defined; complete via bounded windows, or truncation disclosed on Slides 3 and 11
+- [ ] Cohort defined; complete via bounded windows, or truncation disclosed on Slides 3 and 12
 - [ ] Open, duplicate, deleted, incomparable and fixture records excluded and counted
 - [ ] Every rate defined; every percentage shows its n; small denominators shown as counts
-- [ ] Segmented where size, motion, region, tenure or stage history confound
+- [ ] Segmented where size, motion, region, tenure or stage history confound; region win rates checked when `dimension_options` shows regions; Unassigned shown separately
+- [ ] Closed deals attributed by `sales_team_at_close` where exposed, else labelled "current team"
+- [ ] ICP fit (if exposed): rates only for `sufficient` buckets, compared only when `comparison_ready`, provenance and whole-history window stated, `unknown` not treated as weak
+- [ ] Amounts and deal-size bands labelled in the reporting currency per [references/currency-and-fx.md](references/currency-and-fx.md); FX exclusions disclosed
 - [ ] Themes show deal counts; loss reasons labelled stated / inferred / unknown; none inferred from empty fields
 - [ ] Stage-capture bias flagged on framework comparisons
 - [ ] No "predictor", "predicts" or "money slide" language; recommendations are validation tests

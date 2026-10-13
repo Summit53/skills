@@ -1,7 +1,7 @@
 ---
 name: "qbr-generator"
 description: "Build an internal quarterly revenue and sales operating review as an executive PPTX from live Summit53 data: quota and revenue performance, ARR growth and retention, pipeline health, risk and stalled pipeline, account portfolio, wins and losses, and next-quarter actions. DOCX only when explicitly requested. Use when a revenue or sales leader says 'prep for my QBR', 'build my quarterly deck', 'quarterly business review', 'quarterly sales review', 'executive revenue review', 'pull together the numbers for this quarter', 'I need a revenue review', or wants the quarter's CRM performance compiled into an internal presentation. Despite the name, do not use for a customer-facing QBR or value review — use customer-qbr. Do not use for board or investor reporting — use board-revenue-pack. Do not use for the weekly 'why did the number move' brief — use forecast-delta-brief."
-version: "1.1.0"
+version: "1.2.0"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -23,11 +23,13 @@ Read [references/connector-preflight.md](references/connector-preflight.md) and 
 
 Read [references/async-envelopes.md](references/async-envelopes.md) before the first `unified_forecast_summary` call: it defines how to poll processing envelopes with `get_job` and re-call for the payload.
 
+Read [references/currency-and-fx.md](references/currency-and-fx.md) before writing any amount on a slide: it defines reporting-currency labels, disclosure of excluded or unconverted amounts, constant currency and FX effect. Its checklist is part of this skill's final verification.
+
 Skill-specific gates (resolve these up front — see Step 1):
 
 1. **Reporting period, comparison period, currency and audience are resolved before data is pulled**, from the request or context, and every assumption is stated on the Executive Summary slide and in the delivery note.
 2. **Scope.** Org-wide unless the user names a team, segment or region; every returned organization ID must match `scoped_org_id`.
-3. **One currency.** Use the reporting currency the tools return. Never add or compare amounts across currencies; if a payload mixes currencies without a converted total, show the native figures separately and say so.
+3. **One currency.** Use the reporting currency the tools return (`metadata.currency`, or a top-level `currency` where a tool returns one — never assume USD). Never add or compare amounts across currencies; if a payload mixes currencies without a converted total, show the native figures separately and say so. Never convert an amount yourself.
 4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide.
 
 ## Why This Exists
@@ -56,6 +58,8 @@ This skill uses the following Summit53 tools (logical names; resolve the prefix 
 
 **Team Performance**: `team_action_plan`
 
+**Regional view (optional)**: `arr_operating_summary` (read `by_dimension.dimension_options` only, to learn whether `sales_region` / `market_region` are available), `segment_performance_summary` (`dimension`, `level="top"`, optional `secondary` cross-tab; requires analytics permission)
+
 **Post-Sale Health**: `get_value_impact_card` (optional)
 
 **Action Planning**: `weekly_action_plan`
@@ -81,6 +85,8 @@ Call these Summit53 tools. Launch as many in parallel as possible — they're in
    - `unified_forecast_summary` — pipeline coverage, quota tracking, revenue at risk, team metrics
      - Current period: `period_offset: 0`
      - Previous period (for comparison): `period_offset: -1`
+     - Also returns `projected_landing` `{value, basis, closed_won, floored_to_closed_won, fallback_reason, rep_commit, weighted_pipeline, window}` — the landing number leads with the reps' commit roll-up (`basis: "rep_commit_rollup"`) and falls back to weighted pipeline (`basis: "weighted_pipeline"`) with a `fallback_reason`. Capture all of it for Slide 3.
+     - Quota rollups carry `constant_currency` `{label, attainment_percentage, fx_effect_pts, spans_fiscal_years, …}` — attainment restated at plan rates. Capture it for Slide 3.
      - Also returns: `team_summary.revenue_per_rep` (period-scoped closed won ÷ quota-carrying reps — a productivity metric, distinct from quota attainment), `kpis.win_rate.by_deal_size` and `kpis.pipeline_coverage.by_deal_size` (org-adaptive deal-size bands), and `kpis.pipeline_coverage.acv_drift` (`drift_pct`, `direction`, `current_avg`, `historical_avg`, `is_significant` — drift >15%). `acv_drift` is always an object; treat it as a flag only when `is_significant: true`.
    - `forecast_confidence` — confidence scores, rep performance, velocity, stage distributions
    - `hunter_farmer_mix` (optional) — rep-level deal mix (net-new "hunting" vs expansion "farming"), for the optional rep deal-mix view on the Revenue Performance slide. Requires VIEW_TEAM_METRICS or team/all-metrics access — if unauthorized or empty, skip this pull and omit the corresponding slide element.
@@ -88,6 +94,7 @@ Call these Summit53 tools. Launch as many in parallel as possible — they're in
 2. **ARR Growth**
    - `arr_growth_analytics` — total ARR, net retention, growth stage, benchmarks
      - Set `include_trends: true`, `include_changes: true`, `include_benchmarks: true`
+     - `include_changes` also returns `constant_currency` `{label, current, previous, delta, actual_delta, fx_effect, excluded_currencies, status, footnote}`; `include_trends` returns `trends.constant_currency`. `delta` is constant-currency change, `actual_delta` the reported change, `fx_effect` the difference.
      - Also returns: `grr` (Gross Revenue Retention — `renewal_arr / (renewal_arr + churned_arr)`, capped at 100%, excludes expansion), `logo_churn` (`rate`, `churned_logos`, `total_renewal_logos`), and `time_to_value` (`median_days`, `p75_days`, `contracts_measured` — contract start to first realized impact)
    - `arr_growth_narrative` — AI-generated growth narrative with recommendations (reasons about GRR, churn, and onboarding velocity)
    - `renewal_forecast_summary` — ARR renewing in 30/60/90/180-day windows, at-risk causes, and commit/best-case bands, for the forward-looking renewal risk block on the ARR Growth & Retention slide. Requires VIEW_TEAM_METRICS or team/all-metrics access — if unauthorized or empty, skip this pull and omit the block.
@@ -121,6 +128,13 @@ Call these Summit53 tools. Launch as many in parallel as possible — they're in
 
 10. **Action Plan**
     - `weekly_action_plan` — prioritized next steps (limit 10)
+
+11. **Regional Performance** (optional)
+    - `arr_operating_summary` — read `by_dimension.dimension_options`. Proceed only for a dimension whose `available` is true (`sales_region` = Sales Org team tree, `market_region` = geographic market tree).
+    - `segment_performance_summary` with `dimension` set to the available region dimension, `level: "top"`, and the same period as the forecast pull. Returns `groups[]`, `unassigned`, `tree[]`, `strongest_groups` / `weakest_groups` and `dimension_source`.
+    - If both region dimensions are available and the audience is sales leadership, optionally add `secondary` (e.g. `dimension: "sales_region"`, `secondary: "market_region"`) for the `crosstab` — `home_markets` and `cross_market` show which teams sell outside their home market.
+    - `data_quality_score` (optional) — `issues.accounts_missing_country` and deal-currency-without-rate counts are the coverage caveat for any regional view.
+    - Unavailable dimension, access denial or an empty result → omit the regional slide and list it on Sources & Limits.
 
 ### Handling Missing Data
 
@@ -201,6 +215,8 @@ Build these slides in order. Each slide description includes what data to use an
 - **Data source**: `unified_forecast_summary` (both periods), `forecast_confidence`
 - **Layout**: 3-4 large stat callouts across the top (quota attainment %, closed revenue, pipeline value, win rate). Below: bar chart comparing current vs previous quarter revenue. Use emerald for positive deltas, red for negative.
 - **Key numbers to show**: Quota attainment %, total closed revenue, comparison to previous quarter, pipeline coverage ratio.
+- **Projected landing**: Show `projected_landing.value` as the forecast landing callout with its basis in plain words — "reps' commit roll-up" or "weighted pipeline (fallback: {fallback_reason})". If `floored_to_closed_won` is true, say the landing was floored at closed-won. Never present the landing without its basis.
+- **Constant-currency attainment**: When the quota `constant_currency` block is present and `fx_effect_pts` is material, show reported and constant-currency attainment side by side, labelled with the block's `label` (e.g. "FY2027 plan rates"), and name `fx_effect_pts` as currency, not performance. Omit for single-currency organizations. Note `spans_fiscal_years` when true.
 - **Productivity & segmentation**: Add **Revenue per Rep** (`team_summary.revenue_per_rep`) as a stat callout — it shows per-head productivity, which quota attainment alone hides. If `kpis.win_rate.by_deal_size` shows a meaningful spread across bands, add a small horizontal bar set "Win Rate by Deal Size" — a healthy blended win rate often masks a weak segment, and the QBR is the right venue to expose it.
 - **Rep deal-mix (optional, sales-leadership audience only)**: If `hunter_farmer_mix` is available (requires VIEW_TEAM_METRICS or team/all-metrics access), add a small stacked-bar or split-stat next to Revenue per Rep showing each rep's mix of net-new "hunting" vs expansion "farming" deals — it explains *how* revenue per rep was earned, not just how much. If the call is unauthorized or returns empty, omit this element and keep the slide as-is.
 
@@ -209,7 +225,8 @@ Build these slides in order. Each slide description includes what data to use an
 #### Slide 4: ARR Growth & Retention
 - **Background**: Off-white (`F8FAFC`)
 - **Data source**: `arr_growth_analytics`, `arr_growth_narrative`
-- **Layout**: Left side — large ARR number with growth % delta, NRR percentage, growth stage label. Right side — line chart of ARR trend if trend data is available, or a stat card layout if not.
+- **Layout**: Left side — large ARR number with growth % delta, NRR percentage, growth stage label.
+- **Reported vs constant currency**: Read `constant_currency.status`. `single_currency` → no FX discussion. Otherwise, when `fx_effect` is material (more than about 2% of the reported change, or it flips the sign), show reported growth (`actual_delta`) and constant-currency growth (`delta`) side by side, with the FX effect as its own line, labelled with `label`; a `partial` status carries its `footnote` and `excluded_currencies`. FX effect is never churn, contraction or expansion. No `constant_currency` block → "constant currency unavailable (plan rates not configured)". The trend chart may add the `trends.constant_currency` series. Right side — line chart of ARR trend if trend data is available, or a stat card layout if not.
 - **Retention block**: This slide is now the retention story, not just growth. Show **NRR and GRR as a pair** — NRR is the expansion-inclusive number, GRR is gross retention (capped at 100%, color-coded green ≥90% / amber ≥80% / red <80%). Add **Logo Churn** (`rate` plus `churned_logos`/`total_renewal_logos`) as a count-based companion to GRR's dollar-based view. Add **Time-to-Value** (`median_days`, with `p75_days` and `contracts_measured`) as an onboarding-velocity stat — it connects sales execution to realized customer value.
 - **Include**: Benchmark comparison **only** when `arr_growth_analytics` returns benchmarks (`include_benchmarks: true`) — cite them as the tool's benchmark, with its basis. Never invent or recall a "best-in-class" figure from memory; if no benchmark is returned, omit the comparison. If NRR and GRR diverge sharply, state plainly that expansion is offsetting churn.
 - Pull key quotes/insights from the narrative tool to add a 1-2 sentence insight below the numbers.
@@ -223,6 +240,16 @@ Build these slides in order. Each slide description includes what data to use an
 - **Layout**: Pipeline coverage ratio as a large callout. Below: horizontal stacked bar or pie chart showing stage distribution. Add velocity metrics (avg days in stage, deal cycle time) if available.
 - **Key metrics**: Coverage ratio vs target (3x is standard), stage distribution, pipeline velocity, new pipeline created this quarter.
 - **Pipeline composition**: Add a "Pipeline by Deal Size" mini-chart from `kpis.pipeline_coverage.by_deal_size` (% of pipeline value per band) — coverage in aggregate can look healthy while being concentrated in one band. If `kpis.pipeline_coverage.acv_drift.is_significant` is `true`, add an amber callout: "Pipeline ACV is {direction} {drift_pct}% vs trailing-12-month closed-won average — current deals are {larger/smaller} than what the team has historically converted, which puts forecast confidence at risk." If `is_significant` is `false`, omit the callout (do not surface non-significant drift as a risk).
+
+---
+
+#### Slide 5b: Regional Performance (Optional — Conditional on Region Dimensions)
+- **Background**: Off-white (`F8FAFC`)
+- **Data source**: `segment_performance_summary` (region dimension, `level: "top"`), optionally its `crosstab`; `data_quality_score` for coverage
+- **When to include**: Only when `dimension_options` shows `sales_region` or `market_region` available and the call returns data. Otherwise skip the slide and list it on Sources & Limits.
+- **Layout**: A table or horizontal bar set per top-level region: ARR, new ARR, win rate (with n), pipeline coverage — plus the **Unassigned** row, always shown (with `accounts_missing_market` where present). Mark `strongest_groups` / `weakest_groups` with emerald / amber. Name `dimension_source` in a one-line footnote.
+- **Cross-tab (optional, sales-leadership audience)**: For `sales_region` × `market_region`, a compact matrix from `crosstab.cells` with row and column totals; flag `cross_market` cells as selling outside the home market and name the `home_markets.source` basis.
+- **Guardrails**: Market rows may carry `tam` / `tam_currency` — never sum a parent TAM when any child TAM is missing. If a region trades in several currencies, `metrics.native_by_currency` can show the foreign share; never sum native amounts across currencies. Put `accounts_missing_country` and currency-without-rate counts in the footnote as coverage caveats. Region rows are team- and market-level; no per-rep ranking on an executive deck.
 
 ---
 
@@ -295,7 +322,8 @@ Build these slides in order. Each slide description includes what data to use an
 #### Slide 13: Sources & Limits
 - **Background**: Off-white (`F8FAFC`)
 - **Content**: a compact two-column list at 11-12pt.
-  - **Sources**: each tool used, its as-of / generated timestamp, the reporting and comparison periods, and the currency.
+  - **Sources**: each tool used, its as-of / generated timestamp, the reporting and comparison periods, the currency, and the rates basis (`rates_as_of`, plan-rate `label` where constant currency is shown).
+  - **Currency exclusions**: when `normalization` is `converted_excluding_unconverted` or the `fx_unconverted_amounts_excluded` warning appears, list the excluded native amounts by currency from `unconverted_amounts` — and also note the exclusion beside the affected total on its own slide, not only here. If the excluded share could change a conclusion, call it provisional.
   - **Limits**: every metric that is unavailable, access-gated, stale, low-sample or carries a tool data-quality caveat, one plain line each ("Renewal forecast: not included (access-gated)", "Win rate by deal size: <10 closed deals per band"). No raw permission errors, stack traces or tool error text.
   - Excluded fixture rows, or the demo label if the preflight required one.
 
@@ -309,6 +337,8 @@ Build these slides in order. Each slide description includes what data to use an
 ---
 
 ### Chart Generation
+
+**Money formatting**: any `formatCurrency`-style helper in the deck script takes the reporting currency code from the response and renders the ISO code or its unambiguous symbol (`NZ$`, `A$`, `US$`, `€`, `£`) — never a hard-coded `$`. A bare `$` is acceptable only when the reporting currency is USD and the audience is US-only. Chart value-axis labels follow the same rule.
 
 Use native PptxGenJS charts (`addChart()` — bar, line, pie, stacked bar); they're editable in PowerPoint and look sharper. Follow the `pptx` skill's chart guidance: set titles and data labels, pass `chartColors` from the palette, muted axis labels and subtle grid lines. Fall back to an image only for a chart type PowerPoint cannot draw natively.
 
@@ -346,7 +376,9 @@ QUARTERLY BUSINESS REVIEW — [Quarter] [Year]
    [Narrative paragraph with headline and key themes]
 
 2. Revenue Performance
-   [Table: Metric | This Quarter | Last Quarter | Delta]
+   [Table: Metric | This Quarter | Last Quarter | Delta — constant-currency attainment row when FX is material]
+   [Projected landing with basis and any fallback_reason]
+   [Optional: Regional Performance — top-level regions plus Unassigned, from segment_performance_summary]
    [Optional: Rep deal-mix — net-new hunting vs expansion farming, from hunter_farmer_mix]
    [Narrative: what drove the numbers]
 
@@ -413,5 +445,10 @@ QUARTERLY BUSINESS REVIEW — [Quarter] [Year]
 - [ ] Unavailable / access-gated metrics listed on Sources & Limits, with no error text
 - [ ] Benchmarks shown only when a tool returned them
 - [ ] Risk ordering uses `healthScore` / `healthBand`, not inverted `riskScore`
+- [ ] Reporting currency read from the response and shown once on the title slide; no bare `$` (in text, helpers or chart axes) unless the reporting currency is USD
+- [ ] Excluded or unconverted amounts disclosed beside the affected totals; no self-computed conversions
+- [ ] Constant-currency `status` checked; FX discussion omitted for single-currency orgs; material FX effect shown as its own line on ARR and attainment, never as performance
+- [ ] Projected landing shows its `basis` and any `fallback_reason`
+- [ ] Regional slide (if any) only for an available dimension, includes the Unassigned row, no partial TAM sum
 - [ ] Fixture rows excluded, or the demo label is on every slide
 - [ ] Every slide rendered and inspected at full size; one link returned (two only if a DOCX was requested)

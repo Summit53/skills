@@ -11,8 +11,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 9840,
-          "sha256": "b3f2e40317e626bf36eebb5c050aaf5522ce27fc80b02e7ed11878b4ded8429a"
+          "bytes": 11325,
+          "sha256": "1d39635026a46c20bd1e3886d7dcad61cc73d0f0c175a3fcce5721a1693866e1"
         }
       ]
     },
@@ -30,14 +30,19 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "references/delta-attribution.md",
           "bytes": 13111,
           "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
-          "bytes": 28882,
-          "sha256": "37bf166be4811f6d7187be3835c179cfb260ee714ff02374c20ec97ac39cc4e1"
+          "bytes": 35053,
+          "sha256": "00a1316dfe6d89aec53be132ec70ca7caba72db6e220eff45bf5514c335811df"
         }
       ]
     },
@@ -65,9 +70,14 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 10755,
-          "sha256": "71eb5a94fe3a7efebfe7516dbd2e20adde2adf9556687086d154f6b2a2c5285d"
+          "bytes": 14188,
+          "sha256": "1d762cbeaa962c0343bb213994d2ac6c43d84f27e46646d1a12fb6073d794814"
         }
       ]
     },
@@ -96,8 +106,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 41037,
-          "sha256": "05dbc1ca3a61f1448688560d84896581418900ec2acb4ea48095bd109ef61272"
+          "bytes": 44239,
+          "sha256": "6216e649d05a5ca20414c1f6d8a23e7eeba69ab7a615aa1492f212a960c147a9"
         }
       ]
     },
@@ -136,8 +146,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 88453,
-          "sha256": "fcfd8059b619e5d22ac1c9293dc6dc6fdb7142f02beb85bf72821e870a89eaf9"
+          "bytes": 94630,
+          "sha256": "1331868974c26ca7452a9448b5a2659ee4337b161107ceb759dbd9e42ad63e2f"
         }
       ]
     },
@@ -155,14 +165,19 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "references/delta-attribution.md",
           "bytes": 13111,
           "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
           "path": "SKILL.md",
-          "bytes": 22277,
-          "sha256": "bade5a007427631db2a5be800bb67ad9acb94a4c90b4573b8eb33a55c7da7a2d"
+          "bytes": 25621,
+          "sha256": "88d4ba5ec0de043116ef801da47309fca15b319b595c566aedbb4ff25ab69240"
         }
       ]
     },
@@ -180,9 +195,14 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 35709,
-          "sha256": "9bc86d8d9eb44e547238295c0701c40124e55ea93cdcc8d763c24f8b6b77983e"
+          "bytes": 42872,
+          "sha256": "81711fe872a8a0bacb1f359b9cc975681c3c09838454d63f27c3d2956dff4d80"
         }
       ]
     },
@@ -216,13 +236,13 @@
         },
         {
           "path": "references/workflow-spec.md",
-          "bytes": 55177,
-          "sha256": "c857b250ba3cdcc23d3ac4be93c3c77d601aebe85d20bcabf74331e817df0c33"
+          "bytes": 58368,
+          "sha256": "5119afbc5b07cef9dc63cf1a44b4590ff39aadc38e9061e5938180197f5422b7"
         },
         {
           "path": "SKILL.md",
-          "bytes": 10861,
-          "sha256": "fec7e4427adbe67ffc72e0ee9900b2794bf9c9e377e499960f19250520095658"
+          "bytes": 11672,
+          "sha256": "1935c49baac1de85e1de1a60dbfb9e8725da710682fb1d90fd7322d70d4b0485"
         }
       ]
     },
@@ -251,8 +271,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 32342,
-          "sha256": "26697d2390d3985212aaf49b9c1d1f3873938acb019392ef70d5332daa828695"
+          "bytes": 34643,
+          "sha256": "b6d8a353b8a2564c96a850a4ad0a4d5e1e8575adff9b519e17d235fd71f7af92"
         }
       ]
     },
@@ -270,14 +290,19 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "references/signal-catalog.md",
-          "bytes": 20592,
-          "sha256": "acdd40e4fecfd6bb17d1764f23eda556b1828b5879fc6372b234b468cc7e431d"
+          "bytes": 26161,
+          "sha256": "827e329521faf66c9be6e968d93f2ef4da4fa800ca2a6f80d4a13e0722599044"
         },
         {
           "path": "SKILL.md",
-          "bytes": 24174,
-          "sha256": "a683963534b2a5647c0c9b414604e6dd6287cd0c212422db7eb0b6b583a39933"
+          "bytes": 27584,
+          "sha256": "930a82e5bfefd71cab95ae2a4dfe47c7aed3b7ea1485b9b67ae9da276efe6ad6"
         }
       ]
     },
@@ -295,9 +320,14 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 24509,
-          "sha256": "da413962827ceb0bcfaf375075fb1bbcd16288b3594be18b8419ed66596ec197"
+          "bytes": 40245,
+          "sha256": "d8f51204c4c7927f34a46838a7c176359cf9bdd750f3122c27862e74efee6f09"
         }
       ]
     },
@@ -315,9 +345,14 @@
           "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
         },
         {
+          "path": "references/currency-and-fx.md",
+          "bytes": 6810,
+          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 28179,
-          "sha256": "d5fe91bd3cd0696c78a12a750680f4322097bd623802d343284a542e17ae7eca"
+          "bytes": 35386,
+          "sha256": "9b9f11bcb73012c080865bc94c5c668e32e8a7dae1b5a3636d18e549976da814"
         }
       ]
     }
@@ -679,6 +714,11 @@
       "path": "shared/canonical/connector-preflight.md",
       "bytes": 8476,
       "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+    },
+    {
+      "path": "shared/canonical/currency-and-fx.md",
+      "bytes": 6810,
+      "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
     },
     {
       "path": "shared/canonical/delta-attribution.md",
