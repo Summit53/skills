@@ -6,8 +6,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
@@ -26,13 +26,13 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "references/delta-attribution.md",
@@ -41,8 +41,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 35053,
-          "sha256": "00a1316dfe6d89aec53be132ec70ca7caba72db6e220eff45bf5514c335811df"
+          "bytes": 37126,
+          "sha256": "de6f01116df04016ba853e21dcc1dc0b5e89a628e66068b21d05cec1ac91b8a9"
         }
       ]
     },
@@ -51,8 +51,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
@@ -66,13 +66,13 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "SKILL.md",
@@ -86,8 +86,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
@@ -101,13 +101,13 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
-          "bytes": 44239,
-          "sha256": "6216e649d05a5ca20414c1f6d8a23e7eeba69ab7a615aa1492f212a960c147a9"
+          "bytes": 44248,
+          "sha256": "ea4299c7d136ad5233d84425caf12d9e7d3f841dc2939ae002bd99f8a4449f55"
         }
       ]
     },
@@ -116,8 +116,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
@@ -131,8 +131,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/vendor-branding.md",
@@ -146,8 +146,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 94630,
-          "sha256": "1331868974c26ca7452a9448b5a2659ee4337b161107ceb759dbd9e42ad63e2f"
+          "bytes": 94633,
+          "sha256": "909aeaf6efc68aa24f3a05bdd792cc4591d9cd03ee9f49aa616bcd57b2bf8359"
         }
       ]
     },
@@ -161,13 +161,13 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "references/delta-attribution.md",
@@ -191,18 +191,18 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "SKILL.md",
-          "bytes": 42872,
-          "sha256": "81711fe872a8a0bacb1f359b9cc975681c3c09838454d63f27c3d2956dff4d80"
+          "bytes": 42878,
+          "sha256": "f01527488d479e2ecfcd8bd20b445440c7ceb8c31fd983e191b3f99f4ced8884"
         }
       ]
     },
@@ -211,8 +211,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "SKILL.md",
@@ -226,8 +226,8 @@
       "files": [
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/structural-confounders.md",
@@ -256,8 +256,8 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/delta-attribution.md",
@@ -286,13 +286,13 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "references/signal-catalog.md",
@@ -301,8 +301,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 27584,
-          "sha256": "930a82e5bfefd71cab95ae2a4dfe47c7aed3b7ea1485b9b67ae9da276efe6ad6"
+          "bytes": 27588,
+          "sha256": "9ea7e7dd17414984bc3b9828540c56828625bd73b1023412c97d56ca487f4281"
         }
       ]
     },
@@ -316,18 +316,18 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "SKILL.md",
-          "bytes": 40245,
-          "sha256": "d8f51204c4c7927f34a46838a7c176359cf9bdd750f3122c27862e74efee6f09"
+          "bytes": 41211,
+          "sha256": "0c91d08a959bed74af29b3666898caaf23cea6bbfeadbbb282c730dd6207d4c4"
         }
       ]
     },
@@ -341,13 +341,13 @@
         },
         {
           "path": "references/connector-preflight.md",
-          "bytes": 8476,
-          "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+          "bytes": 9961,
+          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
         },
         {
           "path": "references/currency-and-fx.md",
-          "bytes": 6810,
-          "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
         },
         {
           "path": "SKILL.md",
@@ -712,13 +712,13 @@
     },
     {
       "path": "shared/canonical/connector-preflight.md",
-      "bytes": 8476,
-      "sha256": "f532277c412694a064e1089aed7367bdaac3b4fc4939f9bb636ce9b99f1ce42f"
+      "bytes": 9961,
+      "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
     },
     {
       "path": "shared/canonical/currency-and-fx.md",
-      "bytes": 6810,
-      "sha256": "59630eb7eaf4e2eb7f85c90be47e4a222914305b63862a6231cdb0f8215bf322"
+      "bytes": 8565,
+      "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
     },
     {
       "path": "shared/canonical/delta-attribution.md",

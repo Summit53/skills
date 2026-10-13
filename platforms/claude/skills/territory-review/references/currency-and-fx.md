@@ -1,6 +1,6 @@
 # Currency and FX — Canonical Handling
 
-**Canonical file. Version 1.0.0 · 2026-10-13.**
+**Canonical file. Version 1.1.0 · 2026-10-13.**
 
 Maintained once and copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy with `tools/sync_canonical_references.py --write`. If two copies
@@ -19,6 +19,7 @@ Consumers: `board-revenue-pack`, `qbr-generator`, `forecast-delta-brief`,
 - [4. Constant currency and FX effect](#4-constant-currency-and-fx-effect)
 - [5. FX in movement attribution](#5-fx-in-movement-attribution)
 - [6. Native amounts by currency](#6-native-amounts-by-currency)
+- [7. Sources that return unconverted amounts](#7-sources-that-return-unconverted-amounts)
 - [Checklist](#checklist)
 
 ## Why this exists
@@ -125,6 +126,33 @@ Segment, region and ARR operating rows can carry `metrics.native_by_currency`
   share of a converted figure is foreign.
 - Do not sum native amounts across currencies.
 
+## 7. Sources that return unconverted amounts
+
+Not every tool converts. Verified live on 2026-10-13 against a NZD organization with USD
+deals:
+
+- `risk_heatmap`, `activity_gaps`, `pipeline_risk_summary` (deal lists) and
+  `forecast_confidence` return each deal's **native** amount with **no currency field**.
+- `pipeline_risk_summary` and `forecast_confidence` **totals add native amounts across
+  currencies** (USD counted as NZD). Their pipeline total differed from the converted
+  figure by exactly the USD amount × (rate − 1).
+- Server-built labels and summaries can hard-code `$` — deal-size band labels
+  ("$95K–$350K"), `renewal_forecast_summary.summary`, `arr_growth_narrative.summary` —
+  in a non-USD organization.
+- `revenue_engine_context` can report `metadata.currency.normalization:
+  not_applied_mixed_currency` at the top level while individual sections carry their own
+  converted `fx` block; read each section's `fx`, not only the envelope.
+
+Rules:
+
+- Take every **total** from a converting source (`segment_performance_summary`,
+  `arr_operating_summary`, the capacity planners, `unified_forecast_summary` KPIs).
+- Show deal-level amounts from non-converting sources as **native**, labelled with their
+  currency when you can establish it (for example by reconciling a region's native sum to
+  the server's converted figure at the reported rate), otherwise as "native, currency not
+  reported". Never sum them across deals that may be in different currencies.
+- Relabel server-built bands and summaries in the reporting currency before using them.
+
 ## Checklist
 
 - [ ] Reporting currency read from the response and shown once in the header
@@ -133,3 +161,4 @@ Segment, region and ARR operating rows can carry `metrics.native_by_currency`
 - [ ] Constant-currency `status` checked; FX discussion omitted for single-currency orgs
 - [ ] Material FX effect shown as its own line, never as performance
 - [ ] No self-computed conversions
+- [ ] No totals taken from a non-converting source; deal-level native amounts labelled

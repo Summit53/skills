@@ -1,7 +1,7 @@
 ---
 name: "board-revenue-pack"
 description: "Build a board-ready Summit53 revenue pack (8-slide PPTX, optional regional slide) for a non-operational audience: what changed since last quarter, what arithmetically accounts for it, and whether the evidence points to a market, execution or currency explanation. Pulls ARR, retention, segment performance, the quarterly forecast-confidence decomposition, pipeline, renewals, account health and data readiness, and stops safely when no genuine prior-quarter anchor exists. Use when a user says 'build my board deck', 'board revenue pack', 'prep the numbers for the board', 'investor update', 'I have a board meeting', 'quarterly revenue deck for investors', 'the board is going to ask why this changed', 'is this a market or execution problem', or 'fundraise deck with live metrics'. Do not use for the weekly forecast call — use forecast-delta-brief. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a customer-facing review — use customer-qbr."
-version: "2.4.0"
+version: "2.4.1"
 baselined: "2026-10-13"
 status: "active"
 ---
@@ -196,8 +196,10 @@ the section it belongs to. Do not discard the prefix and do not drop the warning
    `constant_currency` block (`delta`, `actual_delta`, `fx_effect`, `status`, `label`,
    `footnote`) and `include_trends` returns `trends.constant_currency` for the trend chart.
    Read `metadata.currency` on this and every revenue response (see the currency reference).
-4. `arr_growth_narrative` — quote it where it surfaces a retention insight; do not
-   paraphrase it into a stronger claim than it makes.
+4. `arr_growth_narrative` — read it for a retention insight, then restate the underlying
+   numbers yourself. Never paste its text onto a slide: verified live (13 Oct 2026) it used
+   `$` in an NZD organization and carried product recommendations ("Deploy Expansion
+   Playbooks…"), which do not belong in a board pack.
 5. `renewal_forecast_summary` — portfolio-wide renewal bands. Permission-gated; on failure
    fall back to `list_account_contracts` on top accounts **and label the fallback** as a
    top-account inference, never a portfolio forecast.
@@ -213,6 +215,25 @@ the section it belongs to. Do not discard the prefix and do not drop the warning
 The quota block of `unified_forecast_summary` (current quarter) carries a
 `constant_currency` object `{label, attainment_percentage, fx_effect_pts,
 spans_fiscal_years, …}` on team and organization rollups. Capture it with the levels.
+
+**Check the scope of the quota and landing figures before using them.** Verified live
+(13 Oct 2026): for a connected user whose revenue role is `ic`,
+`unified_forecast_summary` returned `quota_metrics` and `projected_landing` for that one
+seller (`rep_commit.sellers: 1`, quota NZD 1.23M against an organization quota of
+NZD 15.26M in `kpis.pipeline_coverage.quota`), even with `leader_view: "cro"`. When
+`quota_metrics.quota_total` does not match the organization quota, or `sellers` is 1,
+take target, commit, best case and projection from the `capacity_to_target_planner`
+rollup instead, and report organization quota attainment as unavailable on the limits
+slide.
+
+**Check that the two quarters are comparable before showing quarter-over-quarter
+levels.** Passing the quarter-anchor gate proves the confidence decomposition has 90
+days of history; it does not prove the prior-quarter levels are like-for-like. On a demo
+or recently imported tenant, close dates can cluster in the current quarter (live: 67 of
+67 closed deals in October, prior quarter booked NZD 0.28M vs NZD 6.37M). If the prior
+quarter's closed-deal count or pipeline is a small fraction of the current one, do not
+present the change as growth: say the quarter split is not like-for-like and keep the
+decomposition as the only comparison.
 
 **Do NOT also call `segment_performance_summary`, `organization_revenue_readiness`,
 `revenue_engine_snapshot` or `revenue_engine_state`** — the bundle carries them, and a
@@ -282,7 +303,7 @@ currency, part of a quarter's ARR movement can be exchange rates alone. Read
   unavailable. Never derive it from spot rates.
 
 FX effect is never execution, churn, contraction or a forecast miss. State it plainly as
-arithmetic ("currency reduced reported ARR by NZ$180k").
+arithmetic ("currency reduced reported ARR by NZD 180k").
 
 State the strength and uncertainty of the reading. An arithmetic pattern is consistent
 with one explanation; it is not causal proof.
@@ -385,12 +406,12 @@ Fixed server-side on 8 Aug 2026. `changes` matches the comparison window:
             "warnings": ["partial_period_mtd_comparison"]}
 ```
 
-The prior figure dropped from $5,250,418 (all of July) to $1,640,390 (1–8 July), so the
+The prior figure dropped from USD 5,250,418 (all of July) to USD 1,640,390 (1–8 July), so the
 delta is like-for-like. The old "Total ARR down 100%" artifact is gone.
 
 **Still required of the pack:** render `comparison_basis` and `observed_through` on the
 slide. An MTD-vs-MTD comparison over 8 days is a legitimate but small and noisy sample, and
-a board reading "down $1.6M" without knowing it covers eight days will misread it. Check
+a board reading "down USD 1.6M" without knowing it covers eight days will misread it. Check
 `comparable` before using `changes` at all — exclude non-comparable changes — and surface
 any entry in `changes.warnings`.
 
@@ -427,15 +448,23 @@ collapsing to zero. Filter to periods whose `data_quality.confidence_level` is n
 
 ### ARR has three different values too
 
-Live, simultaneously: `total_arr` **$10,419,303** (rolling 12-month, by type),
-`arr_band.current_arr` **$17,242,873** (closed-won base), and
-`segment_performance.rollup.active_contract_arr` **$27,267,436** (active contract ARR
+Live, simultaneously: `total_arr` **USD 10,419,303** (rolling 12-month, by type),
+`arr_band.current_arr` **USD 17,242,873** (closed-won base), and
+`segment_performance.rollup.active_contract_arr` **USD 27,267,436** (active contract ARR
 across segments).
 
 Pick one, define it on the slide, and use it consistently. For a board pack, **active
 contract ARR** is usually the right headline (it is what the company actually has under
 contract); `total_arr` is a period-scoped flow measure and reads as a much smaller company.
 Whichever is chosen, the definition goes on the slide.
+
+**Active contract ARR "at period end" is forward-dated mid-quarter.** With the default
+`stock_anchor: "period_end"`, the current-quarter stock is valued at the quarter's last
+day (live: NZD 8.08M as of 31 Dec), which drops every contract whose term ends before
+then; the prior-quarter stock is as of its own end (NZD 9.64M at 30 Sep). The difference
+is renewal exposure, not churn. Lead with the last completed quarter-end figure, show the
+period-end figure as "in term through {date}", and point to the renewal book. Never
+present the gap as contraction.
 
 ### NRR is estimated, and the pack must say so
 

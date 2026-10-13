@@ -160,7 +160,7 @@ Output in chat. Structure:
 - Each horizon as a section, in order: Today → This Week → This Month → This Quarter, then "Already Behind" only if populated.
 - Each recommendation: the **prescription** (an imperative action), then on a sub-line the **evidence** (the data that triggered it) and **why this horizon** (one clause naming the decay rationale).
 - Make the **owner** explicit in the prescription — "you", "coach {rep}", "{rep} to…", or "the team".
-- **Amounts carry the reporting currency** from `metadata.currency` — the ISO code or an unambiguous symbol (`NZ$689K`, `€1.2M`), never a bare `$` unless the reporting currency is USD. Never add amounts from responses that report different currencies, and never convert one yourself. When a response reports `normalization: converted_excluding_unconverted` or `fx_unconverted_amounts_excluded`, say so in the evidence line of any item whose total it affects ("excludes €240k in EUR deals with no rate").
+- **Amounts carry the reporting currency** from `metadata.currency` — the ISO code or an unambiguous symbol (`NZD 689K`, `€1.2M`), never a bare `$` unless the reporting currency is USD. Never add amounts from responses that report different currencies, and never convert one yourself. When a response reports `normalization: converted_excluding_unconverted` or `fx_unconverted_amounts_excluded`, say so in the evidence line of any item whose total it affects ("excludes €240k in EUR deals with no rate").
 - **Forecast number cites its basis.** Wherever the brief quotes the forecast landing, use `projected_landing.value` with its basis in plain words — "reps' commit roll-up" or "weighted pipeline (fallback: {fallback_reason})"; note when it was floored at closed-won.
 
 Omit any horizon section the leader did not ask for (per Step 1 scope), but if scope is `today` and the "Already Behind" lane is populated, still show it — a leader asking about today needs to know what has already slipped.
@@ -210,7 +210,7 @@ Quarter is on quota, but pipeline quality and gross retention are both drifting 
 ▸ TODAY — don't let the day end without these
   1. Re-engage Kiwi Infrastructure Partners • Executive Forecast Workspace — David to call
      directly today, not email.
-     Evidence: NZ$689K Commit, 16 days since last activity, close date already passed ·
+     Evidence: NZD 689K Commit, 16 days since last activity, close date already passed ·
      Why today: a Commit deal silent past its close date distorts the forecast every day it sits.
 
 ▸ THIS WEEK
@@ -221,7 +221,7 @@ Quarter is on quota, but pipeline quality and gross retention are both drifting 
 
 ▸ THIS MONTH
   1. Diagnose the mid-market segment — win rate there is 42% versus 67%+ in every other band.
-     Evidence: win rate by deal size, NZ$95K–NZ$350K band materially below the rest · Why this
+     Evidence: win rate by deal size, NZD 95K–NZD 350K band materially below the rest · Why this
      month: a blended number is hiding it; correcting it is a process change, not one action.
 
 ▸ THIS QUARTER

@@ -384,7 +384,7 @@ After generating the file:
 - **Let the notes tell the story.** The Deal Narrative slide exists because scores alone don't explain *why* a deal is at risk. If the notes say "competitive bake-off with Clari, pricing pressure from procurement, paper process unresolved" — that's the story. Lead with it.
 - **Frame gaps as opportunities, not failures.** "Here's where the biggest upside is hiding" beats "Here's what's wrong."
 - **Make the suggested questions specific.** "Who signs the PO at Acme?" beats "Have you identified the economic buyer?"
-- **Show the account context.** A $200K deal at an account with $1.5M in other active pipeline gets different treatment than a $200K standalone deal.
+- **Show the account context.** A USD 200K deal at an account with USD 1.5M in other active pipeline gets different treatment than a USD 200K standalone deal.
 - **Keep it tight.** About 11-12 slides including Sources & Limits (12 only if Value Realization is included). The goal is a focused 5-10 minute review, not a deep-dive marathon. Change slide count only when legibility or the evidence demands it.
 - **Stay evidence-first.** This is a coaching artifact, not a sales pitch: no causal claims, no invented numbers, and no recommendation that is not traceable to a source.
 

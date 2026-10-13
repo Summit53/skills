@@ -120,7 +120,7 @@ Ask these as one combined message, not sequentially — the user can answer in o
 >
 > 1. **What do you NOT do?** (Features you're often asked for but don't have. Integrations you don't support. Adjacent problems you don't solve. This is the most important question — it's what prevents the deck from over-claiming.)
 >
-> 2. **What's your current commercial offer?** (E.g., "Founding Partner Programme — $9/user/month for 3 months, mutual commitment". Just the mechanics; pricing won't appear on the deck but the skill needs to know what you're actually proposing.)
+> 2. **What's your current commercial offer?** (E.g., "Founding Partner Programme — USD 9/user/month for 3 months, mutual commitment". Just the mechanics; pricing won't appear on the deck but the skill needs to know what you're actually proposing.)
 >
 > 3. **Any proof points / named reference customers** you're willing to cite in a first meeting? (Empty is fine — don't invent.)
 >

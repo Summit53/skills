@@ -1,6 +1,6 @@
 # Connector Preflight — Canonical Contract
 
-**Canonical file. Version 1.0.0 · 2026-10-13.**
+**Canonical file. Version 1.1.0 · 2026-10-13.**
 
 Maintained once and copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy with `tools/sync_canonical_references.py --write`. If two copies
@@ -76,6 +76,15 @@ not relax these.
    disclose the limitation.
 4. Run independent reads in parallel. Keep access-gated enhancements optional: a
    permission error on an enhancement removes that enhancement, not the whole artifact.
+5. **Check the scope a response actually returned, not the scope you asked for.** A
+   tool can quietly narrow its answer to the connected user. Live example: for a user
+   whose revenue role is `ic`, `unified_forecast_summary` returned `quota_metrics` and
+   `projected_landing` for that one seller (`rep_commit.sellers: 1`) even with
+   `leader_view: "cro"`, while its pipeline KPIs stayed organization-wide. Read
+   `metadata.leader_view`, seller counts and quota totals before treating a figure as
+   organization-level. If the returned scope is narrower than the audience needs, take
+   the figure from an organization-level source (for example the
+   `capacity_to_target_planner` rollup) or mark it unavailable and say why.
 
 ## 3. Stay read-only unless the skill says otherwise
 
@@ -122,6 +131,13 @@ Never let a realistic-looking fixture satisfy a stop gate or a minimum-evidence 
 - Never expose raw permission errors, stack traces, or access-denied detail in an
   audience-facing artifact. Summarise the gap in the sources and limits section.
 
+### Generated text fields
+
+Tool `summary`, `narrative`, `headline` and `label` strings are generated prose, not
+evidence. They can use `$` in a non-USD organization and can carry product
+recommendations ("deploy …", "implement …"). Never paste them onto an artifact: restate
+the underlying numbers in the reporting currency, and drop vendor or product promotion.
+
 ## 6. Correlational language
 
 Signal movement, health movement, interventions, coaching, and framework scores are
@@ -139,6 +155,11 @@ Keep tool-provided scores separate from model-derived judgments, and label which
 - For slide artifacts, render every slide to an image and inspect it at full size before
   delivery. Fix clipping, overlap, wrapping, placeholder text, chart errors, and any
   number that does not match the source payload.
+- If LibreOffice is not installed, macOS Quick Look is a usable fallback:
+  `qlmanage -p -o <dir> deck.pptx` writes `Preview.html`, which a browser can show slide
+  by slide (serve the folder on localhost if the browser will not open local files). It
+  does not draw native charts or some shapes, so say which elements could not be checked
+  visually rather than claiming a full render.
 - No bracketed TODOs, placeholder values, or lorem text in a delivered artifact.
 
 ## Preflight checklist

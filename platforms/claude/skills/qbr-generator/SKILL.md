@@ -286,8 +286,8 @@ Build these slides in order. Each slide description includes what data to use an
 - **Background**: Off-white (`F8FAFC`)
 - **Data source**: `get_opportunity` and `get_opportunity_notes_summary` for top 3 closed-won and top 2 closed-lost deals (pulled in Step 2)
 - **Layout**: Two-column. Left: "Wins" with emerald accent. Right: "Losses" with red accent. For each deal, construct a 1-2 sentence narrative using: deal name, amount, key stage progression, and thematic insight from the notes summary.
-  - Example win: "Acme Enterprise ($250K) — expanded from platform to enterprise tier after demonstrating ROI in Q3, closed following expanded C-suite alignment."
-  - Example loss: "TechCorp ($85K) — stalled in negotiation due to budget reallocation; prospect indicated interest for Q3 2026."
+  - Example win: "Acme Enterprise (USD 250K) — expanded from platform to enterprise tier after demonstrating ROI in Q3, closed following expanded C-suite alignment."
+  - Example loss: "TechCorp (USD 85K) — stalled in negotiation due to budget reallocation; prospect indicated interest for Q3 2026."
 - If specific deal data isn't available, drop the slide and list "Deal-level win/loss detail: unavailable" on the Sources & Limits slide.
 - Win and loss narratives come from the notes summary; write what happened alongside the outcome, not a causal verdict on why it was won or lost unless the notes record the buyer's stated reason.
 - **Qualification context**: Pull `opportunity_framework_summary` for the same top wins and losses and add one qualification-framework note per deal — MEDDPIC, BANT, or SPICED, whichever the org uses — e.g., "Economic Buyer confirmed pre-close" for a win or "no compelling event, Budget unconfirmed" for a loss. This explains deals in qualification terms, not just outcome facts.
