@@ -1,363 +1,6 @@
 {
-  "schema_version": 1,
-  "claude": [
-    {
-      "name": "ae-deal-inspection-prep",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 11325,
-          "sha256": "1d39635026a46c20bd1e3886d7dcad61cc73d0f0c175a3fcce5721a1693866e1"
-        }
-      ]
-    },
-    {
-      "name": "board-revenue-pack",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "references/delta-attribution.md",
-          "bytes": 13111,
-          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 37126,
-          "sha256": "de6f01116df04016ba853e21dcc1dc0b5e89a628e66068b21d05cec1ac91b8a9"
-        }
-      ]
-    },
-    {
-      "name": "competitor-response-card",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 7027,
-          "sha256": "b895be5a90572be7dc48d96cada19b5bd19c56218bcf68cece357d990dc24dfe"
-        }
-      ]
-    },
-    {
-      "name": "cs-renewal-forecast",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 14188,
-          "sha256": "1d762cbeaa962c0343bb213994d2ac6c43d84f27e46646d1a12fb6073d794814"
-        }
-      ]
-    },
-    {
-      "name": "customer-qbr",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 8132,
-          "sha256": "a6299c4f9ec86227ada0715fd7510620ae9f0468e3f5113e86be923edbdc9b46"
-        }
-      ]
-    },
-    {
-      "name": "deal-review-prep",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 44248,
-          "sha256": "ea4299c7d136ad5233d84425caf12d9e7d3f841dc2939ae002bd99f8a4449f55"
-        }
-      ]
-    },
-    {
-      "name": "deal-timeline-defence",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 11407,
-          "sha256": "a4e3714eb8ede0fbd33392c0f026d7ccca9c67da97057a1b85e9d5a5a3e7de73"
-        }
-      ]
-    },
-    {
-      "name": "first-meeting-deck",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/vendor-branding.md",
-          "bytes": 7788,
-          "sha256": "4ab433d8b57ba9b846a58fc2cb0f2b583abcd179a380c4d022d8ec6e895e2050"
-        },
-        {
-          "path": "references/vendor-context.md",
-          "bytes": 11972,
-          "sha256": "31ab99de2196e31dbb40d388f9f174539a32ab2af998d30465d43c8915880b95"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 94633,
-          "sha256": "909aeaf6efc68aa24f3a05bdd792cc4591d9cd03ee9f49aa616bcd57b2bf8359"
-        }
-      ]
-    },
-    {
-      "name": "forecast-delta-brief",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "references/delta-attribution.md",
-          "bytes": 13111,
-          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 25621,
-          "sha256": "88d4ba5ec0de043116ef801da47309fca15b319b595c566aedbb4ff25ab69240"
-        }
-      ]
-    },
-    {
-      "name": "qbr-generator",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 42878,
-          "sha256": "f01527488d479e2ecfcd8bd20b445440c7ceb8c31fd983e191b3f99f4ced8884"
-        }
-      ]
-    },
-    {
-      "name": "renewal-defence-pack",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 9964,
-          "sha256": "b98649995e4061ccca7d882086894381701e7c6961d2bc5aadea60cdf9c64845"
-        }
-      ]
-    },
-    {
-      "name": "rep-coaching-report",
-      "files": [
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/structural-confounders.md",
-          "bytes": 20194,
-          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
-        },
-        {
-          "path": "references/workflow-spec.md",
-          "bytes": 58368,
-          "sha256": "5119afbc5b07cef9dc63cf1a44b4590ff39aadc38e9061e5938180197f5422b7"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 11672,
-          "sha256": "1935c49baac1de85e1de1a60dbfb9e8725da710682fb1d90fd7322d70d4b0485"
-        }
-      ]
-    },
-    {
-      "name": "rep-evidence-dossier",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/delta-attribution.md",
-          "bytes": 13111,
-          "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
-        },
-        {
-          "path": "references/structural-confounders.md",
-          "bytes": 20194,
-          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 34643,
-          "sha256": "b6d8a353b8a2564c96a850a4ad0a4d5e1e8575adff9b519e17d235fd71f7af92"
-        }
-      ]
-    },
-    {
-      "name": "revenue-action-brief-s53",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "references/signal-catalog.md",
-          "bytes": 26161,
-          "sha256": "827e329521faf66c9be6e968d93f2ef4da4fa800ca2a6f80d4a13e0722599044"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 27588,
-          "sha256": "9ea7e7dd17414984bc3b9828540c56828625bd73b1023412c97d56ca487f4281"
-        }
-      ]
-    },
-    {
-      "name": "territory-review",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 41211,
-          "sha256": "0c91d08a959bed74af29b3666898caaf23cea6bbfeadbbb282c730dd6207d4c4"
-        }
-      ]
-    },
-    {
-      "name": "win-loss-analysis",
-      "files": [
-        {
-          "path": "references/async-envelopes.md",
-          "bytes": 10513,
-          "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
-        },
-        {
-          "path": "references/connector-preflight.md",
-          "bytes": 9961,
-          "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
-        },
-        {
-          "path": "references/currency-and-fx.md",
-          "bytes": 8565,
-          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
-        },
-        {
-          "path": "SKILL.md",
-          "bytes": 35386,
-          "sha256": "9b9f11bcb73012c080865bc94c5c668e32e8a7dae1b5a3636d18e549976da814"
-        }
-      ]
-    }
-  ],
-  "codex": [
+  "schema_version": 2,
+  "packages": [
     {
       "name": "ae-deal-inspection-prep",
       "files": [
@@ -367,9 +10,19 @@
           "sha256": "08d2501105fa970454c439135684a49e24c24290fa2335069016fc22d6144307"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 7768,
-          "sha256": "a4365427cea0994f0b63385c90d0ca51cbadaa2ab5a983dd5b16fb5258f1e5c8"
+          "bytes": 11572,
+          "sha256": "61e0ccfae5dc58c075bed69d4fb4ae8bc2fc87c2564b62bfbd10ed1b8656dfaf"
         }
       ]
     },
@@ -387,14 +40,29 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
           "path": "references/delta-attribution.md",
           "bytes": 13111,
           "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 9329,
-          "sha256": "7d8cfed51ae5ff0263151f50a3b602501c763a9e790074532fc5c0767a04ce17"
+          "bytes": 37770,
+          "sha256": "633ade921ded194dc0088558c833c919dc0d4b79902b7dd7d4324fa88eb6dddc"
         }
       ]
     },
@@ -407,9 +75,19 @@
           "sha256": "70b18acce020f2b826a8965a61476b5e1c024e7ad458de67cf60f583e3eb7328"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 5868,
-          "sha256": "54f656e9a2c8663bbe75370191e9e750c2823e8e718b2d2fa3c0139e5c4e6351"
+          "bytes": 7043,
+          "sha256": "a2a85264f312871211a15af9b44e69bb4e2ea494f3b35d36a001ff78e6820e8e"
         }
       ]
     },
@@ -422,9 +100,24 @@
           "sha256": "2b41c8c78533a3516f3911066f7bbb778cb64fe1dff19fca7d6cdd50b03c7617"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 9886,
-          "sha256": "ac733f5085ec8af4f54e86682bfefdda146328d2d46700de6cfa625f5c21bc01"
+          "bytes": 14204,
+          "sha256": "71784e8aba052dd8ac9f32e9366070e201a3c6622ecd5c25bb487d2bd7099eb1"
         }
       ]
     },
@@ -437,9 +130,19 @@
           "sha256": "28c348856ce75a0cccde5c90e2e07d7307d52a313327205a726e31844d1256ed"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 6998,
-          "sha256": "c5d57975ce15f9d0c1bbe6063b9092f239ba21cc522439189a95cfed01de3d75"
+          "bytes": 8339,
+          "sha256": "f8a57e9972a9088c554c697d792d6756f04c32bf44d76e41deb36da3a1cb3572"
         }
       ]
     },
@@ -452,14 +155,19 @@
           "sha256": "989d66027c20f3bec942de94596903ca77e2e81cbb16f700fae88fc17edf2259"
         },
         {
-          "path": "references/workflow-spec.md",
-          "bytes": 32688,
-          "sha256": "6cde9fb6739b8ede890517adcfc22b6d4ba1efc345b74186732ebe13897e17a5"
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
           "path": "SKILL.md",
-          "bytes": 3723,
-          "sha256": "d468f7bf672c01ab360c1ce093e4ae0a84a8b4baca2c7f1e061e3d22b969152f"
+          "bytes": 44505,
+          "sha256": "a61d20cea711e6e94ecdf1a2fd212e155c186ec5aef04a507d4847bc8a583044"
         }
       ]
     },
@@ -472,9 +180,19 @@
           "sha256": "29befe78fe3efd487d9318901761f83361600bd3bd264f5699500bb6cf382798"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 8421,
-          "sha256": "3054012718cc71cd54b2dae5bb7814794774ebabe757b43ec1fb58595a348be8"
+          "bytes": 11506,
+          "sha256": "dbae75cab4a6935257b94f43f61fbb84dcf18f2f39a776a36fdd83e3de1251c8"
         }
       ]
     },
@@ -487,24 +205,29 @@
           "sha256": "e89f98f3d571f694d5ef1b9e669c08c8140a474c73c88887d2e71175a6389e77"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "references/vendor-branding.md",
-          "bytes": 7438,
-          "sha256": "5cf4032bfab5c863a882a82e1a16e3c1a975601eed423d18d91f709dc29541d0"
+          "bytes": 7788,
+          "sha256": "4ab433d8b57ba9b846a58fc2cb0f2b583abcd179a380c4d022d8ec6e895e2050"
         },
         {
           "path": "references/vendor-context.md",
-          "bytes": 11535,
-          "sha256": "7ee459ad76b823aa8e2532467de44bff7fc35de5a553f2236b56f077f3562beb"
-        },
-        {
-          "path": "references/workflow-spec.md",
-          "bytes": 74869,
-          "sha256": "a7211acabb6e6b37c1b14b564190f36920488f8f9ed490e2c40b4619c7ae217e"
+          "bytes": 11992,
+          "sha256": "2868db8a6da1026fa12e4483fa000b002c334f81ff8785519b00cbf15c1d77f1"
         },
         {
           "path": "SKILL.md",
-          "bytes": 5380,
-          "sha256": "f7b2c3c28e4b55d46e4e3da2cc99109e5768fd97cc4235be10922adecbb698ec"
+          "bytes": 95303,
+          "sha256": "31f297653c4e3d231c40e75150432d424f63122ab17f88f9964447e3455172d0"
         }
       ]
     },
@@ -522,14 +245,29 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
           "path": "references/delta-attribution.md",
           "bytes": 13111,
           "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
         },
         {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 10052,
-          "sha256": "fc5b7b54cdeaca0a023be5de048f5bb47ebbb46e57f89d93e1b5e42e1451690b"
+          "bytes": 26214,
+          "sha256": "99c16c72f261cbf1b357ee74a9ac607c7865adfbcbf2a6e00bd337055aa6b698"
         }
       ]
     },
@@ -547,14 +285,24 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
-          "path": "references/workflow-spec.md",
-          "bytes": 26396,
-          "sha256": "f21840560dd5631c2ad6ecb30d6c26374ac78fce8dad072b31316810c2f42ef6"
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
           "path": "SKILL.md",
-          "bytes": 3069,
-          "sha256": "de4768801edaf9096e312d5033785bd66c518eea27c6bb4bed5dc6bb1b632127"
+          "bytes": 43761,
+          "sha256": "c6eb4f64b3aed98497490e902e9af21053b7dcb5622776cb3961084e6dd2dc51"
         }
       ]
     },
@@ -567,9 +315,19 @@
           "sha256": "3959838ee319be00d69e95083e1a6a8d9052b0c937666de7ff78a78f32281730"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
           "path": "SKILL.md",
-          "bytes": 9048,
-          "sha256": "45307813a6564fa52d4d871eff2377e35d63d83b4e8def171fef4f8345d156af"
+          "bytes": 10150,
+          "sha256": "95e17dbfd2e693934a7ec7eaca569bcb1cc424b330aea61cd0200314308f2deb"
         }
       ]
     },
@@ -582,14 +340,29 @@
           "sha256": "5f48aba8cddcd93983e2bc884e078be3aef88f450d356a90b549dccdbbb82cee"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
+          "path": "references/structural-confounders.md",
+          "bytes": 20194,
+          "sha256": "31eabe096882f4bdf5d87f0e30f3057e7b2217c3311a37b6b7b49a4319cdf22e"
+        },
+        {
           "path": "references/workflow-spec.md",
-          "bytes": 38940,
-          "sha256": "d2479fd49547953e265fec6800dc8b82dc69b7b965cd4ebcddf1367929e738d1"
+          "bytes": 58851,
+          "sha256": "cc130075d90608f925c5f4eb96e7553ab47a81b39f47382990b27fec3072926e"
         },
         {
           "path": "SKILL.md",
-          "bytes": 4463,
-          "sha256": "f94b874352315eb3e3dbe9e8f111903cbdead35b3e7b2208b2fa3f7728666aba"
+          "bytes": 12286,
+          "sha256": "542f94e632a002031e6a1864139b527343956d16e69d2905500d1dcca9b11a03"
         }
       ]
     },
@@ -607,9 +380,19 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
           "path": "references/delta-attribution.md",
           "bytes": 13111,
           "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
           "path": "references/structural-confounders.md",
@@ -618,8 +401,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 15862,
-          "sha256": "811b15038b8228dabab98d1eaac2e1ea81fca2766ddf1aec1d5cf91cafa63b9e"
+          "bytes": 35202,
+          "sha256": "4ee61d933b406562f3634f0fd25abdb2f7413c902d008eca8338ec94bac021ee"
         }
       ]
     },
@@ -637,19 +420,54 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
-          "path": "references/signal-catalog.md",
-          "bytes": 20241,
-          "sha256": "6aab91336c0f04773d8b7680969247593f684e814a2ed61d2b2352aed1ef309c"
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
         },
         {
-          "path": "references/workflow-spec.md",
-          "bytes": 17913,
-          "sha256": "3d344a1712c986859ff258cdcdd8815db98eee04582594950f188c801a641774"
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
+          "path": "references/signal-catalog.md",
+          "bytes": 26161,
+          "sha256": "827e329521faf66c9be6e968d93f2ef4da4fa800ca2a6f80d4a13e0722599044"
         },
         {
           "path": "SKILL.md",
-          "bytes": 2074,
-          "sha256": "c917ca903a02c2dae08166aad53ec7456bbbaffb7f096ce37fd0561a77edad6e"
+          "bytes": 27959,
+          "sha256": "29fc96b1d615e4c70ee2f99e612b274770bd352cb9756ed52af367ecc0b17b9d"
+        }
+      ]
+    },
+    {
+      "name": "summit53",
+      "files": [
+        {
+          "path": "agents/openai.yaml",
+          "bytes": 201,
+          "sha256": "a1549a166d35daade2dd9a9c538b5339890a0a577ba1e8469b2e3e541f1894ad"
+        },
+        {
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
+        },
+        {
+          "path": "SKILL.md",
+          "bytes": 5054,
+          "sha256": "54684c2098de14eecce83525c40b235edfb2d9c877f5a418581d9aba14fafbab"
         }
       ]
     },
@@ -667,14 +485,24 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
-          "path": "references/workflow-spec.md",
-          "bytes": 25281,
-          "sha256": "b7864c0a7a79df2bac0cda902c224d923481af211df88a04470b13cf34f1fc64"
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
           "path": "SKILL.md",
-          "bytes": 3223,
-          "sha256": "d37174571cebfd8e27f4d8ca68663e01e0e1870c60b27e9ebbff5360632f23de"
+          "bytes": 41768,
+          "sha256": "ce332cad3acdf40b2d3d5655edfaaad9c259e9fdd1dbda3b539509e4a21ab831"
         }
       ]
     },
@@ -692,14 +520,24 @@
           "sha256": "8e13713801eb04237b15e7fa8ef08e9b79634cfae8dc681d04119c87490651fb"
         },
         {
-          "path": "references/workflow-spec.md",
-          "bytes": 37332,
-          "sha256": "98ec27282abd780c277b1c689bbeb8f53ff51d7bbe988a6b94efe8aace8c8aab"
+          "path": "references/connector-preflight.md",
+          "bytes": 10003,
+          "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
+        },
+        {
+          "path": "references/currency-and-fx.md",
+          "bytes": 8565,
+          "sha256": "af1b08fefd0bb08c16bf815d24077554a9d030ecb099d14f2be6f489f847cabf"
+        },
+        {
+          "path": "references/host-adapters.md",
+          "bytes": 6437,
+          "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
           "path": "SKILL.md",
-          "bytes": 3151,
-          "sha256": "caec948feca0f55abe50e71d832a1b1926fe4873a2b03a76ae555952821dbd0f"
+          "bytes": 35814,
+          "sha256": "adec25e55ed147af7711347914d6388ac1b3fbd323f6ca844ba36727e85fdd50"
         }
       ]
     }
@@ -712,8 +550,8 @@
     },
     {
       "path": "shared/canonical/connector-preflight.md",
-      "bytes": 9961,
-      "sha256": "59e2630f0bcfb8f112c2db6b26ae4bd0055806ea73cda8a64c07ab3c7d85269c"
+      "bytes": 10003,
+      "sha256": "c2499a2856f878edd971bf4e03ef9ca9c97a7ae769a0bb1e22bbc299f8a9261c"
     },
     {
       "path": "shared/canonical/currency-and-fx.md",
@@ -724,6 +562,11 @@
       "path": "shared/canonical/delta-attribution.md",
       "bytes": 13111,
       "sha256": "b2611e8ce0069c4af631896da62e5bafa652c88edabd7c0ea5dec89a8385362d"
+    },
+    {
+      "path": "shared/canonical/host-adapters.md",
+      "bytes": 6437,
+      "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
     },
     {
       "path": "shared/canonical/structural-confounders.md",

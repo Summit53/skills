@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "summit53": {
+      "type": "http",
+      "url": "https://api.summit53.io/mcp"
+    }
+  }
+}

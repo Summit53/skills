@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check or materialize shared canonical references into Claude and Codex packages."""
+"""Check or materialize shared canonical references into the skill packages."""
 
 from __future__ import annotations
 
@@ -10,10 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SHARED = ROOT / "shared" / "canonical"
-PLATFORMS = (
-    ROOT / "platforms" / "claude" / "skills",
-    ROOT / "platforms" / "codex" / "skills",
-)
+PLATFORMS = (ROOT / "plugins" / "summit53" / "skills",)
 
 
 def consumers(canonical: Path) -> list[Path]:
@@ -28,7 +25,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Check byte parity with shared/canonical or explicitly copy canonical "
-            "references into existing Claude and Codex consumers. Seed a new consumer by "
+            "references into existing package consumers. Seed a new consumer by "
             "copying the canonical file into its references/ folder once."
         )
     )

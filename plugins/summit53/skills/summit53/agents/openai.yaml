@@ -1,0 +1,4 @@
+interface:
+  display_name: "Summit53"
+  short_description: "Check the Summit53 connection and pick a workflow"
+  default_prompt: "Use $summit53 to check my Summit53 connection and show what I can do."
