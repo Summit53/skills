@@ -37,6 +37,22 @@ reported as unavailable, never as zero.
 - A Summit53 account that is an approved member of an active Summit53 organisation.
 - For slide decks: Claude's `pptx` skill, or Codex's Presentations skill.
 
+## Install
+
+In Claude Code:
+
+```text
+/plugin install summit53 --marketplace Summit53/skills
+```
+
+In claude.ai, Claude Desktop or Cowork, add the marketplace `https://github.com/Summit53/skills`
+under **Customize › Plugins › Add** and install **Summit53**. In Codex:
+
+```bash
+codex plugin marketplace add Summit53/skills
+codex plugin add summit53@summit53
+```
+
 ## Connect
 
 After installing, sign in to the Summit53 connector with your Summit53 account (OAuth). No API key
@@ -70,7 +86,7 @@ Setup guide for every client: https://www.summit53.com/docs/mcp-setup-guide
 Skills exclude demo and test records from real decisions and label any output built on data
 that cannot be separated from demo records. They describe signals as correlations, not causes,
 and never render missing data as zero or a healthy status. Your data is governed by Summit53's
-terms: https://summit53.io/terms
+terms: https://summit53.io/terms-of-service
 
 ## Support
 
