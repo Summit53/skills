@@ -1,6 +1,6 @@
 {
   "name": "summit53",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Evidence-grounded revenue workflows (forecast, deal, renewal, coaching, territory and board packs) on your Summit53 tenant, with the hosted Summit53 MCP connector bundled.",
   "author": {
     "name": "Summit53",
@@ -8,6 +8,10 @@
   },
   "homepage": "https://github.com/Summit53/skills",
   "repository": "https://github.com/Summit53/skills",
+  "documentationUrl": "https://www.summit53.com/docs/mcp-setup-guide",
+  "supportUrl": "https://www.summit53.com/docs",
+  "privacyPolicyUrl": "https://summit53.io/privacy-policy",
+  "termsOfServiceUrl": "https://summit53.io/terms-of-service",
   "license": "LicenseRef-Summit53-Proprietary",
   "keywords": [
     "summit53",

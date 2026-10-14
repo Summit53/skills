@@ -1,6 +1,6 @@
 {
   "name": "summit53",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Evidence-grounded revenue workflows (forecast, deal, renewal, coaching, territory and board packs) on your Summit53 tenant, with the hosted Summit53 MCP connector bundled.",
   "author": {
     "name": "Summit53",
@@ -37,6 +37,8 @@
     ],
     "brandColor": "#E17D3A",
     "composerIcon": "./assets/icon.png",
-    "logo": "./assets/logo.png"
+    "logo": "./assets/logo.png",
+    "privacyPolicyURL": "https://summit53.io/privacy-policy",
+    "termsOfServiceURL": "https://summit53.io/terms-of-service"
   }
 }
