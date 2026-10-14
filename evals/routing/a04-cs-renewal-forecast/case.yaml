@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: a04-cs-renewal-forecast
+description: "Routes to cs-renewal-forecast; never renewal-defence-pack"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "What's renewing in the next 90 days across my book, and how much ARR is at risk?"
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-cs-renewal-forecast
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?cs-renewal-forecast\""
+  - name: never-renewal-defence-pack
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?renewal-defence-pack\""
+    min: 0
+    max: 0

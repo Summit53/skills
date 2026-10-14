@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: a13-rep-evidence-dossier
+description: "Routes to rep-evidence-dossier; never rep-coaching-report"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "We're preparing for talent calibration. Pull together the performance record for Sarah Mitchell."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-rep-evidence-dossier
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?rep-evidence-dossier\""
+  - name: never-rep-coaching-report
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?rep-coaching-report\""
+    min: 0
+    max: 0

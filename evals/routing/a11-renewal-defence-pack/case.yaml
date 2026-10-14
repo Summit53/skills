@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: a11-renewal-defence-pack
+description: "Routes to renewal-defence-pack; never cs-renewal-forecast"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Procurement is pushing back on Global Horizons Mining's renewal. Help me defend it."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-renewal-defence-pack
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?renewal-defence-pack\""
+  - name: never-cs-renewal-forecast
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?cs-renewal-forecast\""
+    min: 0
+    max: 0

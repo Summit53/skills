@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: b1-deal-review-not-inspection
+description: "Routes to deal-review-prep; never ae-deal-inspection-prep"
+tags: ["routing", "near-miss"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Give me the full picture on the Federation Insurance Group deal for my pipeline review with the team."
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-deal-review-prep
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?deal-review-prep\""
+  - name: never-ae-deal-inspection-prep
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?ae-deal-inspection-prep\""
+    min: 0
+    max: 0

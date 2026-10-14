@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: a15-territory-review
+description: "Routes to territory-review"
+tags: ["routing", "per-skill"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "How are my territories doing? Which regions are underperforming?"
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-territory-review
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?territory-review\""

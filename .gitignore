@@ -12,3 +12,6 @@ __pycache__/
 Thumbs.db
 tmp/
 artifacts/
+
+# Eval run outputs
+evals/results/

@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: r1-router-which-org
+description: "Routes to summit53"
+tags: ["routing", "router"]
+plugins: ["../../../plugins/summit53"]
+execution:
+  prompt: "Which Summit53 organisation am I connected to?"
+  max_turns: 3
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - name: routes-to-summit53
+    type: tool_used
+    tool: Skill
+    input_match: "\"skill\"\\s*:\\s*\"(?:summit53:)?summit53\""
