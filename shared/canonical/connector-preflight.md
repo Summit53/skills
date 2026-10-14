@@ -1,6 +1,6 @@
 # Connector Preflight — Canonical Contract
 
-**Canonical file. Version 1.2.0 · 2026-10-14.**
+**Canonical file. Version 1.3.0 · 2026-10-14.**
 
 Maintained once and copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy with `tools/sync_canonical_references.py --write`. If two copies
@@ -16,6 +16,7 @@ toolchains, rendering, delivery) live in `host-adapters.md`, vendored alongside.
 - [2. Discover capabilities before calling them](#2-discover-capabilities-before-calling-them)
 - [3. Stay read-only unless the skill says otherwise](#3-stay-read-only-unless-the-skill-says-otherwise)
 - [4. Exclude fixture and demo records](#4-exclude-fixture-and-demo-records)
+  - [Demo tenants](#demo-tenants)
 - [5. Missing evidence is unavailable, never zero](#5-missing-evidence-is-unavailable-never-zero)
 - [6. Correlational language](#6-correlational-language)
 - [7. Delivery](#7-delivery)
@@ -55,7 +56,9 @@ not relax these.
    - an approved membership.
 
    Store the organization ID as `scoped_org_id` and the organization name for the
-   artifact header. If any requirement fails, stop and tell the user what is missing.
+   artifact header. Store `demo_tenant = true` only when `organization.is_demo` is exactly
+   `true`; when the field is absent (older deployments) or `false`, `demo_tenant` is
+   false. If any requirement fails, stop and tell the user what is missing.
 4. If more than one Summit53 connector is attached, call `current_context` on each and
    pick the one whose organization matches the user's request. If the request does not
    say which organization and the connectors disagree, ask one short question naming the
@@ -118,7 +121,26 @@ the exact label for its use:
 | Employment, performance, or HR | **Demo data — not for employment decisions** |
 | Routine coaching | **Demo data — not for real coaching** |
 
-Never let a realistic-looking fixture satisfy a stop gate or a minimum-evidence threshold.
+Never let a realistic-looking fixture satisfy a stop gate or a minimum-evidence threshold
+in a real tenant.
+
+### Demo tenants
+
+When `demo_tenant` is true (`current_context` returned `organization.is_demo: true`), the
+whole organization is a synthetic demonstration tenant. This holds in every environment,
+production included: the `environment` value does not decide it. Every record is
+synthetic, including accounts, opportunities and people that carry no row-level marker.
+
+- Run the workflow on the tenant's data as a demonstration. Do not exclude marked rows
+  from counts or gates; excluding them would empty the artifact without making it real.
+  Evidence gates and minimum-evidence thresholds are evaluated on the demo data so the
+  workflow can be shown end to end.
+- Put the label for the artifact's use (table above) on the **entire artifact**: every
+  slide or page, the chat summary, and the delivery note.
+- Say in the delivery note that the organization is a Summit53 demo tenant and that
+  nothing in the artifact is evidence about a real customer, deal, or person.
+- Never send, share, or present a demo-tenant artifact as customer, board, or employment
+  material.
 
 ## 5. Missing evidence is unavailable, never zero
 
@@ -166,7 +188,7 @@ Keep tool-provided scores separate from model-derived judgments, and label which
 Before the first data read:
 
 - [ ] Connector resolved by logical tool name; deferred tools loaded in one batch
-- [ ] `current_context` passed; `scoped_org_id` stored
+- [ ] `current_context` passed; `scoped_org_id` and `demo_tenant` stored
 - [ ] Multiple connectors disambiguated, or only one present
 - [ ] Live schemas inspected for every tool the skill will call
 - [ ] Write capabilities excluded unless the skill and the user both require them
@@ -174,7 +196,8 @@ Before the first data read:
 Before delivery:
 
 - [ ] Returned IDs match `scoped_org_id`
-- [ ] Fixture rows excluded, or the whole artifact carries the correct demo label
+- [ ] Fixture rows excluded, or the whole artifact carries the correct demo label (always
+      when `demo_tenant` is true)
 - [ ] Every missing value rendered as unavailable, with a reason
 - [ ] No causal language about correlational evidence
 - [ ] Slides rendered and inspected; one link returned

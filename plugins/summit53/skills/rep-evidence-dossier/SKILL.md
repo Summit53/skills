@@ -2,7 +2,7 @@
 name: "rep-evidence-dossier"
 description: "Assemble a neutral, defensible Summit53 evidence dossier as a PPTX for a promotion case, PIP, talent calibration, documented performance concern or HR meeting. Screens structural confounders and documentary depth before any performance evidence, closes with an evidence register, and never renders an employment recommendation. Use when a manager says 'build the promotion case for [rep]', 'prep me for calibration', 'we're considering a PIP for [rep]', 'HR wants documentation on [rep]', 'pull together the performance record for [rep]', 'why them and not [other rep]?' or 'what have we done to help this rep?'. Do not use for routine coaching or 1:1 prep — use rep-coaching-report."
 metadata:
-  version: "3.1.0"
+  version: "3.2.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -31,7 +31,10 @@ its checklist before any data call. Then apply these dossier-specific gates:
 1. **Demo label.** This is an employment artifact. When the tenant is Staging or a demo
    tenant, or provenance cannot cleanly separate fixtures from real records, every slide
    carries **Demo data — not for employment decisions**. Every Staging forward test
-   carries it on every slide, even when fixture rows were excluded.
+   carries it on every slide, even when fixture rows were excluded. A tenant whose
+   `current_context` reports `organization.is_demo: true` is a demo tenant in every
+   environment, production included: treat every run there as a demo forward test and follow
+   [Demo tenants](references/connector-preflight.md#demo-tenants).
 2. **Load tools in one batch.** If the tools are deferred, load every tool in the
    [tools table](#tools) in one batch
    ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), resolved

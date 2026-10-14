@@ -2,7 +2,7 @@
 name: "customer-qbr"
 description: "Prepare a customer-facing Summit53 success and value review grounded only in verified value-contract and impact evidence: agreed outcomes, verified progress, measurement gaps, and mutual next commitments, with a customer-safety gate that strips internal scores, forecasts, and notes. Default output is a customer-safe brief or deck specification; PPTX or DOCX only on explicit request. Use for customer QBRs, executive business reviews (EBRs), value-realisation reviews, outcome progress, and mutual success plans, e.g. 'customer QBR for Acme', 'prep the EBR with [customer]', 'what value have we delivered to [account] this quarter', or 'customer-safe value review'. Do not use for an internal revenue or sales operating QBR — use qbr-generator. Do not use for renewal risk, a save plan, or renewal defence — use renewal-defence-pack. Board or investor pack — use board-revenue-pack."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -42,7 +42,9 @@ Skill-specific gates:
    demo, test, or staging deployment and payloads do not expose reliable row-level fixture
    metadata, put this exact label at the top of every output:
    **Demo data — not for customer or commercial decisions.** Never present fixture results as
-   a real customer's value story.
+   a real customer's value story. A tenant whose `current_context` reports
+   `organization.is_demo: true` is always a demo run, in every environment: apply the label and
+   follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Resolve evidence
 

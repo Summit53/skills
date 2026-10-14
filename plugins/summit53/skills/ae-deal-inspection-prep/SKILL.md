@@ -2,7 +2,7 @@
 name: "ae-deal-inspection-prep"
 description: "Prepare the owning account executive for an internal inspection of one named Summit53 opportunity: a concise, read-only one-page evidence sheet with current deal facts, truthful gaps, likely manager questions, defensible answer evidence, and rep-owned next actions. Use when an AE says 'prepare me for deal inspection', 'prep me for my deal inspection on [deal]', 'help me answer questions on this deal', 'what am I missing before my 1:1', 'give me an inspection cheat sheet', or 'what will my manager ask about [deal]'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for a contested chronology or 'when did it go dark' — use deal-timeline-defence. Do not use for drafting re-engagement outreach — use deal-action-engine, if installed."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -50,7 +50,10 @@ Skill-specific gates, stricter than the preflight:
    interventions, or invoke approval-gated actions.
 6. Demo label (commercial use): when the connector or `current_context` identifies a demo,
    test, or staging deployment and provenance is not reliable on every row, label every
-   output exactly **Demo data — not for customer or commercial decisions.**
+   output exactly **Demo data — not for customer or commercial decisions.** A tenant whose
+   `current_context` reports `organization.is_demo: true` is always a demo run, in every
+   environment: apply the label and follow
+   [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Gather the minimum evidence
 

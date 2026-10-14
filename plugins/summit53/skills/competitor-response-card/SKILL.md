@@ -2,7 +2,7 @@
 name: "competitor-response-card"
 description: "Prepare a concise, read-only, one-screen response card for an AE handling a named competitor or competitive objection in an active Summit53 deal: verified battlecard and reactive-play evidence kept separate from suggested talk track, discovery questions, proof to use, what to avoid, and one safe next action. Use for late-entering competitors and battlecard-backed objection handling, e.g. '[competitor] just showed up in [deal]', 'how do I respond to [competitor] on this deal', 'give me a competitive talk track', 'they said [competitor] is cheaper — what do I say', or 'prep an evidence-grounded response for this active deal'. Do not use for historical or portfolio competitive patterns, recurring loss reasons, or win-rate drivers — use win-loss-analysis."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -47,7 +47,9 @@ Skill-specific gates:
    put this exact label at the top of every output:
    **Demo data — not for customer or commercial decisions.** Exclude fixture, demo, synthetic,
    test, or seeded records from real customer guidance unless the user is explicitly running a
-   test.
+   test. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo
+   run, in every environment: apply the label and follow
+   [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Exact battlecard match only
 

@@ -2,7 +2,7 @@
 name: "first-meeting-deck"
 description: "Build a grounded, customer-facing first-meeting or discovery PPTX for one Summit53 account or opportunity: assertive-but-invitational hypotheses, discovery agenda, market point of view, vendor-grounded capabilities and next steps, plus a visibly quarantined AE prep slide. Detects net-new vs expansion meetings and adapts to meeting length. Use when an AE is preparing for a first or early-stage customer meeting, e.g. 'first meeting deck for [deal/account]', 'prep a discovery deck', 'build slides for my call with [prospect]', 'I'm meeting [stakeholder] tomorrow — make me a deck', 'generate a hypothesis deck', 'customer-facing deck for [deal]', 'what should I show in the first meeting', 'turn this opportunity into a discovery deck'. Also use for an explicit 'refresh vendor context' or 'refresh vendor branding' request. Do not use for a value or success review with an existing customer — use customer-qbr. For a one-screen response to a named competitor in an active deal use competitor-response-card."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -27,7 +27,7 @@ Skill-specific gates:
 1. **Vendor files present and current.** Read both vendor reference files in full (see Reference files below) before any other step. Their `Last reviewed` date is **2026-04-21**: treat every date-sensitive claim in them — commercial offer mechanics, cohort names, slot counts and dates, "live" programmes, proof points, reference customers, and recently shipped capabilities — as unverified until checked against a current authoritative source (the vendor's own live website or pricing page, or the user's explicit confirmation in this conversation). An unverified or expired claim does not go on a slide.
 2. **Resolve exactly one opportunity**, the attendees, meeting length and meeting objective before analysis. A name matching several opportunities is ambiguous — list the candidates and ask. Ask only when ambiguity would materially change the deck.
 3. **Scope.** The opportunity's and account's organization must match `scoped_org_id`; on mismatch, stop.
-4. **Demo label.** If the opportunity, account or narratives come from fixture or seeded data that provenance cannot separate from real records, every slide (Slide 0 included) carries **Demo data — not for customer or commercial decisions** in the footer, and the delivery note says the deck must not be shown to a real prospect.
+4. **Demo label.** If the opportunity, account or narratives come from fixture or seeded data that provenance cannot separate from real records, every slide (Slide 0 included) carries **Demo data — not for customer or commercial decisions** in the footer, and the delivery note says the deck must not be shown to a real prospect. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Reference files
 

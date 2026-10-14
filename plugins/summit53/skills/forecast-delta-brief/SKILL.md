@@ -2,7 +2,7 @@
 name: "forecast-delta-brief"
 description: "Produce a one-slide 16:9 PPTX forecast delta brief for the weekly forecast or commit call: the current forecast-confidence number, its signed movement over a fixed seven-day window, which contributors arithmetically account for it, up to three corroborating deals, and the limits, plus a five-line chat summary readable on a phone. Read-only; can run on a Monday-morning schedule. Use when a user says 'why is the number different from last week?', 'what moved the forecast this week', 'prep me for the forecast call', 'commit call brief', 'weekly forecast delta', 'forecast confidence dropped, why', or 'explain this week's forecast movement'. Do not use for daily or monthly narratives (not supported). Do not use for a board or investor pack — use board-revenue-pack. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a renewal-book outlook — use cs-renewal-forecast."
 metadata:
-  version: "3.1.0"
+  version: "3.2.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -59,7 +59,9 @@ Only after all six pass may any other call run.
 **Read-only.** Never request `refresh: true` and never invoke a write, note, or send
 capability. **Demo label:** if fixture or demo rows cannot be reliably excluded (typically
 on a staging or demo tenant), the slide and the chat summary carry exactly: **Demo data —
-not for customer or commercial decisions**.
+not for customer or commercial decisions**. A tenant whose `current_context` reports
+`organization.is_demo: true` is always a demo run, in every environment: apply the label and
+follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## References — read before any call
 
