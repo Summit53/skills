@@ -68,10 +68,14 @@ Setup guide for every client: https://www.summit53.com/docs/mcp-setup-guide
   account. Requests carry only what a skill needs, such as an opportunity, account or rep
   identifier and a reporting window. Summit53 returns data your Summit53 role is already allowed
   to see. The connector sends data to `api.summit53.io` only.
-- **Read-only by default.** Connections from AI assistants are read-only, plus viewing and
-  cancelling background jobs they started. No skill writes to Summit53 unless you explicitly ask
-  for that specific change, the connector exposes it and you approve it. Today that applies only
-  to saving coaching notes in `rep-coaching-report`.
+- **Mostly reads; a few tools save data.** No skill changes your CRM records. Three connector
+  tools save data in Summit53 as a side effect, and Claude asks before running them:
+  `first-meeting-deck` queues `external_account_research`, which runs public web and news
+  research on Summit53's servers and stores the results on the account; `qbr-generator` and
+  `revenue-action-brief-s53` call `weekly_action_plan`, which generates and saves your weekly
+  plan if one doesn't exist yet; and skills may call `cancel_job` to stop a background job they
+  started. Any other write, such as saving coaching notes in `rep-coaching-report`, happens only
+  when you ask for that specific change, the connector exposes it and you approve it.
 - **Web search.** `first-meeting-deck` runs a small number of public web searches about the
   prospect and its market, using the assistant's own web search tool. `competitor-response-card`
   searches the web only when you ask it to.
