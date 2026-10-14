@@ -2,7 +2,7 @@
 name: "board-revenue-pack"
 description: "Build a board-ready Summit53 revenue pack (8-slide PPTX, optional regional slide) for a non-operational audience: what changed since last quarter, what arithmetically accounts for it, and whether the evidence points to a market, execution or currency explanation. Pulls ARR, retention, segment performance, the quarterly forecast-confidence decomposition, pipeline, renewals, account health and data readiness, and stops safely when no genuine prior-quarter anchor exists. Use when a user says 'build my board deck', 'board revenue pack', 'prep the numbers for the board', 'investor update', 'I have a board meeting', 'quarterly revenue deck for investors', 'the board is going to ask why this changed', 'is this a market or execution problem', or 'fundraise deck with live metrics'. Do not use for the weekly forecast call — use forecast-delta-brief. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a customer-facing review — use customer-qbr."
 metadata:
-  version: "2.4.1"
+  version: "2.5.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -59,7 +59,10 @@ Skill-specific gates, stricter than the preflight and run **before any slide is 
 7. **Demo label.** If fixture or demo rows cannot be reliably excluded (typically on a
    staging or demo tenant), the pack may be built only to validate this skill, and every
    slide carries exactly: **Demo data — not for customer or commercial decisions**.
-   Fixture history never satisfies the quarter-anchor gate for a real board.
+   Fixture history never satisfies the quarter-anchor gate for a real board. A tenant whose
+   `current_context` reports `organization.is_demo: true` is always a demo run, in every
+   environment: apply the label and follow
+   [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## References — read before any call
 

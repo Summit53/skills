@@ -2,7 +2,7 @@
 name: "cs-renewal-forecast"
 description: "Prepare a read-only Customer Success portfolio renewal outlook for a CS leader: contract ARR due, at-risk exposure, commit and best-case renewal buckets, top surfaced at-risk accounts, account-health movement, and explicit evidence and NRR limits. Use for a 30- to 180-day renewal book, an internal renewal forecast, or an NRR question that must be bounded by available evidence, e.g. 'what's renewing in the next 90 days', 'renewal forecast for my book', 'how much ARR is at risk this quarter', 'CS renewal outlook for the forecast meeting', or 'what will NRR be'. Do not use for one named account's renewal or procurement defence — use renewal-defence-pack. Do not use for a customer-facing review — use customer-qbr. Do not use for weekly pipeline forecast movement — use forecast-delta-brief. Internal operating QBR — use qbr-generator."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -45,6 +45,10 @@ the connector or `current_context` identifies a demo, test, or staging deploymen
 do not expose reliable row-level fixture metadata, label every output:
 
 > **Demo data — not for customer or commercial decisions.**
+
+A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in
+every environment: apply the label and follow
+[Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## 1. Confirm tenant, authority, and window
 

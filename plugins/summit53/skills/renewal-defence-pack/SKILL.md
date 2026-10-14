@@ -2,7 +2,7 @@
 name: "renewal-defence-pack"
 description: "Prepare an evidence-grounded, read-only renewal defence for one named account and one renewal contract: contract facts, a promise-to-impact evidence table matched only by recorded outcome links, procurement-ready proof points with safe wording, gaps that weaken the defence, and questions to resolve — or an evidence-readiness finding when the records can't support a defence. Use when Customer Success must defend an active renewal, procurement challenge, commercial review, or renewal-risk meeting, e.g. 'build a renewal defence for [account]', 'procurement is pushing back on [customer]'s renewal', 'help me defend this renewal', 'renewal risk meeting prep for [account]', or 'save plan for [customer]'. Do not use for a portfolio renewal forecast or NRR outlook — use cs-renewal-forecast. Do not use for a customer-facing business review — use customer-qbr. Internal quarterly revenue review — use qbr-generator."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -41,6 +41,10 @@ Skill-specific gates:
   every output:
 
   > **Demo data — not for customer or commercial decisions.**
+
+  A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in
+  every environment: apply the label and follow
+  [Demo tenants](references/connector-preflight.md#demo-tenants).
 
   Do not remove that label when exporting or summarising the pack.
 

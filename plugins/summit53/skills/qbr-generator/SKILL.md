@@ -2,7 +2,7 @@
 name: "qbr-generator"
 description: "Build an internal quarterly revenue and sales operating review as an executive PPTX from live Summit53 data: quota and revenue performance, ARR growth and retention, pipeline health, risk and stalled pipeline, account portfolio, wins and losses, and next-quarter actions. DOCX only when explicitly requested. Use when a revenue or sales leader says 'prep for my QBR', 'build my quarterly deck', 'quarterly business review', 'quarterly sales review', 'executive revenue review', 'pull together the numbers for this quarter', 'I need a revenue review', or wants the quarter's CRM performance compiled into an internal presentation. Despite the name, do not use for a customer-facing QBR or value review — use customer-qbr. Do not use for board or investor reporting — use board-revenue-pack. Do not use for the weekly 'why did the number move' brief — use forecast-delta-brief."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -33,7 +33,7 @@ Skill-specific gates (resolve these up front — see Step 1):
 1. **Reporting period, comparison period, currency and audience are resolved before data is pulled**, from the request or context, and every assumption is stated on the Executive Summary slide and in the delivery note.
 2. **Scope.** Org-wide unless the user names a team, segment or region; every returned organization ID must match `scoped_org_id`.
 3. **One currency.** Use the reporting currency the tools return (`metadata.currency`, or a top-level `currency` where a tool returns one — never assume USD). Never add or compare amounts across currencies; if a payload mixes currencies without a converted total, show the native figures separately and say so. Never convert an amount yourself.
-4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide.
+4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Why This Exists
 

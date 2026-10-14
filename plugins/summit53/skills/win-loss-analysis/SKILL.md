@@ -2,7 +2,7 @@
 name: "win-loss-analysis"
 description: "Analyse a cohort of closed Summit53 deals and build a win/loss PPTX: outcome rates with denominators, framework, activity and stakeholder patterns associated with wins and losses, coded qualitative themes with deal counts, loss patterns, segment differences, and recommendations framed as measurable validation tests. For sales leaders, RevOps and offsites. Use for win/loss reports, win-rate analysis, closed-deal analysis, deal post-mortems, 'why are we losing deals', 'what do our wins have in common', 'what separates wins from losses', 'what predicts a win', 'loss reasons', 'win loss patterns', 'help me understand our win rate', 'how can we improve our close rate'. Do not use for a live competitor in an active deal — use competitor-response-card. Do not use for individual rep coaching — use rep-coaching-report."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -29,7 +29,7 @@ Read [references/connector-preflight.md](references/connector-preflight.md) and 
 
 Skill-specific gates:
 
-- **Demo label.** Commercial artifact: if fixture rows cannot be separated, label the whole deck **Demo data — not for customer or commercial decisions**.
+- **Demo label.** Commercial artifact: if fixture rows cannot be separated, label the whole deck **Demo data — not for customer or commercial decisions**. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 - **Cohort defined** (Step 1) before any rate is computed: closed-date window, outcome stages that count as won and lost, currency, segment filters.
 - **Read-only.** No `refresh`, no notes, no writes.
 - **Missing source stop.** If the canonical deal-size band definition from `unified_forecast_summary` remains unavailable after the async flow, stop and state the missing source (see Step 2, item 13).

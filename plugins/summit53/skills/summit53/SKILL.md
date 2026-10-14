@@ -2,7 +2,7 @@
 name: "summit53"
 description: "Start here for any Summit53 Revenue Engine request when the right workflow is unclear, and to set up or check the Summit53 connection. Confirms the Summit53 connector is attached and signed in, reports which organization it is scoped to, and routes to the matching Summit53 skill: forecast movement, board pack, internal QBR, customer QBR, deal review, deal inspection, deal chronology, competitor response, first-meeting deck, renewal outlook, renewal defence, rep coaching, rep evidence dossier, territory review, win/loss analysis or the revenue action brief. Use on 'set up Summit53', 'connect Summit53', 'is Summit53 connected', 'which Summit53 org am I in', 'what can Summit53 do', 'which Summit53 skill should I use', or a revenue question that names Summit53 without naming a workflow."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   baselined: "2026-10-14"
   status: "active"
 ---
@@ -19,7 +19,9 @@ Follow sections 1 and 2 of
 tools by logical name and call `current_context`.
 
 - **It succeeds.** Tell the user, in one line, the organization name, their user, and that
-  the connection is live. Then route (section 2). If the user only asked to check or set
+  the connection is live. If `organization.is_demo` is `true`, add that this is a Summit53
+  demo tenant with synthetic data, so every artifact will carry a demo label (see
+  [Demo tenants](references/connector-preflight.md#demo-tenants)). Then route (section 2). If the user only asked to check or set
   up the connection, stop here and offer three example requests from the routing table.
 - **No Summit53 tools are present.** Help the user connect (section 3). Do not attempt
   the workflow on general knowledge.

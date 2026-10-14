@@ -2,7 +2,7 @@
 name: "rep-coaching-report"
 description: "Prepare an evidence-based Summit53 coaching deck (PPTX) for a routine developmental 1:1 with a sales rep, built around one Results/Effort/Knowledge/Skills coaching thesis from the stored diagnostic, call behaviour, coaching history, pipeline, deal risk, MEDDPICC gaps and activity. Also handles explicit post-session capture of notes, agreed actions or a later outcome when that capability is exposed and approved. Trigger on 'prep my 1:1 with [rep]', 'what should I coach [rep] on?', 'coaching report for [rep]', 'build a coaching deck', 'what's going on in [rep]'s pipeline before our 1:1', 'log my notes from the session with [rep]', 'close out the [rep] 1:1' or 'record the action items from my coaching session'. Do not use for promotion, PIP, calibration or HR decisions — use rep-evidence-dossier."
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -30,7 +30,9 @@ its checklist before any data call. Then apply these coaching-specific gates:
 
 1. **Demo label.** Exclude `synthetic`, `demo_seed` and `demo_fixture` rows from a real
    1:1. A Staging or demo run that uses them carries **Demo data — not for real
-   coaching** on every slide.
+   coaching** on every slide. A tenant whose `current_context` reports
+   `organization.is_demo: true` is always a demo run, in every environment: apply the label and
+   follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 2. **Load tools in one batch.** Load the read tools in
    [references/workflow-spec.md](references/workflow-spec.md#tools) in one batch, per
    [host-adapters.md](references/host-adapters.md#loading-the-summit53-tools), resolved

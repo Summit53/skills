@@ -2,7 +2,7 @@
 name: "deal-review-prep"
 description: "Build a manager-led, evidence-based deal review PPTX for one Summit53 opportunity: health verdict, first constraint, MEDDPIC/BANT/SPICED scorecards, risk factors, blockers, account and stakeholder context, coaching questions and next steps. Use when a sales manager or revenue leader wants to prep for a deal review or pipeline review meeting, review a specific deal, do a deal deep-dive, build a deal scorecard or assess deal health, e.g. 'review this deal', 'deal review for opportunity [ID]', 'how healthy is the [deal] deal', 'what's the risk on [deal]', 'is this deal going to close', 'should I be worried about [deal]', 'give me the full picture on [deal]'. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for a contested deal chronology — use deal-timeline-defence. For a competitor response in an active deal use competitor-response-card; for drafting outreach or re-engagement use deal-action-engine (if installed)."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -28,7 +28,7 @@ Skill-specific gates:
 1. **Resolve exactly one opportunity before any other read.** Use the supplied opportunity ID when given. A deal or account name that matches more than one opportunity is ambiguous: list the candidates (name, account, amount, stage, close date, owner) and ask the user to pick. Never pick silently, and never merge two deals.
 2. **Confirm scope.** The opportunity's organization (and the account's, where returned) must match `scoped_org_id`. On mismatch, stop and report both IDs.
 3. **Check optional capabilities.** Use `list_available_tools` to confirm whether `get_opportunity_signals`, `prepare_dark_deal_rescue`, `opportunity_stakeholder_intelligence`, `get_battlecard` and the target-account tools (`search_target_accounts`, `get_target_account`; Outreach plan) are exposed on this connector. Missing or access-gated enhancements remove their section, never the deck.
-4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide.
+4. **Demo label.** This is a commercial artifact. If fixture rows cannot be separated from real records, put **Demo data — not for customer or commercial decisions** on the title slide and in the footer of every slide. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Why This Exists
 

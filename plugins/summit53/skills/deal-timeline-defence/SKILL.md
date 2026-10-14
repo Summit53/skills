@@ -2,7 +2,7 @@
 name: "deal-timeline-defence"
 description: "Reconstruct a defensible, read-only chronology for one Summit53 opportunity when a close date, activity sequence, ownership or stakeholder handoff, intervention, or dark-deal rescue decision is challenged. Returns a one-line verdict plus a timestamped chronology that separates observed, corroborated, inferred, disputed, and unavailable evidence. Use for requests such as 'what actually happened on this deal', 'defend this timeline', 'when did the deal go dark', 'show the evidence trail', 'who owned this deal when it slipped', or 'should we start a dark-deal rescue'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for drafting re-engagement outreach or a CRM note — use deal-action-engine, if installed."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -46,7 +46,10 @@ Skill-specific gates, stricter than the preflight:
    an intervention, or invoke any approval-gated execution tool.
 5. Demo label (commercial use): when the connector or `current_context` identifies a demo,
    test, or staging deployment and provenance is not reliable on every row, label every
-   output exactly **Demo data — not for customer or commercial decisions.**
+   output exactly **Demo data — not for customer or commercial decisions.** A tenant whose
+   `current_context` reports `organization.is_demo: true` is always a demo run, in every
+   environment: apply the label and follow
+   [Demo tenants](references/connector-preflight.md#demo-tenants).
 
 ## Gather the minimum evidence
 

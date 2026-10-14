@@ -2,7 +2,7 @@
 name: "territory-review"
 description: "Build a strategic territory planning or review deck (PPTX) from live Summit53 account, pipeline, health, activity, ARR, capacity and renewal evidence: sales-region and market-region performance, who sells where, TAM penetration, capacity per region, coverage questions and evidence-backed rebalancing options for CROs, VPs and regional leaders. Use for territory reviews, territory planning, geo or regional performance reviews, territory scorecards, whitespace analysis, prospecting allocation, territory health checks and rebalancing. Triggers: 'how are my territories doing', 'territory breakdown', 'where should we prospect', 'which territories are underperforming', 'regional pipeline review', 'show me territory coverage', 'how penetrated are we in each market', 'who is selling into which region'. Do not use for individual rep coaching — use rep-coaching-report. Do not use for a board or investor pack — use board-revenue-pack."
 metadata:
-  version: "1.2.1"
+  version: "1.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -23,7 +23,7 @@ Read [references/connector-preflight.md](references/connector-preflight.md) and 
 
 Skill-specific gates:
 
-- **Demo label.** This is a commercial artifact. If fixture rows cannot be separated, label the whole deck **Demo data — not for customer or commercial decisions**.
+- **Demo label.** This is a commercial artifact. If fixture rows cannot be separated, label the whole deck **Demo data — not for customer or commercial decisions**. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
 - **Territory basis defined** (Step 1) before any territory-level number is computed.
 - **Period, comparison baseline and currency resolved** before analysis. Never mix currencies inside one comparison.
 - **Audience resolved.** Rep-level detail (named reps, ramp status per rep, capacity per person) appears only when the requested audience is authorized to see it and the detail is necessary for the recommendation. Default to territory-level aggregates.
