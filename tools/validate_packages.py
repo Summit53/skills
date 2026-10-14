@@ -144,6 +144,13 @@ def main() -> None:
             if vendored.exists() and vendored.read_bytes() != canonical.read_bytes():
                 errors.append(f"{package.name}: shared drift in {canonical.name}")
 
+    # The directory rejects .gitattributes rules that rewrite files at checkout,
+    # so line endings are enforced here instead: every text file must be LF.
+    for path in sorted((ROOT / "plugins").rglob("*")):
+        if path.is_file() and path.suffix.lower() in {".md", ".json", ".yaml", ".yml", ".py", ".txt"}:
+            if b"\r\n" in path.read_bytes():
+                errors.append(f"{path.relative_to(ROOT)}: CRLF line endings; use LF")
+
     for warning in warnings:
         print(f"WARNING: {warning}")
     if errors:
