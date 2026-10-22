@@ -2,7 +2,7 @@
 name: "revenue-action-brief-s53"
 description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows. Do not use for weekly forecast movement ('why did the number move') — use forecast-delta-brief. Do not use to draft emails or write CRM records — the brief only hands off to a write-capable skill after the user explicitly asks for and approves that action."
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -70,7 +70,7 @@ Call these Summit53 MCP tools. Launch in parallel — they are independent. Capt
 
 | Tool | Why | Notes |
 |------|-----|-------|
-| `unified_forecast_summary` | Forecast confidence, coverage, revenue at risk, team metrics, deal-size segmentation, ACV drift | `detail_level: "detailed"` — **returns asynchronously, see below** |
+| `unified_forecast_summary` | Forecast confidence, coverage, revenue at risk, team metrics, deal-size segmentation, ACV drift | `detail_level: "detailed"`, organization-wide `leader_view` (see below) — **returns asynchronously, see below** |
 | `arr_growth_analytics` | NRR, GRR, logo churn, time-to-value, ARR mix, growth stage | `include_changes: true`, `include_benchmarks: true` |
 | `risk_heatmap` | Deal-level risk scores, MEDDPIC score, last activity, close-date movement | `page_size: 100`; **paginate until all `total` rows are retrieved** |
 | `deal_drag_summary` | Stalled-deal load — waste scores, drag-risk distribution, most-affected stage | C8 source; `deal_drag_dashboard` is an optional per-deal enrichment call |
@@ -81,6 +81,8 @@ Call these Summit53 MCP tools. Launch in parallel — they are independent. Capt
 | `target_account_funnel_summary` | **Optional** — target-account pipeline generation: stalled accounts, weekly touches vs target, committee gaps to widen | Domain E source; requires the Outreach plan. Default `weeks: 6`. Never call target-account or stakeholder write tools |
 
 From `unified_forecast_summary`, also capture `projected_landing` (`value`, `basis`, `fallback_reason`, `floored_to_closed_won`) and `metadata.currency`; from `arr_growth_analytics`, capture `constant_currency` (`status`, `delta`, `actual_delta`, `fx_effect`, `label`) and `metadata.currency`.
+
+**Ask for the organization-wide forecast view.** Unless the leader asked for their own team's view, pass `leader_view` to `unified_forecast_summary`, set to the organization-wide value the live schema or tool description names (today `"cro"`); see [preflight §2.5](references/connector-preflight.md#2-discover-capabilities-before-calling-them). Leave it out and the server derives the view from the user's revenue role: a VP Sales gets one team's coverage, revenue at risk and rep metrics beside organization-wide reads from the other tools, and the brief mixes the two without saying so. Read back `scope` (`leader_view`, `quota_scope`, `seller_count`, `narrowed`, `reason`) and any `scope_narrowed_to_team` or `scope_narrowed_to_user` warning; where no `scope` block is returned, read `metadata.leader_view` and `projected_landing.rep_commit.sellers`. Keep `leader_view` in the identical-arguments re-call. A narrower scope is stated on the brief (Step 6).
 
 **`unified_forecast_summary` returns asynchronously.** The first call often returns a *processing envelope* — `{"status": "processing", "job_id": ..., "retry_after": N}` — instead of data. This envelope is **not** data; running detection against it will silently find nothing. Follow [references/async-envelopes.md](references/async-envelopes.md): poll `get_job` on the returned `job_id` until terminal, then **re-call `unified_forecast_summary` with identical arguments** to collect the payload. `get_job` returns lifecycle state, not the forecast. Budget 6 polls and 2 payload re-calls; stop immediately on `failed` or `cancelled`. If no payload arrives, treat the source as missing and carry the helper's note into the brief verbatim. Fire the other tools first so polling overlaps their execution.
 
@@ -164,10 +166,11 @@ Output in chat. Structure:
 - Make the **owner** explicit in the prescription — "you", "coach {rep}", "{rep} to…", or "the team".
 - **Amounts carry the reporting currency** from `metadata.currency` — the ISO code or an unambiguous symbol (`NZD 689K`, `€1.2M`), never a bare `$` unless the reporting currency is USD. Never add amounts from responses that report different currencies, and never convert one yourself. When a response reports `normalization: converted_excluding_unconverted` or `fx_unconverted_amounts_excluded`, say so in the evidence line of any item whose total it affects ("excludes €240k in EUR deals with no rate").
 - **Forecast number cites its basis.** Wherever the brief quotes the forecast landing, use `projected_landing.value` with its basis in plain words — "reps' commit roll-up" or "weighted pipeline (fallback: {fallback_reason})"; note when it was floored at closed-won.
+- **Forecast scope is stated when it is narrower than the organization.** When `unified_forecast_summary` returned a team or individual view, put one scope line under the header: "Forecast figures cover {the team | your own book}: {seller_count} sellers, not the whole organization." Add the plain-language reason when the requested view was narrowed for lack of permission, and repeat the scope in the evidence line of every item whose numbers come from that tool.
 
 Omit any horizon section the leader did not ask for (per Step 1 scope), but if scope is `today` and the "Already Behind" lane is populated, still show it — a leader asking about today needs to know what has already slipped.
 
-If any source was missing, end the brief with a **Not assessed** line listing each missing source and the areas it covers (e.g. "Not assessed: retention signals — ARR growth analytics unavailable"). Keep the wording plain; never show raw errors. If the demo label applies, place it directly under the header.
+If any source was missing, end the brief with a **Not assessed** line listing each missing source and the areas it covers (e.g. "Not assessed: retention signals — ARR growth analytics unavailable"). Keep the wording plain; never show raw errors. If the demo label applies, place it directly under the header, above any forecast scope line.
 
 Deliver the brief in chat. Optionally, if the leader wants a copy, also save it as a Markdown file where the host saves files ([host-adapters.md](references/host-adapters.md#saving-and-delivering-files)) and give one clickable link to it.
 
@@ -175,6 +178,7 @@ Deliver the brief in chat. Optionally, if the leader wants a copy, also save it 
 
 ```
 Revenue Action Brief — {date}
+{forecast scope line, only when narrower than the organization}
 {one-sentence posture}
 
 ▸ TODAY — don't let the day end without these
@@ -280,6 +284,7 @@ All are read-only. This skill does not write to the CRM, and it hands off to wri
 - [ ] Preflight checklist complete; `scoped_org_id` matched on returned data
 - [ ] All eight data reads plus `get_job` (and the optional `target_account_funnel_summary`) preflighted; live schemas inspected
 - [ ] `unified_forecast_summary` resolved through the async flow, or recorded as missing
+- [ ] `unified_forecast_summary` called with the organization-wide `leader_view` (or the team view the leader asked for); returned scope read, and any scope narrower than the organization stated under the header and in the affected evidence lines
 - [ ] Every missing source has a note; only its dependent signals suppressed; nothing rendered as zero or healthy
 - [ ] Collapse rules applied; caps honored with "+ N more" lines
 - [ ] Domain E evaluated when `target_account_funnel_summary` is exposed, or listed as not assessed; no target-account or stakeholder writes

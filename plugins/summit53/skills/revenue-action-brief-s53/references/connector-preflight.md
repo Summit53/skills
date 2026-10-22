@@ -1,6 +1,6 @@
 # Connector Preflight — Canonical Contract
 
-**Canonical file. Version 1.3.0 · 2026-10-14.**
+**Canonical file. Version 1.4.0 · 2026-10-22.**
 
 Maintained once and copied byte-identical into every consuming skill. Bump the version on
 edit and re-copy with `tools/sync_canonical_references.py --write`. If two copies
@@ -80,15 +80,29 @@ not relax these.
    disclose the limitation.
 4. Run independent reads in parallel. Keep access-gated enhancements optional: a
    permission error on an enhancement removes that enhancement, not the whole artifact.
-5. **Check the scope a response actually returned, not the scope you asked for.** A
-   tool can quietly narrow its answer to the connected user. Live example: for a user
-   whose revenue role is `ic`, `unified_forecast_summary` returned `quota_metrics` and
-   `projected_landing` for that one seller (`rep_commit.sellers: 1`) even with
-   `leader_view: "cro"`, while its pipeline KPIs stayed organization-wide. Read
-   `metadata.leader_view`, seller counts and quota totals before treating a figure as
-   organization-level. If the returned scope is narrower than the audience needs, take
-   the figure from an organization-level source (for example the
-   `capacity_to_target_planner` rollup) or mark it unavailable and say why.
+5. **Ask for the widest scope, then check the scope a response actually returned.** A
+   tool can quietly narrow its answer to the connected user or their team.
+   - **Ask.** When a tool takes a view or scope argument, pass the organization-wide
+     value its live schema or description names. For `unified_forecast_summary` that is
+     `leader_view` (today `"cro"`). Leaving it out is not neutral: the server then derives
+     the view from the user's revenue role, so a `vp_sales` user silently gets one
+     team's forecast while the other tools in the same artifact stay organization-wide.
+     A view the user may not see is narrowed to the widest one they may see, not
+     refused. Ask for a narrower view only when the user asked for one, and keep the
+     argument in any identical-arguments re-call.
+   - **Read back.** Before treating a figure as organization-level, read the returned
+     scope: `scope.leader_view`, `scope.quota_scope` (`organization`, `team` or `user`),
+     `scope.seller_count`, `scope.narrowed` and `scope.reason`, and the warnings
+     `scope_narrowed_to_team` and `scope_narrowed_to_user`. On a deployment without a
+     `scope` block, read `metadata.leader_view`, `metadata.audience`, seller counts (for
+     example `projected_landing.rep_commit.sellers`) and quota totals. Live example: for a
+     user whose revenue role is `ic`, `leader_view: "cro"` returned `quota_metrics` and
+     `projected_landing` for that one seller (`rep_commit.sellers: 1`).
+   - **Disclose.** If the returned scope is narrower than organization-wide, state it on
+     the artifact beside the affected figures (for example "Team view: 7 sellers, not the
+     whole organization") and in the limits. If the audience needs organization-level
+     figures, take them from an organization-level source (for example the
+     `capacity_to_target_planner` rollup) or mark them unavailable and say why.
 
 ## 3. Stay read-only unless the skill says otherwise
 
@@ -191,11 +205,13 @@ Before the first data read:
 - [ ] `current_context` passed; `scoped_org_id` and `demo_tenant` stored
 - [ ] Multiple connectors disambiguated, or only one present
 - [ ] Live schemas inspected for every tool the skill will call
+- [ ] Organization-wide view requested wherever a tool takes a view or scope argument
 - [ ] Write capabilities excluded unless the skill and the user both require them
 
 Before delivery:
 
 - [ ] Returned IDs match `scoped_org_id`
+- [ ] Returned scope read; any scope narrower than organization-wide stated on the artifact
 - [ ] Fixture rows excluded, or the whole artifact carries the correct demo label (always
       when `demo_tenant` is true)
 - [ ] Every missing value rendered as unavailable, with a reason
