@@ -2,7 +2,7 @@
 name: "forecast-delta-brief"
 description: "Produce a one-slide 16:9 PPTX forecast delta brief for the weekly forecast or commit call: the current forecast-confidence number, its signed movement over a fixed seven-day window, which contributors arithmetically account for it, up to three corroborating deals, and the limits, plus a five-line chat summary readable on a phone. Read-only; can run on a Monday-morning schedule. Use when a user says 'why is the number different from last week?', 'what moved the forecast this week', 'prep me for the forecast call', 'commit call brief', 'weekly forecast delta', 'forecast confidence dropped, why', or 'explain this week's forecast movement'. Do not use for daily or monthly narratives (not supported). Do not use for a board or investor pack — use board-revenue-pack. Do not use for an internal quarterly operating review — use qbr-generator. Do not use for a renewal-book outlook — use cs-renewal-forecast."
 metadata:
-  version: "3.2.0"
+  version: "3.3.0"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -112,6 +112,17 @@ After the gates pass, request these together so the forecast poll overlaps the o
    (`attainment_percentage`, `fx_effect_pts`, `label`) and `metadata.currency`
    (`rates_as_of`, `normalization`, `unconverted_amounts`). **Follow the async reference
    exactly.**
+
+   **Ask for the organization-wide view.** Unless the user asked for their own team's
+   view, pass `leader_view` set to the organization-wide value the live schema or tool
+   description names (today `"cro"`); see
+   [preflight §2.5](references/connector-preflight.md#2-discover-capabilities-before-calling-them).
+   Leave it out and the server derives the view from the user's revenue role, so a VP
+   Sales gets one team's levels beside an organization-wide confidence number. Read back
+   `scope` (`leader_view`, `quota_scope`, `seller_count`, `narrowed`, `reason`) and any
+   `scope_narrowed_to_team` or `scope_narrowed_to_user` warning; where no `scope` block
+   is returned, read `metadata.leader_view` and `projected_landing.rep_commit.sellers`.
+   If the levels cover less than the whole organization, the slide says so (Step 3).
 
    ⚠ **It cannot give you last week's levels.** It is period-scoped — `period_offset: -1`
    returns the *prior reporting period*, not the prior week. Only
@@ -326,7 +337,9 @@ Compose one reading path, top to bottom:
    `fallback_reason` goes on the slide if it fits at ≥16 pt, otherwise in the speaker
    notes. Every amount carries the reporting currency code or unambiguous symbol (`NZ$`,
    `A$`, `US$`, `€`, `£`) read from `metadata.currency`; any formatting helper in the slide
-   code takes that code rather than a hard-coded `$`.
+   code takes that code rather than a hard-coded `$`. When the returned scope is narrower
+   than the organization, the strip carries it as a label, for example "Team view: 7
+   sellers. Confidence and movement above are organization-wide."
 6. **Visible limits** — concise and non-empty: every limitation that could change
    interpretation (below).
 
@@ -341,6 +354,10 @@ Include each that applies, on the slide:
 - **Residual** — "X of the Y-point move is not attributed to any instrumented driver."
 - **Stale scores** — quoted deals older than the freshness budget, with age.
 - **Coaching flag excluded** — "fired on N of M reps and is not discriminating."
+- **Narrowed scope** — when `unified_forecast_summary` returned a team or individual
+  view: "Levels cover {the team | your own book}, {seller_count} sellers, not the whole
+  organization; confidence and movement are organization-wide." Add the plain-language
+  reason when the requested view was narrowed for lack of permission.
 - **Missing sources** — any async note or unavailable source, summarised (no raw errors).
 - **Window** — if the returned span is not seven days.
 - **Excluded currency amounts** — when `normalization` is `converted_excluding_unconverted`
@@ -357,13 +374,14 @@ block listing: organization name; `scoped_org_id` and the matched `entity_id` / 
 `object_id` (speaker notes only — never on the visible slide); every logical capability
 name used (no tool prefixes); `as_of` and window dates; reporting currency, `rates_as_of`
 and any `unconverted_amounts` by currency; `projected_landing.basis`, `fallback_reason`
-and `floored_to_closed_won`; citation freshness; score ages;
+and `floored_to_closed_won`; the requested and returned `leader_view`, `quota_scope`,
+`seller_count` and any narrowing reason; citation freshness; score ages;
 warnings verbatim; the residual calculation; excluded evidence (coaching flag, stale or
 fixture rows); and async lifecycle notes.
 
 ## Step 4 — Verify before delivering
 
-Check content, not exit status. Do not deliver unless all fifteen pass:
+Check content, not exit status. Do not deliver unless all sixteen pass:
 
 1. `organization.id`, decomposition `entity_id`, and citation `object_id` all equal
    `scoped_org_id`; `period.current_date == as_of`; the citation is acceptably fresh.
@@ -394,6 +412,9 @@ Check content, not exit status. Do not deliver unless all fifteen pass:
     contributor bar or as performance; omitted for single-currency orgs.
 15. Projected landing shows its value with `basis`, and any `fallback_reason` is on the
     slide or in the speaker notes.
+16. `unified_forecast_summary` was called with the organization-wide `leader_view` (or the
+    team view the user asked for); the returned scope was read, and any scope narrower
+    than the organization is labelled on the strip and listed in the limits.
 
 ## Step 5 — Deliver
 
@@ -408,6 +429,7 @@ Limits: {the one most interpretation-changing limit}
 {Demo label, if it applies}
 ```
 
+When the levels cover less than the whole organization, that scope is the Limits line.
 Do not print the slide as Markdown, and do not paste tables into chat.
 
 ---
@@ -440,7 +462,7 @@ step, no deduplication, no approval gate.
 |---|---|
 | `current_context` | Tenant gate — called first |
 | `forecast_confidence_decomposition` | Weekly delta and contributor attribution — **core**, `lookback_days: 7` |
-| `unified_forecast_summary` | Authoritative current levels, projected landing and constant-currency attainment (async — follow the envelope reference) |
+| `unified_forecast_summary` | Authoritative current levels, projected landing and constant-currency attainment (async — follow the envelope reference); organization-wide `leader_view`, returned scope read back |
 | `get_job` | Async lifecycle for the above |
 | `risk_heatmap` | Current-state deal corroboration (paginate; `healthScore`, never `riskScore`) |
 | `get_opportunity_signals` | First constraint per named deal |
