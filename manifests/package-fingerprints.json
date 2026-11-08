@@ -21,8 +21,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 11786,
-          "sha256": "c0378c842562f17bd2c92d74693fe14ff2656bf9b3a86359da3c27e5cbcadb95"
+          "bytes": 11787,
+          "sha256": "5b28d2e56a8f51c71ac86bd686bce240903125368d2d79e291d7dfa56228e047"
         }
       ]
     },
@@ -166,8 +166,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 44710,
-          "sha256": "d7b0ca75f5a62e4b45ff8c4ea66d4280cc28802be21d7206f332d5c6781e8fa4"
+          "bytes": 44636,
+          "sha256": "14cf618ac3979d1e41464ef22e20f5f84a10451a4fadba7921d47eeddef0e67e"
         }
       ]
     },
@@ -191,8 +191,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 11720,
-          "sha256": "3a3fd52d5996606507f6b855ce4b3965ad9d2f3211e8d267fc49e957a202ea45"
+          "bytes": 11721,
+          "sha256": "939bbbb1645c9e2fb6297fcaf77d41a873f68a382ffc9adc884627ec8564b425"
         }
       ]
     },
@@ -215,19 +215,9 @@
           "sha256": "230389fa260f293881b2c5c75fbae26aee97a66750774668ac5710ee1326b8ee"
         },
         {
-          "path": "references/vendor-branding.md",
-          "bytes": 7788,
-          "sha256": "4ab433d8b57ba9b846a58fc2cb0f2b583abcd179a380c4d022d8ec6e895e2050"
-        },
-        {
-          "path": "references/vendor-context.md",
-          "bytes": 11992,
-          "sha256": "2868db8a6da1026fa12e4483fa000b002c334f81ff8785519b00cbf15c1d77f1"
-        },
-        {
           "path": "SKILL.md",
-          "bytes": 95508,
-          "sha256": "3d9374c82695741555093a34fb314347a14b1f5d9e42306e6db683de451b0b64"
+          "bytes": 95886,
+          "sha256": "938e356c4a87fe940c5dbd141cd7aa5115280e4121a14541e38238d61e9cb9d1"
         }
       ]
     },
@@ -356,13 +346,13 @@
         },
         {
           "path": "references/workflow-spec.md",
-          "bytes": 58851,
-          "sha256": "cc130075d90608f925c5f4eb96e7553ab47a81b39f47382990b27fec3072926e"
+          "bytes": 58848,
+          "sha256": "50acdc4286a03768f142fc366535913ae41387f950f4275f7cb8d8d2a0585988"
         },
         {
           "path": "SKILL.md",
           "bytes": 12497,
-          "sha256": "5ecf89b837268fbacce70e673071fabc56f3fddb44c782f831371a4d83004386"
+          "sha256": "8ca6d7c2679f80d5e7b5878564bd9b22824c6cd19fa396c7ade9ce27c868560a"
         }
       ]
     },
@@ -441,8 +431,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 29978,
-          "sha256": "9f2e1922bc4d3d2bec213ea2c70369373e98c766bc38cd557ab50f2421b9b0a9"
+          "bytes": 29878,
+          "sha256": "c600ee0b2de23bcd686ab98d0cc4ce3b842c0b49444f0c3c5380ca8d4badf26d"
         }
       ]
     },
@@ -501,8 +491,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 41973,
-          "sha256": "782e4265a7301653a5865cd94f1743032c7584bb4d05ca184055662f0c438790"
+          "bytes": 41970,
+          "sha256": "dcf884028bf44cb3af4c3e3ce6ddd685809c976c2857f4850dbbe52ab237bbca"
         }
       ]
     },
@@ -536,8 +526,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 36019,
-          "sha256": "5119ad4ae5f0cf9a2952db522fd2472fdce13f8ba3189ad5c65862afa681057e"
+          "bytes": 36016,
+          "sha256": "a4102f83459ba57736b7e5bd8ebb5374232e07e337f7e8d62bdd1be262da6ad4"
         }
       ]
     }

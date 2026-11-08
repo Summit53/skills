@@ -528,7 +528,7 @@ stays near 10 slides.
 #### Slide 1: Title
 
 - **Background:** Navy.
-- **Content:** "[Rep Name] — Coaching Report", date, "Powered by Summit53".
+- **Content:** "[Rep Name] — Coaching Report", date, "Source: Summit53".
 - **Layout:** centred, clean. Large Cambria title, Calibri subtitle.
 
 #### Slide 2: Coaching diagnosis — this week's focus

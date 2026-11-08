@@ -2,7 +2,7 @@
 name: "rep-coaching-report"
 description: "Prepare an evidence-based Summit53 coaching deck (PPTX) for a routine developmental 1:1 with a sales rep, built around one Results/Effort/Knowledge/Skills coaching thesis from the stored diagnostic, call behaviour, coaching history, pipeline, deal risk, MEDDPICC gaps and activity. Also handles explicit post-session capture of notes, agreed actions or a later outcome when that capability is exposed and approved. Trigger on 'prep my 1:1 with [rep]', 'what should I coach [rep] on?', 'coaching report for [rep]', 'build a coaching deck', 'what's going on in [rep]'s pipeline before our 1:1', 'log my notes from the session with [rep]', 'close out the [rep] 1:1' or 'record the action items from my coaching session'. Do not use for promotion, PIP, calibration or HR decisions — use rep-evidence-dossier."
 metadata:
-  version: "2.2.0"
+  version: "2.2.1"
   baselined: "2026-10-13"
   status: "active"
 ---

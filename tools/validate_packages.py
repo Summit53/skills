@@ -26,6 +26,10 @@ FORBIDDEN = {
     "Codex Presentations/Documents skill": re.compile(r"\b(?:Presentations|Documents) skill\b"),
     "ToolSearch mechanics": re.compile(r"\bToolSearch\b"),
     "Claude invocation syntax": re.compile(r"/summit53:[a-z]"),
+    # Skills may only hand off to skills this plugin ships.
+    "unbundled skill handoff": re.compile(r"\bdeal-action-engine\b"),
+    # Directory policy: skill output must not double as advertising.
+    "promotional footer": re.compile(r"Powered by Summit53"),
 }
 # Skill hosts substitute $0, $1 ... with invocation arguments when a SKILL.md loads,
 # so a literal "$5,250,418" arrives as "<word>,250,418". Write amounts as "USD 5,250,418".
@@ -107,6 +111,9 @@ def main() -> None:
         if match:
             line = text.count("\n", 0, match.start()) + 1
             errors.append(f"{package.name}/SKILL.md:{line}: '$<digit>' is replaced by skill arguments at load time; write a currency code instead")
+        # Vendor facts come from the customer's own Knowledge Base, never the plugin.
+        for bundled in sorted(package.glob("references/vendor-*.md")):
+            errors.append(f"{package.name}: {bundled.name} bundles vendor content in the public plugin")
         for required in (PREFLIGHT, HOST_ADAPTERS):
             if not (package / "references" / required).is_file():
                 errors.append(f"{package.name}: missing references/{required}")

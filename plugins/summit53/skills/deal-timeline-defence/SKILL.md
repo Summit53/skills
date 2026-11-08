@@ -1,8 +1,8 @@
 ---
 name: "deal-timeline-defence"
-description: "Reconstruct a defensible, read-only chronology for one Summit53 opportunity when a close date, activity sequence, ownership or stakeholder handoff, intervention, or dark-deal rescue decision is challenged. Returns a one-line verdict plus a timestamped chronology that separates observed, corroborated, inferred, disputed, and unavailable evidence. Use for requests such as 'what actually happened on this deal', 'defend this timeline', 'when did the deal go dark', 'show the evidence trail', 'who owned this deal when it slipped', or 'should we start a dark-deal rescue'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for drafting re-engagement outreach or a CRM note — use deal-action-engine, if installed."
+description: "Reconstruct a defensible, read-only chronology for one Summit53 opportunity when a close date, activity sequence, ownership or stakeholder handoff, intervention, or dark-deal rescue decision is challenged. Returns a one-line verdict plus a timestamped chronology that separates observed, corroborated, inferred, disputed, and unavailable evidence. Use for requests such as 'what actually happened on this deal', 'defend this timeline', 'when did the deal go dark', 'show the evidence trail', 'who owned this deal when it slipped', or 'should we start a dark-deal rescue'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for drafting re-engagement outreach or a CRM note."
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -21,7 +21,7 @@ Route before reading data:
 | Challenged chronology, inactivity onset, close-timing claim, handoff, or rescue-decision evidence | Use this skill |
 | Manager-led formal review, pipeline-review deck, broad deal health, or coaching questions | Route to `deal-review-prep` |
 | AE asks to prepare their own answers, evidence gaps, and next actions for an inspection | Route to `ae-deal-inspection-prep` |
-| Draft or send re-engagement email, create a CRM note, or execute a rescue | Route to `deal-action-engine`, if installed; do not perform it here |
+| Draft or send re-engagement email, create a CRM note, or execute a rescue | Not done here. On request, offer a draft from `prepare_dark_deal_rescue` or in chat; nothing is saved or sent |
 
 If the request mixes timeline defence with another route, complete the chronology only and
 state which remaining part belongs elsewhere.

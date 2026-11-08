@@ -2,7 +2,7 @@
 name: "territory-review"
 description: "Build a strategic territory planning or review deck (PPTX) from live Summit53 account, pipeline, health, activity, ARR, capacity and renewal evidence: sales-region and market-region performance, who sells where, TAM penetration, capacity per region, coverage questions and evidence-backed rebalancing options for CROs, VPs and regional leaders. Use for territory reviews, territory planning, geo or regional performance reviews, territory scorecards, whitespace analysis, prospecting allocation, territory health checks and rebalancing. Triggers: 'how are my territories doing', 'territory breakdown', 'where should we prospect', 'which territories are underperforming', 'regional pipeline review', 'show me territory coverage', 'how penetrated are we in each market', 'who is selling into which region'. Do not use for individual rep coaching — use rep-coaching-report. Do not use for a board or investor pack — use board-revenue-pack."
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -219,7 +219,7 @@ Build the deck with the host's presentation toolchain ([host-adapters.md](refere
 Slide 4 appears only when the `sales_region` × `market_region` cross-tab is available; without it the deck is 10 slides and later slides move up one (slide numbers in this file assume it is present). Adjust the composition when the number of territories or data density needs it; keep the content contract.
 
 #### Slide 1: Title
-- Navy background. "Territory Review", period label, date, organization name, "Powered by Summit53". Centered; large Georgia title, Calibri subtitle.
+- Navy background. "Territory Review", period label, date, organization name, "Source: Summit53". Centered; large Georgia title, Calibri subtitle.
 
 #### Slide 2: Territory overview and basis
 - Sources: `arr_operating_summary` (`by_dimension`), `account_intelligence_summary` (`territory_summary`), `segment_performance_summary` (`level: "top"`), `unified_forecast_summary`, `data_quality_score`.

@@ -2,7 +2,7 @@
 name: "win-loss-analysis"
 description: "Analyse a cohort of closed Summit53 deals and build a win/loss PPTX: outcome rates with denominators, framework, activity and stakeholder patterns associated with wins and losses, coded qualitative themes with deal counts, loss patterns, segment differences, and recommendations framed as measurable validation tests. For sales leaders, RevOps and offsites. Use for win/loss reports, win-rate analysis, closed-deal analysis, deal post-mortems, 'why are we losing deals', 'what do our wins have in common', 'what separates wins from losses', 'what predicts a win', 'loss reasons', 'win loss patterns', 'help me understand our win rate', 'how can we improve our close rate'. Do not use for a live competitor in an active deal — use competitor-response-card. Do not use for individual rep coaching — use rep-coaching-report."
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -328,7 +328,7 @@ Slide 4 appears only when a region cut or ICP fit evidence is available; without
 - Order by expected impact. Process framing, not blame.
 
 #### Slide 12: Close — cohort, definitions and limits
-- Cherry background. Company name, "Evidence to improve win rates", date, "Powered by Summit53".
+- Cherry background. Company name, "Evidence to improve win rates", date, "Source: Summit53".
 - Lower block (off-white): cohort definition, rate definitions, exclusions, sample selection rule, truncation status, reporting currency and any deals excluded for a missing FX rate, team attribution basis (team at close or current team), unavailable sources and optional capabilities (summarised), stage-capture bias note, the demo label if it applies, and "Associations, not validated predictors."
 
 ### Chart generation

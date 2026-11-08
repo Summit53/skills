@@ -62,6 +62,16 @@ claude.ai, Claude Desktop or Cowork, connect Summit53 on the plugin's **Connecto
 
 Setup guide for every client: https://www.summit53.com/docs/mcp-setup-guide
 
+## Example prompts
+
+Once you're connected, try:
+
+- "Why did our forecast move this week?"
+- "What should I focus on this week across the revenue team?"
+- "How are my territories doing?"
+- "Review the health of our largest open deal."
+- "Give me the renewal outlook for next quarter."
+
 ## What this plugin connects to, sends and writes
 
 - **Summit53 API.** Skills call the Summit53 MCP server at `api.summit53.io` with your signed-in
@@ -80,8 +90,8 @@ Setup guide for every client: https://www.summit53.com/docs/mcp-setup-guide
   prospect and its market, using the assistant's own web search tool. `competitor-response-card`
   searches the web only when you ask it to.
 - **Local files.** Deck and document skills create PPTX, DOCX or Markdown files in your working
-  folder or the assistant's output area. `first-meeting-deck` updates its own vendor-context
-  reference files only after you approve the change.
+  folder or the assistant's output area. `first-meeting-deck` reads your company's positioning from
+  your Summit53 Knowledge Base, and writes a copy of its working brief only if you ask for one.
 - **No hooks, commands or background processes.** The plugin contains skills, the connector
   reference and a logo, and nothing else runs on your machine.
 
