@@ -361,8 +361,8 @@
       "files": [
         {
           "path": "agents/openai.yaml",
-          "bytes": 268,
-          "sha256": "062b3eeac6d93f8c4b848c5ee5f55484a0e102e911f7cdbffafd620e44f59de0"
+          "bytes": 293,
+          "sha256": "860494a9e8aa7eca33cadb98a4644cfe66fa5fe73e21d67146b8640cbf6a6076"
         },
         {
           "path": "references/async-envelopes.md",
@@ -391,8 +391,8 @@
         },
         {
           "path": "SKILL.md",
-          "bytes": 35461,
-          "sha256": "973ea3056cb1328c1db457c4b570f43087babb07a4ecb5973fe889a6e9e2155a"
+          "bytes": 35761,
+          "sha256": "962fbfa259a00bf272b787f49135e05cfe3adeec4ef214ab3f857ca3fe8405b7"
         }
       ]
     },
