@@ -1,15 +1,15 @@
 ---
 name: "rep-evidence-dossier"
-description: "Assemble a neutral, defensible Summit53 evidence dossier as a PPTX for a promotion case, PIP, talent calibration, documented performance concern or HR meeting. Screens structural confounders and documentary depth before any performance evidence, closes with an evidence register, and never renders an employment recommendation. Use when a manager says 'build the promotion case for [rep]', 'prep me for calibration', 'we're considering a PIP for [rep]', 'HR wants documentation on [rep]', 'pull together the performance record for [rep]', 'why them and not [other rep]?' or 'what have we done to help this rep?'. Do not use for routine coaching or 1:1 prep — use rep-coaching-report."
+description: "Assemble a neutral, defensible Summit53 evidence dossier as a PPTX for a promotion case, performance improvement plan, talent calibration, documented performance concern or HR meeting. Screens structural confounders and documentary depth before any performance evidence, closes with an evidence register, and never renders an employment recommendation. Use when a manager says 'build the promotion case for [rep]', 'prep me for calibration', 'we're considering a performance improvement plan for [rep]', 'HR wants documentation on [rep]', 'pull together the performance record for [rep]', 'why them and not [other rep]?' or 'what have we done to help this rep?'. Do not use for routine coaching or 1:1 prep — use rep-coaching-report."
 metadata:
-  version: "3.2.0"
+  version: "3.2.1"
   baselined: "2026-10-13"
   status: "active"
 ---
 
 # Rep Evidence Dossier
 
-Assemble the documentary record for a human employment decision: promotion, PIP,
+Assemble the documentary record for a human employment decision: promotion, performance improvement plan,
 calibration or documented performance concern. The dossier is a PPTX that puts
 documentary depth and structural confounders ahead of any performance evidence, and it
 **renders no recommendation**.
@@ -18,7 +18,7 @@ documentary depth and structural confounders ahead of any performance evidence, 
 
 - Routine developmental coaching, recurring 1:1 prep, "what should I coach them on?" →
   `rep-coaching-report`. Do not build this dossier for a normal 1:1.
-- Promotion, PIP, calibration, talent review, HR documentation or a formal performance
+- Promotion, performance improvement plan, calibration, talent review, HR documentation or a formal performance
   decision → this skill.
 - Logging a coaching session, notes, actions or outcomes → not this skill. This skill
   never writes (see [Guardrails](#guardrails)).
@@ -83,15 +83,15 @@ render and deliver on the current host:
 
 ## The moments this serves
 
-Serves **RL7 — defending a promotion** and **RL8 — putting someone on a PIP**.
+Serves **RL7 — defending a promotion** and **RL8 — putting someone on a performance improvement plan**.
 
 **RL7 — calibration.** Manager to VP/CRO, with peer managers in the room. The dreaded
 question comes from a peer whose candidate just got passed over: *"Why them and not
 [other rep]?"* Today the case is assembled from memory and last quarter's numbers, in a
 room where everyone is doing the same and the loudest advocate wins.
 
-**RL8 — the PIP.** Manager, HR, sometimes legal. The dreaded question is not about the
-rep: *"What did you do to help them before this?"* A thin answer makes the PIP
+**RL8 — the performance improvement plan.** Manager, HR, sometimes legal. The dreaded question is not about the
+rep: *"What did you do to help them before this?"* A thin answer makes the performance improvement plan
 indefensible and ends the **manager's** career, not the rep's. Today that means
 reconstructing months of coaching history from calendar invites and memory.
 
@@ -105,7 +105,7 @@ Four rules follow, and none are negotiable:
 
 1. **The dossier renders no recommendation.** It does not conclude the rep should be
    promoted, managed out or retained. It assembles evidence and hands the decision to
-   the human accountable for it. A tool that recommends a PIP has, in a hearing, made
+   the human accountable for it. A tool that recommends a performance improvement plan has, in a hearing, made
    the decision, and the manager cannot then claim to have exercised judgement.
 2. **Structural confounders appear before performance evidence.** This is document
    order, not tone. See
@@ -149,7 +149,7 @@ Carried forward from 2.x:
 
 ## Step 1 — Establish purpose and rep
 
-Ask which rep, and **ask what decision this supports**: promotion, PIP, calibration or
+Ask which rep, and **ask what decision this supports**: promotion, performance improvement plan, calibration or
 general documentation. The purpose changes what the dossier emphasises, and asking it on
 the record is itself good process.
 
@@ -450,7 +450,7 @@ each.
 
 **Banned, because these are conclusions the dossier is not entitled to draw:**
 `underperformer`, `poor performer`, `not meeting the bar`, `failing`, `should be`,
-`recommend`, `needs a PIP`, `unable to`, `lacks`, `caused`, `because of their`,
+`recommend`, `needs a performance improvement plan`, `unable to`, `lacks`, `caused`, `because of their`,
 `due to poor`.
 
 **Required substitutions:**
@@ -461,7 +461,7 @@ each.
 | "Coaching didn't work" | "Focus metric moved from X to Y over the window; the record does not establish why" |
 | "Rep lacks discovery skills" | "Discovery score averaged X across N deals, against the org playbook standard of Y" |
 | "Below benchmark" | "X against a team-P75 benchmark of Y (n=N), a gap of Z%. Below team P75 does not by itself mean below-average performance." |
-| "Needs a PIP" | *(nothing: the dossier does not say this)* |
+| "Needs a performance improvement plan" | *(nothing: the dossier does not say this)* |
 | "Intervention worked" | "Metric moved X → Y in the outcome window; ledger label 'worked'; correlational" |
 
 Every performance statement is a **measurement with a comparator and a window**. If a
@@ -529,7 +529,7 @@ excluded as fixture data.
 If the depth gate tripped, add one sentence on what would close the gap: which records
 need to be created through the ordinary coaching process in the product's Coaching
 dashboard, and that they need to accrue over time rather than be backfilled. Backfilling
-a coaching record ahead of a PIP is precisely what a grievance process is designed to
+a coaching record ahead of a performance improvement plan is precisely what a grievance process is designed to
 detect, and it should not be suggested.
 
 ## Guardrails
