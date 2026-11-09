@@ -21,7 +21,7 @@ Route before reading data:
 | Challenged chronology, inactivity onset, close-timing claim, handoff, or rescue-decision evidence | Use this skill |
 | Manager-led formal review, pipeline-review deck, broad deal health, or coaching questions | Route to `deal-review-prep` |
 | AE asks to prepare their own answers, evidence gaps, and next actions for an inspection | Route to `ae-deal-inspection-prep` |
-| Draft or send re-engagement email, create a CRM note, or execute a rescue | Not done here. On request, offer a draft from `prepare_dark_deal_rescue` or in chat; nothing is saved or sent |
+| Draft or send re-engagement email, create a CRM note, or execute a rescue | Not done here. On request, write a draft in chat from the verified chronology; nothing is saved or sent |
 
 If the request mixes timeline defence with another route, complete the chronology only and
 state which remaining part belongs elsewhere.

@@ -277,7 +277,7 @@ The routing targets above are the skills in the standard Summit53 library; if a 
 
 ## Tools Used
 
-`current_context` (preflight), `list_available_tools` (when the tool set is uncertain), `unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`, `deal_drag_dashboard` (C8 handoff only), and `target_account_funnel_summary` (optional, Domain E).
+`current_context` (preflight), `list_available_tools` (when the tool set is uncertain), `unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`, `prepare_dark_deal_rescue` (Domain A drafts), `deal_drag_dashboard` (C8 handoff only), and `target_account_funnel_summary` (optional, Domain E).
 
 All are read-only. This skill does not write to the CRM, and it drafts or routes an item only on the leader's explicit request.
 
@@ -295,5 +295,5 @@ All are read-only. This skill does not write to the CRM, and it drafts or routes
 - [ ] Constant-currency `status` checked; FX effect never fired or worded as a performance signal; omitted for single-currency orgs
 - [ ] Any forecast landing quoted with its `projected_landing.basis` and `fallback_reason`
 - [ ] Demo label applied if fixtures could not be excluded
-- [ ] No drafting, sending or CRM writes; any handoff explicitly requested or approved
+- [ ] No sending or CRM writes; any draft or handoff explicitly requested
 - [ ] Brief delivered in chat; optional saved copy returned as one clickable link

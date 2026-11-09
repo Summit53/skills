@@ -323,7 +323,7 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
   - The overdue-close diagnosis in 1-2 lines
   - Stakeholder gaps identified by the rescue packet
   - The suggested action plan as a short numbered list
-  - One line noting that a drafted re-engagement email is available in chat on request — do not reproduce the email in the deck
+  - One line noting that a drafted re-engagement email exists in the rescue packet — do not reproduce the email in the deck
   - A prominent label or footer stating this is a **draft for review only** — nothing has been sent or executed. Never phrase this section as something already done.
   - If `prepare_dark_deal_rescue` is unavailable on this connector or the deal doesn't meet the cold/Red trigger, omit this appendix entirely and don't mention it.
 

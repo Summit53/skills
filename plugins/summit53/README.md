@@ -87,7 +87,8 @@ Once you're connected, try:
   started. Any other write, such as saving coaching notes in `rep-coaching-report`, happens only
   when you ask for that specific change, the connector exposes it and you approve it.
 - **Web search.** `first-meeting-deck` runs a small number of public web searches about the
-  prospect and its market, using the assistant's own web search tool. `competitor-response-card`
+  prospect and its market, using the assistant's own web search tool. It also reads your company's public website during
+  setup and when checking that date-sensitive claims are current. `competitor-response-card`
   searches the web only when you ask it to.
 - **Local files.** Deck and document skills create PPTX, DOCX or Markdown files in your working
   folder or the assistant's output area. `first-meeting-deck` reads your company's positioning from
