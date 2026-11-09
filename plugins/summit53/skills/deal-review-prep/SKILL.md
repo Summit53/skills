@@ -1,8 +1,8 @@
 ---
 name: "deal-review-prep"
-description: "Build a manager-led, evidence-based deal review PPTX for one Summit53 opportunity: health verdict, first constraint, MEDDPIC/BANT/SPICED scorecards, risk factors, blockers, account and stakeholder context, coaching questions and next steps. Use when a sales manager or revenue leader wants to prep for a deal review or pipeline review meeting, review a specific deal, do a deal deep-dive, build a deal scorecard or assess deal health, e.g. 'review this deal', 'deal review for opportunity [ID]', 'how healthy is the [deal] deal', 'what's the risk on [deal]', 'is this deal going to close', 'should I be worried about [deal]', 'give me the full picture on [deal]'. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for a contested deal chronology — use deal-timeline-defence. For a competitor response in an active deal use competitor-response-card; for drafting outreach or re-engagement use deal-action-engine (if installed)."
+description: "Build a manager-led, evidence-based deal review PPTX for one Summit53 opportunity: health verdict, first constraint, MEDDPIC/BANT/SPICED scorecards, risk factors, blockers, account and stakeholder context, coaching questions and next steps. Use when a sales manager or revenue leader wants to prep for a deal review or pipeline review meeting, review a specific deal, do a deal deep-dive, build a deal scorecard or assess deal health, e.g. 'review this deal', 'deal review for opportunity [ID]', 'how healthy is the [deal] deal', 'what's the risk on [deal]', 'is this deal going to close', 'should I be worried about [deal]', 'give me the full picture on [deal]'. Do not use for an AE's own inspection prep — use ae-deal-inspection-prep. Do not use for a contested deal chronology — use deal-timeline-defence. For a competitor response in an active deal use competitor-response-card. Do not use for drafting outreach."
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -17,7 +17,7 @@ Generate a structured, coaching-ready deal review deck for one opportunity by pu
 - The owning AE preparing for their own inspection (likely questions, answer practice, a cheat sheet) → `ae-deal-inspection-prep`.
 - A challenged or contested chronology, inactivity onset, or evidence trail → `deal-timeline-defence`.
 - A one-screen response to a named competitor in an active deal → `competitor-response-card`. This skill only adds a short battlecard callout.
-- Drafting, sending or executing emails, notes or rescue actions → `deal-action-engine` when installed. Never execute them here.
+- Drafting outreach → on request, show the draft from `prepare_dark_deal_rescue` or write one in chat. Never send or save it, and never execute notes or rescue actions here.
 
 ## Preflight
 
@@ -83,7 +83,7 @@ Launch these calls in parallel where possible — they're mostly independent. Yo
    - If `get_opportunity` returns stage = "Closed Won", call `get_value_contract` with the opportunity ID to pull promised outcomes, metrics, and expansion signals.
 
 7. **Dark Deal Rescue Packet** (conditional — only if the deal is flagged "going cold" per the Activity Cadence Assessment in Step 3, or receives a Red health verdict)
-   - `prepare_dark_deal_rescue` with the opportunity ID — a shadow-mode rescue packet: overdue-close diagnosis, stakeholder gaps, a drafted re-engagement email, and a suggested action plan. This tool is **read-only/shadow-mode evidence only** — it drafts, it does not send or execute anything. Use its diagnosis, stakeholder gaps and action plan as evidence for the review; never present any of it as an action already taken, and never send or execute it from this skill. The drafted email stays out of the deck — if the user wants to work on outreach, hand off to `deal-action-engine` (if installed).
+   - `prepare_dark_deal_rescue` with the opportunity ID — a shadow-mode rescue packet: overdue-close diagnosis, stakeholder gaps, a drafted re-engagement email, and a suggested action plan. This tool is **read-only/shadow-mode evidence only** — it drafts, it does not send or execute anything. Use its diagnosis, stakeholder gaps and action plan as evidence for the review; never present any of it as an action already taken, and never send or execute it from this skill. The drafted email stays out of the deck — if the user asks to work on outreach, show it in chat as a draft; nothing is sent.
    - **Deployment note**: `prepare_dark_deal_rescue` is not exposed on every deployment (historically staging-only). Check `list_available_tools` before calling; if it's unavailable, skip the call entirely and skip the rescue appendix on Slide 10 — don't error or block deck generation.
 
 8. **Competitive Battlecard** (conditional — only if the notes summary or framework evidence names a specific competitor)
@@ -200,7 +200,7 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
 
 #### Slide 1: Title Slide
 - **Background**: Navy (`1E2761`)
-- **Content**: Deal name as the main title, account name, amount, and close date as subtitle. "Deal Review Prep" label. Date and "Powered by Summit53" at bottom.
+- **Content**: Deal name as the main title, account name, amount, and close date as subtitle. "Deal Review Prep" label. Date and "Source: Summit53" at bottom.
 - **Layout**: Centered, clean. Large Georgia title, Calibri subtitle.
 
 ---
@@ -323,7 +323,7 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
   - The overdue-close diagnosis in 1-2 lines
   - Stakeholder gaps identified by the rescue packet
   - The suggested action plan as a short numbered list
-  - One line noting that a drafted re-engagement email exists in the packet and that outreach drafting belongs in `deal-action-engine` (if installed) — do not reproduce the email in the deck
+  - One line noting that a drafted re-engagement email exists in the rescue packet — do not reproduce the email in the deck
   - A prominent label or footer stating this is a **draft for review only** — nothing has been sent or executed. Never phrase this section as something already done.
   - If `prepare_dark_deal_rescue` is unavailable on this connector or the deal doesn't meet the cold/Red trigger, omit this appendix entirely and don't mention it.
 
@@ -341,7 +341,7 @@ The structure is the default, not a cage: keep the compact evidence-first narrat
 
 #### Slide 12: Closing Slide
 - **Background**: Navy (`1E2761`)
-- **Content**: Deal name, "Prepared for pipeline review", date, "Powered by Summit53"
+- **Content**: Deal name, "Prepared for pipeline review", date, "Source: Summit53"
 - **Layout**: Clean, centered. Mirror the title slide design.
 
 ---
@@ -382,7 +382,7 @@ After generating the file:
 ## Tips for Great Deal Reviews
 
 - **Ground everything in evidence.** Generic statements like "the deal looks risky" are useless. "No champion identified, paper process undefined, and the close date is 12 days away" is actionable. Notes make this even sharper — "the Feb 1 note says procurement is pushing back on price and the last activity was 16 days ago" is a coaching conversation.
-- **Let the notes tell the story.** The Deal Narrative slide exists because scores alone don't explain *why* a deal is at risk. If the notes say "competitive bake-off with Clari, pricing pressure from procurement, paper process unresolved" — that's the story. Lead with it.
+- **Let the notes tell the story.** The Deal Narrative slide exists because scores alone don't explain *why* a deal is at risk. If the notes say "competitive bake-off with another vendor, pricing pressure from procurement, paper process unresolved" — that's the story. Lead with it.
 - **Frame gaps as opportunities, not failures.** "Here's where the biggest upside is hiding" beats "Here's what's wrong."
 - **Make the suggested questions specific.** "Who signs the PO at Acme?" beats "Have you identified the economic buyer?"
 - **Show the account context.** A USD 200K deal at an account with USD 1.5M in other active pipeline gets different treatment than a USD 200K standalone deal.
@@ -416,7 +416,7 @@ This skill pulls data from the following Summit53 tools (logical names; resolve 
 
 ## Guardrails
 
-- Read-only. Never send rescue emails, create notes, write to target accounts or stakeholder suggestions, or execute recommended actions; `prepare_dark_deal_rescue` is shadow-mode evidence only. Writes and outreach hand off to `deal-action-engine` (if installed) only on the user's explicit request.
+- Read-only. Never send rescue emails, create notes, write to target accounts or stakeholder suggestions, or execute recommended actions; `prepare_dark_deal_rescue` is shadow-mode evidence only. Outreach is drafted in chat only on the user's explicit request, and nothing is sent or saved.
 - Never reveal access-denied detail, permission errors or stack traces inside the deck.
 - Never convert missing data into a zero, a green status or a positive signal.
 - Never claim causality from activity, framework, account-health or signal correlations.

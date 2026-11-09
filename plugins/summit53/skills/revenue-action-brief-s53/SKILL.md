@@ -1,8 +1,8 @@
 ---
 name: "revenue-action-brief-s53"
-description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows. Do not use for weekly forecast movement ('why did the number move') — use forecast-delta-brief. Do not use to draft emails or write CRM records — the brief only hands off to a write-capable skill after the user explicitly asks for and approves that action."
+description: "Generate a prioritized, read-only revenue action brief for a VP Sales or CRO, organized into today, this week, this month, and this quarter. Use live Summit53 CRM evidence to answer what needs attention, what to focus on, where to spend time, or what the leader should do next. Keep this customer-facing and separate from Summit53's internal GTM workflows. Do not use for weekly forecast movement ('why did the number move') — use forecast-delta-brief. Do not use as a general email drafter or to write CRM records: it drafts a re-engagement touch only for an item the leader picks, and sends nothing."
 metadata:
-  version: "1.4.0"
+  version: "1.4.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -14,7 +14,7 @@ Produce a horizoned action brief for a sales leader: exactly what to do **today*
 ## Route first
 
 - Weekly forecast movement ("why did the number move this week") → `forecast-delta-brief`.
-- Drafting emails, re-engagement touches, coaching materials or CRM writes → not this skill. The brief may hand an item to a write-capable skill only after the leader explicitly asks for and approves that action (Step 7).
+- General email drafting, coaching materials or CRM writes → not this skill. When the leader picks an item, the brief can draft a re-engagement touch in chat or route to another skill (Step 7); nothing is sent.
 - Prioritizing what to do today, this week, this month or this quarter stays here.
 
 ## Preflight
@@ -26,7 +26,7 @@ Skill-specific gates:
 - **Preflight every read capability** this skill uses before the first data call: the eight data reads in Step 2 (`unified_forecast_summary`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`) plus `get_job` for the async flow, `deal_drag_dashboard` if a C8 handoff is requested, and the **optional** `target_account_funnel_summary` (pipeline-generation signals; requires the customer's Outreach plan — if it is not exposed or is access-denied, Domain E is not assessed and the brief continues). If they are deferred, load them all in one batch ([host-adapters.md](references/host-adapters.md#loading-the-summit53-tools)), then inspect each live schema. Tool names and arguments in this file are semantic guidance; follow the live schema when it differs and note the difference.
 - **Missing source ≠ zero.** If a capability is not exposed, errors, or is access-denied, record a missing-source note for it and suppress **only** the signals whose `source` depends on it (per the catalog). Never substitute zero, never treat the silence as health, and never let a missing source make the brief look calmer than the data supports.
 - **Demo label.** Commercial artifact: if fixture rows cannot be separated, put **Demo data — not for customer or commercial decisions** under the brief's header. A tenant whose `current_context` reports `organization.is_demo: true` is always a demo run, in every environment: apply the label and follow [Demo tenants](references/connector-preflight.md#demo-tenants).
-- **Read-only.** No `refresh: true`. The brief never drafts, sends, logs, or writes. Handoffs follow Step 7.
+- **Read-only.** No `refresh: true`. The brief never sends, logs, or writes. Drafts and handoffs follow Step 7.
 
 References:
 
@@ -238,7 +238,7 @@ Quarter is on quota, but pipeline quality and gross retention are both drifting 
 
 ## Step 7: Acting on a Brief Item (Handoff)
 
-The brief diagnoses and prioritises — it does not draft or send. When the leader wants to act on a specific item, hand off to the execution skill that owns that kind of work, **carrying the diagnosis with it** so the output targets the real problem instead of re-deriving it from scratch.
+The brief diagnoses and prioritises, and it sends nothing. When the leader wants to act on a specific item, draft it here or hand off to the skill that owns that kind of work, **carrying the diagnosis with it** so the output targets the real problem instead of re-deriving it from scratch.
 
 After rendering the brief, offer once, briefly: "Want me to action any of these? Give me the item number." Do not push — if the leader doesn't take it up, stop there.
 
@@ -246,7 +246,7 @@ When the leader picks an item, route by the signal's domain:
 
 | Brief item | Hand off to | Produces |
 |------------|-------------|----------|
-| Domain A — deal-level (A1–A6) | `deal-action-engine` | A drafted re-engagement touch targeting the diagnosed blocker |
+| Domain A — deal-level (A1–A6) | none — draft here (see below) | A drafted re-engagement touch targeting the diagnosed blocker; nothing is saved or sent |
 | B2 / B3 — rep coaching | `rep-coaching-report` (prep mode) | Coaching prep / 1:1 agenda for that rep |
 | B1 — your own task backlog | none | Offer to list the open items in full — it's your own to-do list, nothing to draft |
 | E1–E3 — target-account pipeline generation | none | Offer to list the named accounts with their `stuck.action`, untouched accounts or `up_next` thread. The work happens in the customer's outreach workflow; this brief never creates, updates or converts target accounts or acts on stakeholder suggestions |
@@ -254,14 +254,16 @@ When the leader picks an item, route by the signal's domain:
 
 **Handoff protocol** (for the routable rows):
 
-1. Identify the item's `signal_id` and the entity it concerns — the opportunity ID (Domain A) or rep ID (Domain B).
+1. Identify the item's `signal_id` and the entity it concerns — the rep ID (Domain B).
 2. Invoke the target skill by its plain name ([host-adapters.md](references/host-adapters.md#referring-to-other-summit53-skills)) and follow it, scoped to that entity.
-3. Pass the brief's diagnosis as known context — the signal, the evidence line, and the specific blocker. This is the point of the bridge: `deal-action-engine` should draft against the obstacle the brief already identified (e.g. "silent 16 days, closes today"), not open a generic check-in.
-4. These execution skills can **write** — they draft messages, create notes, and log to the CRM. The brief itself is strictly read-only. Hand off to a skill that drafts messages or writes CRM records **only after the leader has explicitly requested or approved that specific next action** in this conversation — naming the item number is a request to act on it; a general "thanks" is not. State what the target skill will do (e.g. "deal-action-engine will draft a re-engagement email for {deal}; it can also log to the CRM — go ahead?") and wait for a clear yes. The handoff is a deliberate step from diagnosis into action; name it as such. Any approval flow inside the target skill still applies.
+3. Pass the brief's diagnosis as known context — the signal, the evidence line, and the specific blocker — so the target skill works on the obstacle the brief already identified.
+4. The brief itself is strictly read-only. `rep-coaching-report` can save coaching notes only when the leader asks for that specific change, the connector exposes it and the leader approves it. Route an item only after the leader has explicitly requested that next action in this conversation — naming the item number is a request to act on it; a general "thanks" is not. Any approval flow inside the target skill still applies.
 
-**Domain C and D items** (pipeline-shape and structural signals) usually have no single drafted artifact — they are decisions and process changes, not one email. Do not force a handoff. Offer instead to break the item into concrete sub-steps in chat. If the leader wants tracking tasks created, that is a write: the brief does not create them; hand off to the product surface or a write-capable skill that owns tasks, under the same explicit-approval rule. Be honest that the work here is the leader's judgment, not something to generate.
+**Domain A items** stay in this conversation. Call `prepare_dark_deal_rescue` with the opportunity ID when the deal has gone dark (it returns a draft and saves or sends nothing), or write the draft here. Either way, target the obstacle the brief already identified (e.g. "silent 16 days, closes today"), not a generic check-in, and present it as a draft for the leader to send from their own tools.
 
-One exception in Domain C: `pipeline_stall_load` (C8) *does* decompose. If the leader wants to act on it, call `deal_drag_dashboard` (read-only) for the worst-waste deals and offer to route each to `deal-action-engine` exactly as a Domain A item, under the same explicit-approval rule — so "run a stalled-deal review" becomes a set of drafted re-engagement touches, each carrying that deal's drag cause and recommended recovery action as context.
+**Domain C and D items** (pipeline-shape and structural signals) usually have no single drafted artifact — they are decisions and process changes, not one email. Do not force a handoff. Offer instead to break the item into concrete sub-steps in chat. If the leader wants tracking tasks created, that is a write: the brief does not create them; point the leader to where tasks are managed in Summit53. Be honest that the work here is the leader's judgment, not something to generate.
+
+One exception in Domain C: `pipeline_stall_load` (C8) *does* decompose. If the leader wants to act on it, call `deal_drag_dashboard` (read-only) for the worst-waste deals and offer to draft each one exactly as a Domain A item, under the same explicit-request rule — so "run a stalled-deal review" becomes a set of drafted re-engagement touches, each carrying that deal's drag cause and recommended recovery action as context.
 
 The routing targets above are the skills in the standard Summit53 library; if a deployment names them differently, the mapping is the only thing that needs adjusting — the protocol is unchanged.
 
@@ -270,14 +272,14 @@ The routing targets above are the skills in the standard Summit53 library; if a 
 - **No significant signals fire** — only when every source returned a payload may you say so plainly: "No pressing actions detected — pipeline, retention, and team execution are all within healthy ranges." If any source was missing, say instead: "No pressing actions detected in the areas assessed" and keep the **Not assessed** line — silence from a missing source is not health. Do not manufacture filler recommendations.
 - **A horizon is empty** — omit the section rather than printing an empty heading.
 - **Sparse CRM data** — if multiple source tools return little data, produce the brief from what fired and add one line noting the brief is partial and which areas could not be assessed.
-- **Leader asks to act on an item** — this skill diagnoses and prioritises; it does not draft or send. Follow the Step 7 handoff to route the item to the execution skill that owns it. Do not draft emails or coaching materials inline.
+- **Leader asks to act on an item** — this skill diagnoses and prioritises; it sends nothing. Follow Step 7: draft a Domain A item in chat, or route other items to the skill that owns them. Do not draft coaching materials inline.
 - **Same underlying problem fires multiple signals** — apply the collapse rules in Step 5 (rep as key, deal as key, never collapse downward across horizons). Never repeat the same deal or rep across sections.
 
 ## Tools Used
 
-`current_context` (preflight), `list_available_tools` (when the tool set is uncertain), `unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`, `deal_drag_dashboard` (C8 handoff only), and `target_account_funnel_summary` (optional, Domain E).
+`current_context` (preflight), `list_available_tools` (when the tool set is uncertain), `unified_forecast_summary`, `get_job`, `arr_growth_analytics`, `risk_heatmap`, `deal_drag_summary`, `forecast_confidence`, `team_action_plan`, `weekly_action_plan`, `activity_gaps`, `prepare_dark_deal_rescue` (Domain A drafts), `deal_drag_dashboard` (C8 handoff only), and `target_account_funnel_summary` (optional, Domain E).
 
-All are read-only. This skill does not write to the CRM, and it hands off to write-capable skills only on the leader's explicit request or approval.
+All are read-only. This skill does not write to the CRM, and it drafts or routes an item only on the leader's explicit request.
 
 ## Verification checklist
 
@@ -293,5 +295,5 @@ All are read-only. This skill does not write to the CRM, and it hands off to wri
 - [ ] Constant-currency `status` checked; FX effect never fired or worded as a performance signal; omitted for single-currency orgs
 - [ ] Any forecast landing quoted with its `projected_landing.basis` and `fallback_reason`
 - [ ] Demo label applied if fixtures could not be excluded
-- [ ] No drafting, sending or CRM writes; any handoff explicitly requested or approved
+- [ ] No sending or CRM writes; any draft or handoff explicitly requested
 - [ ] Brief delivered in chat; optional saved copy returned as one clickable link

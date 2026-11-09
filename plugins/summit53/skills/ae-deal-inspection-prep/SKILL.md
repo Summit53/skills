@@ -1,8 +1,8 @@
 ---
 name: "ae-deal-inspection-prep"
-description: "Prepare the owning account executive for an internal inspection of one named Summit53 opportunity: a concise, read-only one-page evidence sheet with current deal facts, truthful gaps, likely manager questions, defensible answer evidence, and rep-owned next actions. Use when an AE says 'prepare me for deal inspection', 'prep me for my deal inspection on [deal]', 'help me answer questions on this deal', 'what am I missing before my 1:1', 'give me an inspection cheat sheet', or 'what will my manager ask about [deal]'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for a contested chronology or 'when did it go dark' — use deal-timeline-defence. Do not use for drafting re-engagement outreach — use deal-action-engine, if installed."
+description: "Prepare the owning account executive for an internal inspection of one named Summit53 opportunity: a concise, read-only one-page evidence sheet with current deal facts, truthful gaps, likely manager questions, defensible answer evidence, and rep-owned next actions. Use when an AE says 'prepare me for deal inspection', 'prep me for my deal inspection on [deal]', 'help me answer questions on this deal', 'what am I missing before my 1:1', 'give me an inspection cheat sheet', or 'what will my manager ask about [deal]'. Do not use for a manager-led formal deal review deck — use deal-review-prep. Do not use for a contested chronology or 'when did it go dark' — use deal-timeline-defence. Do not use for drafting re-engagement outreach."
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
   baselined: "2026-10-13"
   status: "active"
 ---
@@ -21,7 +21,7 @@ Route before reading any data:
 | AE-owned readiness for one named deal: likely questions, evidence gaps, answers, next actions | Use this skill |
 | Manager-led formal deal review, pipeline-review deck, broad coaching assessment, or executive artifact | Route to `deal-review-prep` |
 | Challenged chronology, disputed activity sequence, "when did it go dark", or rescue-decision defence | Route to `deal-timeline-defence` |
-| Draft or send re-engagement outreach, write a CRM note, or execute an action | Route to `deal-action-engine`, if installed; do not perform it here |
+| Draft or send re-engagement outreach, write a CRM note, or execute an action | Not done here. On request, offer a draft from `prepare_dark_deal_rescue` or in chat; nothing is saved or sent |
 
 Persona language alone is insufficient. A manager asking for an AE's formal review deck still
 belongs to `deal-review-prep`; an AE challenging the chronology still belongs to
